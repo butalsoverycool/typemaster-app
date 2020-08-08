@@ -6,7 +6,7 @@ const Ctx = createContext();
 const newGameState = {
   gameReady: false,
   gameON: false,
-  material: '',
+  material: {},
   charIndex: 0,
 
   time: null,

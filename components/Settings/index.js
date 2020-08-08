@@ -26,9 +26,9 @@ const Settings = ({ gameState, gameSetters, ...props }) => {
 
   return (
     <View style={styles.container}>
+      <Typer />
       <Level />
       <CaseSens />
-      <Typer />
     </View>
   );
 };

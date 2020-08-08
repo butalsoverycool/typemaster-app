@@ -14,7 +14,6 @@ const styles = StyleSheet.create({
 
   inputContainerStyle: { borderBottomWidth: 0 },
   inputStyle: {
-    color: 'red',
     height: 50,
     backgroundColor: '#ddd',
     textAlign: 'center',

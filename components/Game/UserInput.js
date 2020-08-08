@@ -1,7 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Alert } from 'react-native';
 import { Input } from 'react-native-elements';
-import { withState } from './GameState';
+import { withState } from '../GameState';
+import { dynamicMsg } from '../../constants/preset';
+import { randOfArr } from '../../constants/helperFuncs';
+
+const { gameOverText } = dynamicMsg;
 
 const styles = StyleSheet.create({
   container: {
@@ -18,7 +22,14 @@ const styles = StyleSheet.create({
 const UserInput = ({ gameState, gameSetters, ...props }) => {
   if (!gameState) return null;
 
-  const { gameReady, gameON, material, charIndex, points, msg } = gameState;
+  const {
+    gameReady,
+    gameON,
+    material: { text },
+    charIndex,
+    points,
+    msg,
+  } = gameState;
   const { setPoints, setCharIndex, startGame, endGame } = gameSetters;
 
   if (!gameReady) return null;
@@ -29,7 +40,7 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
     if (!gameON) startGame();
 
     // if typo, -1 points
-    if (char.toLowerCase() !== material[charIndex].toLowerCase()) {
+    if (char.toLowerCase() !== text[charIndex].toLowerCase()) {
       setPoints(-1);
       return;
     }
@@ -41,13 +52,21 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
     setCharIndex();
 
     // done
-    if (charIndex + 1 >= material.length) {
+    if (charIndex + 1 >= text.length) {
       endGame();
     }
   };
 
   const blurHandler = () => {
-    alert('Sorry, game was interupted. Please start over.');
+    const res = randOfArr(gameOverText);
+
+    Alert.alert('', 'Interaction outside keyboard', [
+      {
+        text: res.text + ' ' + res.emoji,
+        style: 'cancel',
+      },
+    ]);
+
     endGame();
   };
 

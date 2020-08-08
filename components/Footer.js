@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import { withState } from './GameState';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import Settings from './Settings';
-import Main from './Main';
+import Main from './Game';
 
 const Tab = createMaterialBottomTabNavigator();
 

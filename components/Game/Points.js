@@ -1,19 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Badge } from 'react-native-elements';
-import { withState } from './GameState';
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 30,
-  },
-  title: {
-    marginRight: 5,
-  },
-  badgeStyle: { flex: 1, width: 80 },
-});
+import { withState } from '../GameState';
+import styles from './styles';
 
 const Points = ({ gameState, ...props }) => {
   if (!gameState) return null;
@@ -21,8 +10,7 @@ const Points = ({ gameState, ...props }) => {
   const { points } = gameState;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Points</Text>
+    <View style={styles.contentContainer}>
       <Badge
         value={points}
         status={
@@ -37,6 +25,7 @@ const Points = ({ gameState, ...props }) => {
         badgeStyle={styles.badgeStyle}
         textStyle={{ fontSize: 20 }}
       />
+      <Text style={styles.label}>Points</Text>
     </View>
   );
 };

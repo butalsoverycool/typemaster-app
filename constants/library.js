@@ -1,5 +1,8 @@
 const library = [
-  'Hej jag heter Eddie',
+  {
+    title: 'Hej, jag heter Eddie',
+    text: 'Hej, jag heter Eddie, jag har skrivit detta själv',
+  },
   /* "Jaså du, du är go du",
   "Okejdå jag går väl med på det",
   "En vilseledd åsna är ändå en åsna",

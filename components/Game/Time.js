@@ -1,20 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Badge } from 'react-native-elements';
-import { withState } from './GameState';
-import * as PRESET from '../constants/preset';
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 30,
-  },
-  title: {
-    marginRight: 5,
-  },
-  badgeStyle: { flex: 1, width: 80 },
-});
+import { withState } from '../GameState';
+import * as PRESET from '../../constants/preset';
+import styles from './styles';
 
 const tickingMs = 100;
 
@@ -101,8 +90,8 @@ const Time = ({ gameState, gameSetters, ...props }) => {
   }, [ds]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Time</Text>
+    <View style={styles.contentContainer}>
+      <Text style={styles.label}>Time</Text>
       <Badge
         value={`${mStr}:${sStr}:${ds}` || '00:00:00:00'}
         status="primary"

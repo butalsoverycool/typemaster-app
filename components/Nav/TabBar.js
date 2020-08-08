@@ -1,8 +1,6 @@
 import React from 'react';
-import { TabBarIOS, View, Text, TouchableOpacity, Image } from 'react-native';
-import * as PRESET from '../constants/preset';
-import keyboardIcon from '../assets/keyboard.png';
-import settingsIcon from '../assets/settings.png';
+import { View, TouchableOpacity, Image } from 'react-native';
+import * as PRESET from '../../constants/preset';
 
 function TabBar({ state, descriptors, navigation, ...props }) {
   return (
