@@ -6,6 +6,8 @@ import Status from './Status';
 import Material from './Material';
 import Action from './Action';
 
+import CancelGame from './CancelGame';
+
 const styles = StyleSheet.create({
   container: {
     width: '100%',
@@ -14,14 +16,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const Main = props => (
+const Main = ({ gameState: { gameON, gameReady, material }, ...props }) => (
   <View style={styles.container}>
     {/* <Msg /> */}
+    {gameON && <CancelGame />}
 
     <Status />
 
     <Material />
-    <Action />
+    {material.title && <Action />}
   </View>
 );
 

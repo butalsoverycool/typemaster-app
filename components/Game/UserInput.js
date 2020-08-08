@@ -33,12 +33,19 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
   const {
     gameReady,
     gameON,
-    material: { text },
+    gamePaused,
+    material: { text = '' },
     charIndex,
     points,
     msg,
   } = gameState;
-  const { setPoints, setCharIndex, startGame, endGame } = gameSetters;
+  const {
+    setPoints,
+    setCharIndex,
+    startGame,
+    endGame,
+    togglePauseGame,
+  } = gameSetters;
 
   if (!gameReady) return null;
 
@@ -46,6 +53,8 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
     if (!char || char === undefined) return;
 
     if (!gameON) startGame();
+
+    if (gameON && gamePaused) togglePauseGame();
 
     // if typo, -1 points
     if (char.toLowerCase() !== text[charIndex].toLowerCase()) {

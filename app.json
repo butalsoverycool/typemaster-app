@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "typemaster",
-    "slug": "typemaster",
+    "name": "Type Master",
+    "slug": "type-master",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,23 +13,22 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "com.butalsoverycool.typemaster"
+      "supportsTablet": true,
+      "bundleIdentifier": "com.butalsoverycool.kimnkoubou",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.butalsoverycool.kimnkoubou",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "packagerOpts": {
       "config": "metro.config.js",
-      "sourceExts": [
-        "js",
-        "jsx",
-        "svg",
-        "svgx"
-      ]
+      "sourceExts": ["js", "jsx", "svg", "svgx"]
     }
   }
 }

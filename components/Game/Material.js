@@ -45,6 +45,7 @@ const Material = ({ gameState, gameSetters, ...props }) => {
   const {
     gameReady,
     gameON,
+    gamePaused,
     material: { title = '', text = '' },
     charIndex,
     settings,
@@ -133,7 +134,7 @@ const Material = ({ gameState, gameSetters, ...props }) => {
         wrapperStyle={[styles.innerContainer, { alignItems: 'flex-start' }]}
       >
         <View>
-          {gameReady || gameON ? (
+          {gameReady || gameON || gamePaused ? (
             <TextMaterial />
           ) : title && text ? (
             <TextInfo />

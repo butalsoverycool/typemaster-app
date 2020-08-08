@@ -6,6 +6,7 @@ const Ctx = createContext();
 const newGameState = {
   gameReady: false,
   gameON: false,
+  gamePaused: false,
 
   charIndex: 0,
 
@@ -14,6 +15,13 @@ const newGameState = {
   points: 0,
 
   msg: [],
+};
+
+const endGameState = {
+  gameReady: false,
+  gameON: false,
+  gamePaused: false,
+  msg: ['Game ended!'],
 };
 
 const initialState = {
@@ -33,10 +41,13 @@ class GameState extends Component {
 
     this.state = clone(initialState);
 
+    this.resetGame = this.resetGame.bind(this);
     this.prepareGame = this.prepareGame.bind(this);
     this.startGame = this.startGame.bind(this);
     this.endGame = this.endGame.bind(this);
+    this.togglePauseGame = this.togglePauseGame.bind(this);
 
+    this.setMaterial = this.setMaterial.bind(this);
     this.setLevel = this.setLevel.bind(this);
     this.setCaseSens = this.setCaseSens.bind(this);
     this.setTyper = this.setTyper.bind(this);
@@ -45,9 +56,11 @@ class GameState extends Component {
     this.addTick = this.addTick.bind(this);
 
     this.setters = {
+      resetGame: this.resetGame,
       prepareGame: this.prepareGame,
       startGame: this.startGame,
       endGame: this.endGame,
+      togglePauseGame: this.togglePauseGame,
 
       setMaterial: this.setMaterial,
       setLevel: this.setLevel,
@@ -95,13 +108,19 @@ class GameState extends Component {
     this.setState(ps => ({ time: ps.time + 1 }));
   }
 
-  prepareGame() {
-    if (this.state.gameON || this.state.gameReady) return;
+  resetGame() {
+    if (!this.state.gameON && !this.state.gamePaused) return;
 
     this.setState(ps => ({
       ...ps,
       ...newGameState,
+    }));
+  }
 
+  prepareGame() {
+    if (this.state.gameON || this.state.gameReady) return;
+
+    this.setState(ps => ({
       msg: [
         'Interaction outside of keyboard area = game over',
         'When you are ready, just start typing...',
@@ -117,9 +136,18 @@ class GameState extends Component {
   }
 
   endGame() {
+    if (!this.state.gameON && !this.state.gameReady && !this.state.gamePaused)
+      return;
+
+    this.setState(ps => ({ ...ps, ...endGameState }));
+  }
+
+  togglePauseGame() {
     if (!this.state.gameON && !this.state.gameReady) return;
 
-    this.setState({ msg: [], gameON: false, gameReady: false });
+    const msg = this.state.gamePaused ? '' : 'Paused!';
+
+    this.setState(ps => ({ msg, gamePaused: !ps.gamePaused }));
   }
 
   render() {

@@ -32,6 +32,7 @@ const Time = ({ gameState, gameSetters, ...props }) => {
 
   const {
     gameON,
+    gamePaused,
     time,
     settings: { level },
   } = gameState;
@@ -51,14 +52,14 @@ const Time = ({ gameState, gameSetters, ...props }) => {
   };
 
   useEffect(() => {
-    if (gameON) {
+    if (gameON && !gamePaused) {
       let ticking = setInterval(tick, tickingMs);
       setTimer(ticking);
     } else {
       clearInterval(timer);
       setTimer(null);
     }
-  }, [gameON]);
+  }, [gameON, gamePaused]);
 
   //const timeConvert = () => {
 
