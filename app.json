@@ -13,16 +13,23 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.butalsoverycool.typemaster"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "packagerOpts": {
       "config": "metro.config.js",
-      "sourceExts": ["js", "jsx", "svg", "svgx"]
+      "sourceExts": [
+        "js",
+        "jsx",
+        "svg",
+        "svgx"
+      ]
     }
   }
 }

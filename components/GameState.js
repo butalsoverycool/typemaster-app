@@ -6,7 +6,7 @@ const Ctx = createContext();
 const newGameState = {
   gameReady: false,
   gameON: false,
-  material: {},
+
   charIndex: 0,
 
   time: null,
@@ -17,6 +17,7 @@ const newGameState = {
 };
 
 const initialState = {
+  material: {},
   settings: {
     level: 0,
     caseSensitive: false,
@@ -48,6 +49,7 @@ class GameState extends Component {
       startGame: this.startGame,
       endGame: this.endGame,
 
+      setMaterial: this.setMaterial,
       setLevel: this.setLevel,
       setCaseSens: this.setCaseSens,
       setTyper: this.setTyper,
@@ -60,6 +62,10 @@ class GameState extends Component {
   tryCallback(cb) {
     if (typeof cb === 'function') cb();
   }
+
+  setMaterial = material => {
+    this.setState({ material });
+  };
 
   setLevel(level) {
     this.setState(ps => ({ settings: { ...ps.settings, level } }));
@@ -95,7 +101,7 @@ class GameState extends Component {
     this.setState(ps => ({
       ...ps,
       ...newGameState,
-      material: pickMaterial(),
+
       msg: [
         'Interaction outside of keyboard area = game over',
         'When you are ready, just start typing...',

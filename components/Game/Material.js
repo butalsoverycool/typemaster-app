@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, Modal } from 'react-native';
-import { Card } from 'react-native-elements';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, SafeAreaView, ScrollView } from 'react-native';
+import { Card, ListItem, Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import UserInput from './UserInput';
 import styles from './styles';
 import { levels } from '../../constants/options';
+import library from '../../constants/library';
 
 const localStyles = StyleSheet.create({
   material: { fontSize: 20, flexShrink: 1 },
@@ -34,6 +35,8 @@ const localStyles = StyleSheet.create({
   },
 
   infoText: { width: '100%', minWidth: '100%', textAlign: 'center' },
+
+  textItem: { fontSize: 20, color: 'black' },
 });
 
 const Material = ({ gameState, gameSetters, ...props }) => {
@@ -46,15 +49,51 @@ const Material = ({ gameState, gameSetters, ...props }) => {
     charIndex,
     settings,
   } = gameState;
-  const { endGame } = gameSetters;
+  const { endGame, setMaterial } = gameSetters;
 
   const typed = text.substring(0, charIndex);
   const notTyped = text.substring(charIndex);
+
+  const [choice, setChoice] = useState({});
 
   const clickHandler = () => {
     alert('Sorry, game ended');
     endGame();
   };
+
+  const PickText = () => (
+    <View
+      style={{
+        width: '100%',
+        height: 400,
+        flex: 1,
+        justifyContent: 'flex-start',
+      }}
+    >
+      <SafeAreaView
+        style={{
+          flex: 1,
+        }}
+      >
+        <ScrollView
+          centerContent={true}
+          contentContainerStyle={{ width: '100%', minWidth: '100%' }}
+        >
+          {library.map((item, nth) => (
+            <ListItem
+              key={nth}
+              containerStyle={{}}
+              titleStyle={localStyles.textItem}
+              title={item.title}
+              subtitle={item.text.length}
+              bottomDivider
+              onPress={() => setMaterial(item)}
+            />
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
 
   const TextInfo = () => (
     <View style={localStyles.infoContainer}>
@@ -64,6 +103,17 @@ const Material = ({ gameState, gameSetters, ...props }) => {
       <Text style={localStyles.infoText}>{text.length}</Text>
       <Text style={localStyles.infoLabel}>Level</Text>
       <Text style={localStyles.infoText}>{levels[settings.level]}</Text>
+
+      <Button
+        buttonStyle={{
+          marginTop: 5,
+          borderRadius: 5,
+          backgroundColor: '#444',
+          color: 'whitesmoke',
+        }}
+        title="change text"
+        onPress={() => setMaterial({})}
+      />
     </View>
   );
 
@@ -82,7 +132,15 @@ const Material = ({ gameState, gameSetters, ...props }) => {
         containerStyle={styles.card}
         wrapperStyle={[styles.innerContainer, { alignItems: 'flex-start' }]}
       >
-        {gameReady || gameON ? <TextMaterial /> : <TextInfo />}
+        <View>
+          {gameReady || gameON ? (
+            <TextMaterial />
+          ) : title && text ? (
+            <TextInfo />
+          ) : (
+            <PickText />
+          )}
+        </View>
       </Card>
       <UserInput />
     </View>

@@ -1,5 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, Text, Alert } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Alert,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import { Input } from 'react-native-elements';
 import { withState } from '../GameState';
 import { dynamicMsg } from '../../constants/preset';
@@ -71,15 +79,22 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Input
-        autoFocus={gameReady}
-        containerStyle={styles.inputContainer}
-        inputStyle={styles.input}
-        onChangeText={value => inputHandler(value[value.length - 1])}
-        onBlur={blurHandler}
-      />
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+      style={styles.section}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <Input
+            autoFocus={gameReady}
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.input}
+            onChangeText={value => inputHandler(value[value.length - 1])}
+            onBlur={blurHandler}
+          />
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
