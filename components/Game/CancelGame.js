@@ -1,13 +1,19 @@
 import React from 'react';
 import { withState } from '../GameState';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Button, Image } from 'react-native-elements';
+import { Card, Button, Image } from 'react-native-elements';
 import { IconFill, IconOutline } from '@ant-design/icons-react-native';
+import styles from './styles';
+import Icon from '../Icon';
 
-const styles = {
+const localStyles = {
+  section: {
+    maxHeight: 60,
+  },
   button: (props = {}) => ({
     color: props.color || 'red',
   }),
+
   TouchableOpacityStyle: {
     position: 'absolute',
     width: '100%',
@@ -17,34 +23,47 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-around',
     left: 0,
-    top: 0,
+    top: -30,
     flex: 1,
   },
 
   FloatingButtonStyle: {
     resizeMode: 'contain',
     width: 50,
-
     height: 50,
-    //backgroundColor:'black'
   },
 };
 
 const CancelGame = ({ gameState, gameSetters }) => {
   const { gameON, gamePaused } = gameState;
-  const { togglePauseGame, endGame } = gameSetters;
+  const { prepareGame, togglePauseGame, endGame } = gameSetters;
 
   return (
-    <TouchableOpacity activeOpacity={0.7} style={styles.TouchableOpacityStyle}>
-      {gamePaused ? (
-        <View>
-          <Text>Type to continue</Text>
-        </View>
-      ) : (
-        <IconFill name="pause-circle" size={50} onPress={togglePauseGame} />
-      )}
-      <IconFill name="stop" size={50} onPress={endGame} />
-    </TouchableOpacity>
+    <View style={[styles.section, localStyles.section]}>
+      <Card
+        containerStyle={styles.card}
+        wrapperStyle={[styles.cardWrapper, { justifyContent: 'space-around' }]}
+      >
+        {gameON && (
+          <View>
+            <Icon
+              name={gamePaused ? 'play-circle' : 'pause-circle'}
+              color={gamePaused ? 'green' : 'orange'}
+              onPress={togglePauseGame}
+              label={gamePaused ? 'continue' : 'pause'}
+            />
+          </View>
+        )}
+
+        <Icon
+          name="stop"
+          size={50}
+          color="red"
+          onPress={endGame}
+          label="quit"
+        />
+      </Card>
+    </View>
   );
 };
 

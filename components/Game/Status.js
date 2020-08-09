@@ -9,13 +9,13 @@ import styles from './styles';
 const Status = ({ gameState, ...props }) => {
   if (!gameState) return null;
 
-  const { gameReady, gameON, points, time } = gameState;
+  const { gameStandby, gameON, points, time } = gameState;
 
-  //if (!gameON && gameReady) return null;
+  //if (!gameON && gameStandby) return null;
 
   return (
     <View style={styles.section}>
-      <Card containerStyle={styles.card} wrapperStyle={styles.innerContainer}>
+      <Card containerStyle={styles.card} wrapperStyle={styles.cardWrapper}>
         <Time />
 
         <Points />

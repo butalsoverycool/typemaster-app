@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   section: {
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     width: '100%',
     marginTop: 5,
@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 0,
     padding: 10,
-    flex: 1,
+    /* flex: 1, */
   },
   card: {
     marginTop: 0,
@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
     backgroundColor: '#eee',
   },
-  innerContainer: {
-    height: '100%',
+  cardWrapper: {
+    /* height: '100%', */
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',

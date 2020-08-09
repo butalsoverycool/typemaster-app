@@ -20,9 +20,9 @@ const styles = StyleSheet.create({
 const Header = ({ gameState, ...props }) => {
   if (!gameState) return null;
 
-  const { gameReady, gameON, msg } = gameState;
+  const { gameStandby, gameON, msg } = gameState;
 
-  //if (gameReady || gameON) return null;
+  //if (gameStandby || gameON) return null;
 
   return (
     <View style={styles.container}>

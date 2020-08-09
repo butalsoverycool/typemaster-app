@@ -15,6 +15,15 @@ const library = [
     title: 'Margareta',
     text: 'Ingen vet det jag vet, en hemlighet',
   },
+  {
+    title: 'Lincoln-visan',
+    text:
+      'Har ni hört den förskräckliga händelsen? Den är sann ty det hände just nu',
+  },
+  {
+    title: 'Klas Klättermus',
+    text: 'Det var en gång en mus, och den musen hette Klas',
+  },
   /* "Jaså du, du är go du",
   "Okejdå jag går väl med på det",
   "En vilseledd åsna är ändå en åsna",

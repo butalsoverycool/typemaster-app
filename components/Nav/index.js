@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TabBar from './TabBar';
 import Game from '../Game';
 import Settings from '../Settings';
+import About from '../About';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,6 +18,7 @@ export default function App() {
       <Tab.Navigator tabBar={props => <TabBar {...props} />}>
         <Tab.Screen name="Game" component={Game} />
         <Tab.Screen name="Settings" component={Settings} />
+        <Tab.Screen name="About" component={About} />
       </Tab.Navigator>
     </View>
   );

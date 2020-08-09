@@ -7,16 +7,16 @@ import styles from './styles';
 const Action = ({ gameState, gameSetters, ...props }) => {
   if (!gameState || !gameSetters) return null;
 
-  const { gameReady, gameON } = gameState;
+  const { gameStandby, gameON, gamePaused, gameFinished } = gameState;
   const { prepareGame, endGame } = gameSetters;
 
   return (
     <View style={styles.section}>
-      <Card containerStyle={styles.card} wrapperStyle={styles.innerContainer}>
+      <Card containerStyle={styles.card} wrapperStyle={styles.cardWrapper}>
         <View style={styles.contentContainer}>
-          {!gameReady /*  || gameON */ && (
+          {!gameStandby && !gamePaused /*  || gameON */ && (
             <Button
-              title={!gameON ? 'Start' : 'Stop'}
+              title={gameFinished ? 'Play again' : !gameON ? 'Start' : 'Stop'}
               type="solid"
               containerStyle={{
                 alignItems: 'center',

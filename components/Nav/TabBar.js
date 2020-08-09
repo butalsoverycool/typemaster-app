@@ -40,8 +40,6 @@ function TabBar({ state, descriptors, navigation, ...props }) {
           });
         };
 
-        const icon = PRESET.navIcons[route.name];
-
         return (
           <TouchableOpacity
             key={index}
@@ -53,7 +51,7 @@ function TabBar({ state, descriptors, navigation, ...props }) {
             onLongPress={onLongPress}
             style={{ flex: 1, alignItems: 'center' }}
           >
-            <Image source={icon} style={{ height: 60, width: 60 }} />
+            {PRESET.navIcons[route.name]}
           </TouchableOpacity>
         );
       })}

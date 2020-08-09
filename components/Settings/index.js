@@ -10,7 +10,7 @@ import Typer from './Typer';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-around',
+    justifyContent: 'flex-end',
     backgroundColor: '#eee',
   },
   icon: {
@@ -28,7 +28,7 @@ const Settings = ({ gameState, gameSetters, ...props }) => {
     <View style={styles.container}>
       <Typer />
       <Level />
-      <CaseSens />
+      {/* <CaseSens /> */}
     </View>
   );
 };

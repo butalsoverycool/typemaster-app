@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, SafeAreaView, ScrollView } from 'react-native';
 import { Card, ListItem, Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import UserInput from './UserInput';
+import theme from '../../constants/theme';
 import styles from './styles';
 import { levels } from '../../constants/options';
 import library from '../../constants/library';
@@ -24,7 +25,7 @@ const localStyles = StyleSheet.create({
   },
 
   infoLabel: {
-    marginTop: 10,
+    marginTop: 5,
     marginBottom: 0,
 
     fontSize: 18,
@@ -34,7 +35,12 @@ const localStyles = StyleSheet.create({
     minWidth: '100%',
   },
 
-  infoText: { width: '100%', minWidth: '100%', textAlign: 'center' },
+  infoText: {
+    width: '100%',
+    minWidth: '100%',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
 
   textItem: { fontSize: 20, color: 'black' },
 });
@@ -43,17 +49,18 @@ const Material = ({ gameState, gameSetters, ...props }) => {
   if (!gameState) return null;
 
   const {
-    gameReady,
+    gameStandby,
     gameON,
     gamePaused,
+    gameFinished,
     material: { title = '', text = '' },
-    charIndex,
+    typed,
     settings,
   } = gameState;
   const { endGame, setMaterial } = gameSetters;
 
-  const typed = text.substring(0, charIndex);
-  const notTyped = text.substring(charIndex);
+  /* const typed = text.substring(0, charIndex);
+  const notTyped = text.substring(charIndex); */
 
   const [choice, setChoice] = useState({});
 
@@ -63,57 +70,63 @@ const Material = ({ gameState, gameSetters, ...props }) => {
   };
 
   const PickText = () => (
-    <View
-      style={{
-        width: '100%',
-        height: 400,
-        flex: 1,
-        justifyContent: 'flex-start',
-      }}
-    >
-      <SafeAreaView
-        style={{
-          flex: 1,
-        }}
-      >
-        <ScrollView
-          centerContent={true}
-          contentContainerStyle={{ width: '100%', minWidth: '100%' }}
-        >
-          {library.map((item, nth) => (
-            <ListItem
-              key={nth}
-              containerStyle={{}}
-              titleStyle={localStyles.textItem}
-              title={item.title}
-              subtitle={item.text.length}
-              bottomDivider
-              onPress={() => setMaterial(item)}
-            />
-          ))}
-        </ScrollView>
-      </SafeAreaView>
+    <View style={styles.section}>
+      <Text style={[theme.title, { textAlign: 'center' }]}>Pick a text</Text>
+      <Card style={styles.card} wrapperStyle={styles.cardWrapper}>
+        <SafeAreaView style={{}}>
+          <ScrollView
+            centerContent={true}
+            contentContainerStyle={{ width: '100%', minWidth: '100%' }}
+          >
+            {library.map((item, nth) => (
+              <ListItem
+                key={nth}
+                title={item.title}
+                subtitle={String(item.text.length)}
+                titleStyle={localStyles.textItem}
+                bottomDivider
+                onPress={() => setMaterial(item)}
+              />
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Card>
     </View>
   );
 
   const TextInfo = () => (
     <View style={localStyles.infoContainer}>
-      <Text style={localStyles.infoLabel}>Title</Text>
-      <Text style={localStyles.infoText}>{title}</Text>
-      <Text style={localStyles.infoLabel}>Length</Text>
-      <Text style={localStyles.infoText}>{text.length}</Text>
-      <Text style={localStyles.infoLabel}>Level</Text>
-      <Text style={localStyles.infoText}>{levels[settings.level]}</Text>
+      <Text style={[localStyles.infoLabel, { fontSize: 22 }]}>
+        Text to type
+      </Text>
+
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderWidth: 1,
+          borderColor: 'black',
+          marginTop: 5,
+          marginBottom: 5,
+        }}
+      >
+        <Text style={localStyles.infoLabel}>Title</Text>
+        <Text style={localStyles.infoText}>{title}</Text>
+        <Text style={localStyles.infoLabel}>Length</Text>
+        <Text style={localStyles.infoText}>{text.length}</Text>
+        <Text style={localStyles.infoLabel}>Level</Text>
+        <Text style={localStyles.infoText}>{levels[settings.level]}</Text>
+      </View>
 
       <Button
         buttonStyle={{
           marginTop: 5,
           borderRadius: 5,
           backgroundColor: '#444',
-          color: 'whitesmoke',
         }}
+        titleStyle={{ color: 'whitesmoke' }}
         title="change text"
-        onPress={() => setMaterial({})}
+        onPress={() => setMaterial()}
       />
     </View>
   );
@@ -121,20 +134,33 @@ const Material = ({ gameState, gameSetters, ...props }) => {
   const TextMaterial = () => (
     <View>
       <Text style={localStyles.material}>
-        <Text style={localStyles.typed}>{typed}</Text>
-        <Text style={localStyles.notTyped}>{notTyped}</Text>
+        <Text style={localStyles.typed}>{typed.output}</Text>
+        <Text style={localStyles.notTyped}>{typed.remaining}</Text>
       </Text>
     </View>
   );
 
+  const ScoreBoard = () => (
+    <View>
+      <Text>SCORE BOARD</Text>
+    </View>
+  );
+
   return (
-    <View style={styles.section}>
+    <View style={[styles.section, {}]}>
       <Card
         containerStyle={styles.card}
-        wrapperStyle={[styles.innerContainer, { alignItems: 'flex-start' }]}
+        wrapperStyle={[
+          styles.cardWrapper,
+          {
+            alignItems: 'flex-start',
+          },
+        ]}
       >
         <View>
-          {gameReady || gameON || gamePaused ? (
+          {gamePaused ? null : gameFinished ? (
+            <ScoreBoard />
+          ) : gameStandby || gameON ? (
             <TextMaterial />
           ) : title && text ? (
             <TextInfo />

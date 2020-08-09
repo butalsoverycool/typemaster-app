@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { withState } from '../GameState';
-import Msg from '../Msg';
+import Msg from './Msg';
 import Status from './Status';
 import Material from './Material';
 import Action from './Action';
@@ -16,14 +16,19 @@ const styles = StyleSheet.create({
   },
 });
 
-const Main = ({ gameState: { gameON, gameReady, material }, ...props }) => (
+const Main = ({
+  gameState: { gameON, gameStandby, gamePaused, material },
+  ...props
+}) => (
   <View style={styles.container}>
-    {/* <Msg /> */}
-    {gameON && <CancelGame />}
+    <Msg />
 
-    <Status />
+    {(gameStandby || gameON || gamePaused) && <Status />}
+
+    {(gameStandby || gameON) && <CancelGame />}
 
     <Material />
+
     {material.title && <Action />}
   </View>
 );

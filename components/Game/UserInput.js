@@ -5,6 +5,7 @@ import {
   Text,
   Alert,
   KeyboardAvoidingView,
+  Platform,
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
@@ -31,23 +32,23 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
   if (!gameState) return null;
 
   const {
-    gameReady,
+    gameStandby,
     gameON,
     gamePaused,
-    material: { text = '' },
-    charIndex,
+    material,
+    typed,
     points,
     msg,
   } = gameState;
   const {
     setPoints,
-    setCharIndex,
+    setTyped,
     startGame,
     endGame,
     togglePauseGame,
   } = gameSetters;
 
-  if (!gameReady) return null;
+  if (!gameStandby) return null;
 
   const inputHandler = char => {
     if (!char || char === undefined) return;
@@ -57,7 +58,7 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
     if (gameON && gamePaused) togglePauseGame();
 
     // if typo, -1 points
-    if (char.toLowerCase() !== text[charIndex].toLowerCase()) {
+    if (char !== material.text[typed.index]) {
       setPoints(-1);
       return;
     }
@@ -66,25 +67,30 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
     setPoints(1);
 
     // update charIndex (+1)
-    setCharIndex();
+    setTyped({
+      index: typed.index + 1,
+      input: material.text + char,
+    });
 
     // done
-    if (charIndex + 1 >= text.length) {
+    if (typed.index + 1 >= material.text.length) {
       endGame();
     }
   };
 
   const blurHandler = () => {
+    endGame();
+
+    if (typed.index <= 0) return;
+
     const res = randOfArr(gameOverText);
 
-    Alert.alert('', 'Interaction outside keyboard', [
+    Alert.alert('Game ended', 'Interaction outside keyboard', [
       {
         text: res.text + ' ' + res.emoji,
         style: 'cancel',
       },
     ]);
-
-    endGame();
   };
 
   return (
@@ -95,7 +101,7 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           <Input
-            autoFocus={gameReady}
+            autoFocus={gameStandby}
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
             onChangeText={value => inputHandler(value[value.length - 1])}
