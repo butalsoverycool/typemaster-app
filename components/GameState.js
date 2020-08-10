@@ -1,7 +1,8 @@
 import React, { Component, createContext } from 'react';
-import { Alert } from 'react-native';
+import { AsyncStorage, Alert, TextInput } from 'react-native';
 import { clone, pickMaterial, randOfArr } from '../constants/helperFuncs';
 import { dynamicMsg } from '../constants/preset';
+import { Value } from 'react-native-reanimated';
 
 const Ctx = createContext();
 
@@ -31,10 +32,10 @@ const endGameState = {
   gameStandby: false,
   gameON: false,
   gamePaused: false,
-  time: null,
 };
 
 const initialState = {
+  scoreboard: [],
   gameStandby: false,
   gameON: false,
   gamePaused: false,
@@ -57,7 +58,6 @@ const initialState = {
 
   settings: {
     level: 0,
-    caseSensitive: false,
     typer: '',
   },
 
@@ -86,6 +86,11 @@ class GameState extends Component {
     this.setPoints = this.setPoints.bind(this);
     this.setPushNav = this.setPushNav.bind(this);
 
+    this.load = this.load.bind(this);
+    this.save = this.save.bind(this);
+    this.saveScore = this.saveScore.bind(this);
+    this.clearScore = this.clearScore.bind(this);
+
     this.setters = {
       resetGame: this.resetGame,
       prepareGame: this.prepareGame,
@@ -102,11 +107,93 @@ class GameState extends Component {
       setTypoCount: this.setTypoCount,
       setPoints: this.setPoints,
       setPushNav: this.setPushNav,
+
+      saveScore: this.saveScore,
+      clearScore: this.clearScore,
     };
+  }
+
+  componentDidMount() {
+    this.load('scoreboard');
   }
 
   componentWillUnmount() {
     this.setState(clone(initialState));
+  }
+
+  async load(key) {
+    try {
+      const value = JSON.parse(await AsyncStorage.getItem(key)) || [];
+
+      this.setState({ [key]: value });
+    } catch (error) {
+      Alert('Oh no', 'Failed to load ' + key, {
+        text: 'Ok',
+        style: 'cancel',
+      });
+    }
+  }
+
+  async save(key, val) {
+    try {
+      const saved = await AsyncStorage.setItem(key, JSON.stringify(val));
+
+      if (saved !== null) console.log(key, 'was saved!');
+    } catch (error) {
+      Alert('Oh no', 'Failed to save ' + key, {
+        text: 'Ok',
+        style: 'cancel',
+      });
+    }
+  }
+
+  saveScore() {
+    // curr score
+    const {
+      settings: { typer, level },
+      time,
+      points,
+      material: { title },
+    } = this.state;
+
+    const newScore = {
+      typer: typer || 'unknown',
+      level,
+      time: time / 10,
+      points,
+      title,
+      text: title,
+    };
+
+    const unsorted = clone(this.state.scoreboard);
+
+    // append new score
+    unsorted.push(newScore);
+
+    // sort scores
+    const newBoard = unsorted.sort((a, b) =>
+      a.points > b.points
+        ? -1
+        : a.time < b.time
+        ? -1
+        : a.level > b.level
+        ? -1
+        : 1
+    );
+
+    // save
+    this.save('scoreboard', newBoard);
+    this.setState({ scoreboard: newBoard });
+  }
+
+  async clearScore() {
+    try {
+      await AsyncStorage.removeItem('scoreboard', () => {
+        this.load('scoreboard');
+      });
+    } catch (error) {
+      Alert('Oh no', 'Failed to clear score', { text: 'Ok', style: 'cancel' });
+    }
   }
 
   tryCallback(cb) {
@@ -209,13 +296,28 @@ class GameState extends Component {
     if (!this.state.gameON && !this.state.gameStandby && !this.state.gamePaused)
       return;
 
-    this.setState(ps => ({
-      ...ps,
-      ...endGameState,
-      gameFinished: ps.typed.remaining.length <= 0,
-      pushNav: ps.typed.remaining.length <= 0 ? 'ScoreBoard' : false,
-      msg: ps.typed.remaining.length <= 0 ? 'Game finished' : 'Game ended',
-    }));
+    this.setState(
+      ps => ({
+        ...ps,
+        ...endGameState,
+        gameFinished: ps.typed.remaining.length <= 0,
+        pushNav: ps.typed.remaining.length <= 0 ? 'ScoreBoard' : false,
+        msg: ps.typed.remaining.length <= 0 ? 'Game finished' : 'Game ended',
+      }),
+      () => {
+        if (this.state.gameFinished) {
+          if (!this.state.settings.typer) {
+            // ask user for name (modal)
+            // cancel just returns
+            // otherwise saveScore()
+
+            return;
+          } else {
+            this.saveScore();
+          }
+        }
+      }
+    );
   }
 
   togglePauseGame() {

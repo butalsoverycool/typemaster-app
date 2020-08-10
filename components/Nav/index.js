@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   container: { width: '100%', flex: 1, backgroundColor: '#eee' },
 });
 
-const Nav = ({ gameState: { pushNav } }) => {
+const Nav = props => {
   return (
     <View style={styles.container}>
       <Tab.Navigator tabBar={props => <TabBar {...props} />}>

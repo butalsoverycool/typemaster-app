@@ -2,7 +2,6 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -16,8 +15,7 @@ import {
   levelWithdrawal,
   bannedKeys,
 } from '../../constants/preset';
-import { levels } from '../../constants/options';
-import { randOfArr, clone } from '../../constants/helperFuncs';
+import { randOfArr } from '../../constants/helperFuncs';
 
 const { gameOverText } = dynamicMsg;
 

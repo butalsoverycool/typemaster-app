@@ -1,5 +1,6 @@
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
+import { Provider as PaperProvider } from 'react-native-paper';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -49,11 +50,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <GameState>
-        <View style={styles.container}>
-          <Header />
+        <PaperProvider>
+          <View style={styles.container}>
+            <Header />
 
-          <Nav />
-        </View>
+            <Nav />
+          </View>
+        </PaperProvider>
       </GameState>
     </NavigationContainer>
   );
