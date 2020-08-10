@@ -183,7 +183,7 @@ class GameState extends Component {
 
     // save
     this.save('scoreboard', newBoard);
-    this.setState({ scoreboard: newBoard });
+    this.setState(ps => ({ ...ps, ...newGameState(ps), scoreboard: newBoard }));
   }
 
   async clearScore() {
@@ -296,28 +296,13 @@ class GameState extends Component {
     if (!this.state.gameON && !this.state.gameStandby && !this.state.gamePaused)
       return;
 
-    this.setState(
-      ps => ({
-        ...ps,
-        ...endGameState,
-        gameFinished: ps.typed.remaining.length <= 0,
-        pushNav: ps.typed.remaining.length <= 0 ? 'ScoreBoard' : false,
-        msg: ps.typed.remaining.length <= 0 ? 'Game finished' : 'Game ended',
-      }),
-      () => {
-        if (this.state.gameFinished) {
-          if (!this.state.settings.typer) {
-            // ask user for name (modal)
-            // cancel just returns
-            // otherwise saveScore()
-
-            return;
-          } else {
-            this.saveScore();
-          }
-        }
-      }
-    );
+    this.setState(ps => ({
+      ...ps,
+      ...endGameState,
+      gameFinished: ps.typed.remaining.length <= 0,
+      pushNav: ps.typed.remaining.length <= 0 ? 'ScoreBoard' : false,
+      msg: ps.typed.remaining.length <= 0 ? 'Game finished' : 'Game ended',
+    }));
   }
 
   togglePauseGame() {

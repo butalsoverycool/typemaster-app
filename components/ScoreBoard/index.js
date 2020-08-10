@@ -4,6 +4,8 @@ import { Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
 import { DataTable } from 'react-native-paper';
+import NameInput from './NameInput';
+import { levels } from '../../constants/options';
 
 const localStyles = StyleSheet.create({
   title: { justifyContent: 'flex-start' },
@@ -49,12 +51,22 @@ const score = [
 ];
 
 const ScoreBoard = ({
-  gameState: { scoreboard },
+  gameState: {
+    gameFinished,
+    scoreboard,
+    settings: { typer },
+  },
   gameSetters: { saveScore, clearScore },
   ...props
 }) => {
+  if (gameFinished && typer) {
+    saveScore();
+  }
+
   return (
     <View style={theme.view}>
+      {gameFinished && !typer && <NameInput />}
+
       <View style={theme.section}>
         <Text style={theme.title}>LOCAL SCOREBOARD</Text>
       </View>
@@ -87,13 +99,13 @@ const ScoreBoard = ({
                   {time}
                 </DataTable.Cell>
                 <DataTable.Cell style={localStyles.cell}>
-                  {level}
+                  {levels[level].substring(0, 6)}
                 </DataTable.Cell>
                 <DataTable.Cell style={localStyles.cell}>{text}</DataTable.Cell>
               </DataTable.Row>
             ))}
 
-          <DataTable.Pagination
+          {/* <DataTable.Pagination
             style={{ justifyContent: 'center', flexWrap: 'nowrap', padding: 0 }}
             page={1}
             numberOfPages={3}
@@ -101,17 +113,17 @@ const ScoreBoard = ({
               console.log(page);
             }}
             label=""
-          />
+          /> */}
         </DataTable>
       </View>
 
-      <View style={theme.section}>
+      {/* <View style={theme.section}>
         <Button title="save something" onPress={saveScore} />
-      </View>
+      </View> */}
 
-      <View style={theme.section}>
+      {/* <View style={theme.section}>
         <Button title="clear scores" onPress={clearScore} />
-      </View>
+      </View> */}
     </View>
   );
 };
