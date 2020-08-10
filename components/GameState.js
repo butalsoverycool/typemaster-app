@@ -20,6 +20,7 @@ const newGameState = (ps, override = null) => ({
     input: '',
     output: '',
     remaining: ps.material.text,
+    typoCount: 0,
   },
   ...override,
 });
@@ -79,6 +80,7 @@ class GameState extends Component {
     this.setCaseSens = this.setCaseSens.bind(this);
     this.setTyper = this.setTyper.bind(this);
     this.setTyped = this.setTyped.bind(this);
+    this.setTypoCount = this.setTypoCount.bind(this);
     this.setPoints = this.setPoints.bind(this);
     this.setPushNav = this.setPushNav.bind(this);
 
@@ -95,6 +97,7 @@ class GameState extends Component {
       setCaseSens: this.setCaseSens,
       setTyper: this.setTyper,
       setTyped: this.setTyped,
+      setTypoCount: this.setTypoCount,
       setPoints: this.setPoints,
       setPushNav: this.setPushNav,
     };
@@ -143,6 +146,14 @@ class GameState extends Component {
     remaining = remaining || this.state.material.text.substring(index);
 
     this.setState(ps => ({ typed: { index, input, output, remaining } }));
+  }
+  setTypoCount(toAdd = 1) {
+    this.setState(ps => ({
+      typed: {
+        ...ps.typed,
+        typoCount: ps.typed.typoCount + toAdd,
+      },
+    }));
   }
 
   addTick() {

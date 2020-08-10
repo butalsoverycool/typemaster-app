@@ -43,6 +43,7 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
   const {
     setPoints,
     setTyped,
+    setTypoCount,
     startGame,
     endGame,
     togglePauseGame,
@@ -59,6 +60,7 @@ const UserInput = ({ gameState, gameSetters, ...props }) => {
 
     // if typo, -1 points
     if (char !== material.text[typed.index]) {
+      setTypoCount(1);
       setPoints(-1);
       return;
     }
