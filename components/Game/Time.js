@@ -1,106 +1,102 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { withState } from '../GameState';
 import * as PRESET from '../../constants/preset';
 import styles from './styles';
 
-const tickingMs = 100;
+class Time extends Component {
+  constructor(props) {
+    super(props);
 
-const getTime = time => {
-  const d = Number(input);
-  const h = Math.floor(d / 10 / 3600);
-  const m = Math.floor(((d / 10) % 3600) / 60);
-  const s = Math.floor(((d / 10) % 3600) % 60);
-  const cs = Math.floor(d % 10);
+    this.state = {
+      tickingMs: 100,
+      timer: null,
+      ticking: null,
+    };
 
-  const obj = {
-    h: h > 0 ? (h >= 10 ? h : '0' + h) : '00',
-    m: m > 0 ? (m >= 10 ? m : '0' + m) : '00',
-    s: s > 0 ? (s >= 10 ? s : '0' + s) : '00',
-    cs: cs > 0 ? (cs >= 10 ? cs : '0' + cs) : '00',
-  };
+    this.tick = this.tick.bind(this);
+  }
 
-  return {
-    str: `${obj.h}:${obj.m}:${obj.s}:${obj.cs}`,
-    obj,
-  };
-};
+  /* componentDidMount = () => {
+    this.tickingMs = 100;
 
-const Time = ({ gameState, gameSetters, ...props }) => {
-  if (!gameState) return null;
+  } */
 
-  const {
-    gameON,
-    gamePaused,
-    time,
-    settings: { level },
-  } = gameState;
+  componentDidUpdate = (pp, ps) => {
+    const {
+      gameON: prevGameON,
+      gamePaused: prevGamePaused,
+      time: prevTime,
+    } = pp.gameState;
+    const { timer, tickingMs } = this.state;
 
-  const { addTick, setPoints } = gameSetters;
+    const {
+      gameON,
+      gamePaused,
+      time,
+      settings: { level },
+    } = this.props.gameState;
 
-  const [timer, setTimer] = useState(null);
+    const { setPoints } = this.props.gameSetters;
 
-  const tick = () => {
-    addTick();
-
-    // point withdrawal
-    /* if ((newTime / 6) % 100 === 0) {
-      const newPoints = Math.round(PRESET.levelWithdrawal[level] * 10) / 10;
-      setPoints(newPoints);
-    } */
-  };
-
-  useEffect(() => {
-    if (gameON && !gamePaused) {
-      let ticking = setInterval(tick, tickingMs);
-      setTimer(ticking);
-    } else {
-      clearInterval(timer);
-      setTimer(null);
+    // run once at game start
+    // start ticking-interval
+    if (!prevGameON && gameON) {
+      let timer = setInterval(this.tick, tickingMs);
+      this.setState({ timer });
     }
-  }, [gameON, gamePaused]);
+    // run once att game stop
+    // clear ticking-interval
+    else if ((prevGameON && !gameON) || (!prevGamePaused && gamePaused)) {
+      clearInterval(timer);
+      this.setState({ timer: null });
+    }
 
-  //const timeConvert = () => {
+    const withdrawal = PRESET.levelWithdrawal[level];
 
-  //const h = Math.floor(time / 10 / 3600);
-  const m = Math.floor(((time / 10) % 3600) / 60);
-  const s = Math.floor(time / 10) % 60;
-  const ds = Math.floor(time % 10);
+    // everytime time changes, update points
+    if (gameON && prevTime !== time) {
+      setPoints(withdrawal);
+    }
+  };
 
-  /* const timeObj = {
-    /* h: h > 0 ? (h >= 10 ? h : '0' + h) : '00', 
-    m: m > 0 ? (m >= 10 ? m : '0' + m) : '00',
-    s: s > 0 ? (s >= 10 ? s : '0' + s) : '00',
-    cs: cs > 0 ? (cs >= 10 ? cs : '0' + cs) : '00', 
-  }; */
+  componentWillUnmount = () => {
+    clearInterval(this.state.timer);
+  };
 
-  //const timeStr = `${timeObj.m}:${timeObj.s}:${timeObj.ds}`;
-  //}
+  tick = () => {
+    this.props.gameSetters.addTick();
+  };
 
-  const mStr = m >= 10 ? m : '0' + m;
-  const sStr = s >= 10 ? s : '0' + s;
-  //const dsStr = ds >= 10 ? ds : '0' + ds;
+  render() {
+    if (!this.props.gameState) return null;
 
-  const withdrawal = PRESET.levelWithdrawal[level];
+    const { gameState } = this.props;
 
-  useEffect(() => {
-    if (!gameON) return;
+    const { time } = gameState;
 
-    setPoints(withdrawal);
-  }, [ds]);
+    //const timeConvert = () => {
+    //const h = Math.floor(time / 10 / 3600);
+    const m = Math.floor(((time / 10) % 3600) / 60);
+    const s = Math.floor(time / 10) % 60;
+    const ds = Math.floor(time % 10);
 
-  return (
-    <View style={styles.contentContainer}>
-      <Text style={styles.label}>Time</Text>
-      <Badge
-        value={`${mStr}:${sStr}:${ds}` || '00:00:00:00'}
-        status="primary"
-        badgeStyle={styles.badgeStyle}
-        textStyle={{ fontSize: 20 }}
-      />
-    </View>
-  );
-};
+    const mStr = m >= 10 ? m : '0' + m;
+    const sStr = s >= 10 ? s : '0' + s;
+
+    return (
+      <View style={styles.contentContainer}>
+        <Text style={styles.label}>Time</Text>
+        <Badge
+          value={`${mStr}:${sStr}:${ds}` || '00:00:00:00'}
+          status="primary"
+          badgeStyle={styles.badgeStyle}
+          textStyle={{ fontSize: 20 }}
+        />
+      </View>
+    );
+  }
+}
 
 export default withState(Time);

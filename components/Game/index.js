@@ -25,7 +25,7 @@ const Main = ({
 
     {(gameStandby || gameON || gamePaused) && <Status />}
 
-    {(gameStandby || gameON) && <CancelGame />}
+    {(gameStandby || gameON || gamePaused) && <CancelGame />}
 
     <Material />
 

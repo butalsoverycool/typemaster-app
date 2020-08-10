@@ -34,7 +34,7 @@ const Msg = ({ gameState, ...props }) => {
   }));
 
   return (
-    <View style={(styles.section, {})}>
+    <View style={styles.section}>
       <Card
         containerStyle={[styles.card, localStyles.card]}
         wrapperStyle={[styles.cardWrapper, localStyles.cardWrapper]}

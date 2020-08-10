@@ -42,18 +42,19 @@ const CancelGame = ({ gameState, gameSetters }) => {
     <View style={[styles.section, localStyles.section]}>
       <Card
         containerStyle={styles.card}
-        wrapperStyle={[styles.cardWrapper, { justifyContent: 'space-around' }]}
+        wrapperStyle={[
+          styles.cardWrapper,
+          { flexDirection: 'row', justifyContent: 'space-around' },
+        ]}
       >
-        {gameON && (
-          <View>
-            <Icon
-              name={gamePaused ? 'play-circle' : 'pause-circle'}
-              color={gamePaused ? 'green' : 'orange'}
-              onPress={togglePauseGame}
-              label={gamePaused ? 'continue' : 'pause'}
-            />
-          </View>
-        )}
+        {gameON ? (
+          <Icon
+            name={gamePaused ? 'play-circle' : 'pause-circle'}
+            color={gamePaused ? 'green' : 'orange'}
+            onPress={togglePauseGame}
+            label={gamePaused ? 'continue' : 'pause'}
+          />
+        ) : null}
 
         <Icon
           name="stop"

@@ -28,7 +28,7 @@ const endGameState = {
   gameStandby: false,
   gameON: false,
   gamePaused: false,
-  msg: ['Game ended!'],
+  time: null,
 };
 
 const initialState = {
@@ -94,6 +94,10 @@ class GameState extends Component {
       setPoints: this.setPoints,
       addTick: this.addTick,
     };
+  }
+
+  componentWillUnmount() {
+    this.setState(clone(initialState));
   }
 
   tryCallback(cb) {

@@ -73,7 +73,7 @@ const Material = ({ gameState, gameSetters, ...props }) => {
     <View style={styles.section}>
       <Text style={[theme.title, { textAlign: 'center' }]}>Pick a text</Text>
       <Card style={styles.card} wrapperStyle={styles.cardWrapper}>
-        <SafeAreaView style={{}}>
+        <SafeAreaView>
           <ScrollView
             centerContent={true}
             contentContainerStyle={{ width: '100%', minWidth: '100%' }}
