@@ -4,6 +4,8 @@ import { Card, ListItem, Badge } from 'react-native-elements';
 import { withState } from '../GameState';
 import lightIcon from '../../assets/lightbulb.png';
 import styles from './styles';
+import theme from '../../constants/theme';
+import Icon from '../Icon';
 
 const localStyles = StyleSheet.create({
   container: {},
@@ -30,11 +32,11 @@ const Msg = ({ gameState, ...props }) => {
 
   const list = msgArr.map((title, nth) => ({
     title,
-    icon: <Image key={nth} source={lightIcon} style={styles.icon} />,
+    icon: <Icon type="IconOutline" name="info-circle" color="#444" size={20} />,
   }));
 
   return (
-    <View style={styles.section}>
+    <View style={theme.section}>
       <Card
         containerStyle={[styles.card, localStyles.card]}
         wrapperStyle={[styles.cardWrapper, localStyles.cardWrapper]}

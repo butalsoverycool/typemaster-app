@@ -3,7 +3,11 @@ import keyboardIcon from '../assets/keyboard.png';
 import settingsIcon from '../assets/settings.png';
 import Icon from '../components/Icon';
 
-export const levelWithdrawal = [-0.01, -0.02, -0.05, -0.666];
+export const levelWithdrawal = [-0.01, -0.02, -0.04, -0.666];
+
+export const speedStandard = [2, 4, 6, 8];
+
+export const bannedKeys = ['Backspace', 'Enter'];
 
 export const navIcons = {
   Game: isFocued => (

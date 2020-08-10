@@ -19,8 +19,8 @@ const Nav = ({ gameState: { pushNav } }) => {
     <View style={styles.container}>
       <Tab.Navigator tabBar={props => <TabBar {...props} />}>
         <Tab.Screen name="Game" component={Game} />
-        <Tab.Screen name="ScoreBoard" component={ScoreBoard} />
         <Tab.Screen name="Settings" component={Settings} />
+        <Tab.Screen name="ScoreBoard" component={ScoreBoard} />
         <Tab.Screen name="About" component={About} />
       </Tab.Navigator>
     </View>

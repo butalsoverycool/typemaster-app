@@ -4,6 +4,7 @@ import { Badge } from 'react-native-elements';
 import { withState } from '../GameState';
 import * as PRESET from '../../constants/preset';
 import styles from './styles';
+import StatusData from './StatusData';
 
 class Time extends Component {
   constructor(props) {
@@ -74,7 +75,7 @@ class Time extends Component {
 
     const { gameState } = this.props;
 
-    const { time } = gameState;
+    const { time, typed, settings } = gameState;
 
     //const timeConvert = () => {
     //const h = Math.floor(time / 10 / 3600);
@@ -82,19 +83,28 @@ class Time extends Component {
     const s = Math.floor(time / 10) % 60;
     const ds = Math.floor(time % 10);
 
+    const sTot = time / 10;
+
     const mStr = m >= 10 ? m : '0' + m;
     const sStr = s >= 10 ? s : '0' + s;
 
+    // speed
+    const TPS = typed.output.length / sTot;
+
+    const statusColor =
+      TPS <= PRESET.speedStandard[settings.level] / 2
+        ? 'red'
+        : TPS < PRESET.speedStandard[settings.level]
+        ? 'gold'
+        : '#444';
+
     return (
-      <View style={styles.contentContainer}>
-        <Text style={styles.label}>Time</Text>
-        <Badge
-          value={`${mStr}:${sStr}:${ds}` || '00:00:00:00'}
-          status="primary"
-          badgeStyle={styles.badgeStyle}
-          textStyle={{ fontSize: 20 }}
-        />
-      </View>
+      <StatusData
+        label="Time"
+        index={0}
+        data={`${mStr}:${sStr}:${ds}` || '00:00:00:00'}
+        statusColor={statusColor}
+      />
     );
   }
 }

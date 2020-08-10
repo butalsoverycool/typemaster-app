@@ -1,5 +1,6 @@
+import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Card as RNECard } from 'react-native-elements';
+import { Card as RNECard, Input as RNEInput } from 'react-native-elements';
 
 export default StyleSheet.create({
   view: {
@@ -9,6 +10,7 @@ export default StyleSheet.create({
     padding: 0,
   },
   section: {
+    width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'center',
     margin: 0,
@@ -20,6 +22,7 @@ export default StyleSheet.create({
   fillW: { width: '100%' },
   fullH: { height: '100%' },
   title: {
+    textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
@@ -44,6 +47,26 @@ export const Card = props => (
   <RNECard
     containerStyle={cardStyle.container}
     wrapperStyle={cardStyle.wrapper}
+    {...props}
+  />
+);
+
+const inputStyle = StyleSheet.create({
+  container: { borderBottomWidth: 0, alignSelf: 'flex-start' },
+  input: {
+    width: '100%',
+    minWidth: '100%',
+    height: 50,
+    backgroundColor: '#ddd',
+    textAlign: 'center',
+    borderBottomWidth: 0,
+  },
+});
+
+export const Input = props => (
+  <RNEInput
+    inputContainerStyle={[inputStyle.container, props.containerStyle]}
+    inputStyle={[inputStyle.input, props.style]}
     {...props}
   />
 );

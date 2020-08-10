@@ -1,5 +1,9 @@
 const library = [
   {
+    title: 'Shorty',
+    text: 'Hej',
+  },
+  {
     title: 'Hej, jag heter Eddie',
     text: 'Hej, jag heter Eddie, jag har skrivit detta själv',
   },
@@ -23,6 +27,26 @@ const library = [
   {
     title: 'Klas Klättermus',
     text: 'Det var en gång en mus, och den musen hette Klas',
+  },
+  {
+    title: 'A',
+    text: 'abcdef',
+  },
+  {
+    title: 'G',
+    text: 'ghijkl',
+  },
+  {
+    title: 'M',
+    text: 'mnopq',
+  },
+  {
+    title: 'R',
+    text: 'rstuvw',
+  },
+  {
+    title: 'X',
+    text: 'xyz',
   },
   /* "Jaså du, du är go du",
   "Okejdå jag går väl med på det",

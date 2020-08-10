@@ -1,10 +1,19 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Card } from 'react-native-elements';
 import { withState } from '../GameState';
+import styles from './styles';
 import Time from './Time';
 import Points from './Points';
-import styles from './styles';
+import TypoCount from './TypoCount';
+import Remaining from './Remaining';
+import theme from '../../constants/theme';
+
+const localStyles = StyleSheet.create({
+  section: {
+    width: '50%',
+  },
+});
 
 const Status = ({ gameState, ...props }) => {
   if (!gameState) return null;
@@ -14,11 +23,18 @@ const Status = ({ gameState, ...props }) => {
   //if (!gameON && gameStandby) return null;
 
   return (
-    <View style={styles.section}>
-      <Card containerStyle={styles.card} wrapperStyle={styles.cardWrapper}>
+    <View style={theme.section}>
+      <Card
+        containerStyle={styles.card}
+        wrapperStyle={[styles.cardWrapper, { flexWrap: 'wrap' }]}
+      >
         <Time />
 
         <Points />
+
+        <TypoCount />
+
+        <Remaining />
       </Card>
     </View>
   );

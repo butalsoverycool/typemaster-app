@@ -5,6 +5,7 @@ import { Card, Button, Image } from 'react-native-elements';
 import { IconFill, IconOutline } from '@ant-design/icons-react-native';
 import styles from './styles';
 import Icon from '../Icon';
+import theme from '../../constants/theme';
 
 const localStyles = {
   section: {
@@ -39,31 +40,33 @@ const CancelGame = ({ gameState, gameSetters }) => {
   const { prepareGame, togglePauseGame, endGame } = gameSetters;
 
   return (
-    <View style={[styles.section, localStyles.section]}>
-      <Card
-        containerStyle={styles.card}
-        wrapperStyle={[
-          styles.cardWrapper,
-          { flexDirection: 'row', justifyContent: 'space-around' },
-        ]}
-      >
-        {gameON ? (
-          <Icon
-            name={gamePaused ? 'play-circle' : 'pause-circle'}
-            color={gamePaused ? 'green' : 'orange'}
-            onPress={togglePauseGame}
-            label={gamePaused ? 'continue' : 'pause'}
-          />
-        ) : null}
+    <View style={theme.section}>
+      <View style={[styles.section, localStyles.section]}>
+        <Card
+          containerStyle={styles.card}
+          wrapperStyle={[
+            styles.cardWrapper,
+            { flexDirection: 'row', justifyContent: 'space-around' },
+          ]}
+        >
+          {gameON ? (
+            <Icon
+              name={gamePaused ? 'play-circle' : 'pause-circle'}
+              color={gamePaused ? 'green' : 'orange'}
+              onPress={togglePauseGame}
+              label={gamePaused ? 'continue' : 'pause'}
+            />
+          ) : null}
 
-        <Icon
-          name="stop"
-          size={50}
-          color="red"
-          onPress={endGame}
-          label="quit"
-        />
-      </Card>
+          <Icon
+            name="stop"
+            size={50}
+            color="red"
+            onPress={endGame}
+            label="quit"
+          />
+        </Card>
+      </View>
     </View>
   );
 };

@@ -26,16 +26,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  badgeContainer: { marginTop: 5 },
-  badge: { padding: 10 },
-  badgeStyle: { height: 40, width: 90, marginLeft: 5, marginRight: 5 },
-
   contentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  badgeContainer: { marginTop: 5 },
+  badge: { padding: 10 },
+  badgeStyle: { height: 30, width: 90, marginLeft: 5, marginRight: 5 },
+
   label: {
+    width: 50,
     marginLeft: 5,
     marginRight: 5,
   },

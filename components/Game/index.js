@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import theme from '../../constants/theme';
 import { withState } from '../GameState';
 import Msg from './Msg';
 import Status from './Status';
@@ -20,7 +21,7 @@ const Main = ({
   gameState: { gameON, gameStandby, gamePaused, material },
   ...props
 }) => (
-  <View style={styles.container}>
+  <View style={theme.view}>
     <Msg />
 
     {(gameStandby || gameON || gamePaused) && <Status />}

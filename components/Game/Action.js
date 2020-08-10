@@ -3,6 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import { Card, Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import styles from './styles';
+import theme from '../../constants/theme';
 
 const Action = ({ gameState, gameSetters, ...props }) => {
   if (!gameState || !gameSetters) return null;

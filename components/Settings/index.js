@@ -6,6 +6,7 @@ import { printStr } from '../../constants/helperFuncs';
 import Level from './Level';
 import CaseSens from './CaseSens';
 import Typer from './Typer';
+import theme from '../../constants/theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -25,8 +26,11 @@ const Settings = ({ gameState, gameSetters, ...props }) => {
   const { settings } = gameState;
 
   return (
-    <View style={styles.container}>
+    <View style={theme.view}>
+      <Text style={theme.title}>SETTINGS</Text>
+
       <Typer />
+
       <Level />
       {/* <CaseSens /> */}
     </View>

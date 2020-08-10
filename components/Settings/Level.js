@@ -4,6 +4,7 @@ import { withState } from '../GameState';
 import { ButtonGroup, TouchableHighlight } from 'react-native-elements';
 import * as OPTIONS from '../../constants/options';
 import styles, { buttonGroupStyle } from './styles';
+import theme from '../../constants/theme';
 
 // About typemaster Stella: https://www.pond5.com/stock-footage/item/75268195-miss-stella-pajunas-worlds-fast-typist-types-ibm-electric-ty
 const Level = ({ gameState, gameSetters, ...props }) => {
@@ -13,8 +14,8 @@ const Level = ({ gameState, gameSetters, ...props }) => {
   const { setLevel } = gameSetters;
 
   return (
-    <View style={styles.sectionContainer}>
-      <Text style={styles.groupLabel}>Level</Text>
+    <View style={theme.section}>
+      <Text style={[theme.subtitle, { textAlign: 'center' }]}>Level</Text>
       <ButtonGroup
         containerStyle={[
           styles.sectionContentContainer,

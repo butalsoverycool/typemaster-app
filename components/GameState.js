@@ -1,5 +1,7 @@
 import React, { Component, createContext } from 'react';
-import { clone, pickMaterial } from '../constants/helperFuncs';
+import { Alert } from 'react-native';
+import { clone, pickMaterial, randOfArr } from '../constants/helperFuncs';
+import { dynamicMsg } from '../constants/preset';
 
 const Ctx = createContext();
 
@@ -133,21 +135,34 @@ class GameState extends Component {
   }
 
   setPoints(toAdd) {
+    if (this.state.points + toAdd < -10) {
+      const res = randOfArr(dynamicMsg.gameOverText);
+
+      return Alert.alert('Game Over', 'Points dropped below -10', [
+        {
+          text: 'I can do better ' + res.emoji,
+          style: 'cancel',
+        },
+      ]);
+    }
+
     this.setState(ps => ({
       points: Math.round((ps.points + toAdd) * 100) / 100,
     }));
   }
 
-  setTyped({ index, input, output, remaining }) {
-    if (!input) return console.log('Missing input to update typed-state');
+  setTyped({ index, output, remaining, ...props }) {
+    if (!props.input) return console.log('Missing input to update typed-state');
 
     index = index || this.state.typed.index + 1;
     output = output || this.state.material.text.substring(0, index);
     remaining = remaining || this.state.material.text.substring(index);
 
-    this.setState(ps => ({ typed: { index, input, output, remaining } }));
+    this.setState(ps => ({ typed: { ...props, index, output, remaining } }));
   }
+
   setTypoCount(toAdd = 1) {
+    this.setTyped(ps => {});
     this.setState(ps => ({
       typed: {
         ...ps.typed,
@@ -187,7 +202,7 @@ class GameState extends Component {
   startGame() {
     if (this.state.gameON || !this.state.gameStandby) return;
 
-    this.setState({ gameON: true, msg: [] });
+    this.setState({ gameON: true, msg: 'Game is ON!' });
   }
 
   endGame() {

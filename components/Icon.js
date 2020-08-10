@@ -19,7 +19,7 @@ const Icon = ({
   const Component = ICON[type];
 
   return (
-    <View style={{ width: size }}>
+    <View style={{ width: size, height: size }}>
       {label && labelPos === 'top' && <Text style={styles.label}>{label}</Text>}
       <Component size={size} {...props} />
       {label && labelPos === 'bottom' && (

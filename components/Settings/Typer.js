@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import { withState } from '../GameState';
-import { Input } from 'react-native-elements';
 import styles from './styles';
+import theme, { Input } from '../../constants/theme';
 
 const Typer = ({ gameState, gameSetters, ...props }) => {
   if (!gameState) return null;
@@ -13,14 +13,9 @@ const Typer = ({ gameState, gameSetters, ...props }) => {
   const { setTyper } = gameSetters;
 
   return (
-    <View style={styles.sectionContainer}>
-      <Text style={styles.groupLabel}>Typer</Text>
+    <View style={theme.section}>
+      <Text style={[theme.subtitle, { textAlign: 'center' }]}>Typer</Text>
       <Input
-        inputContainerStyle={[
-          styles.sectionContentContainer,
-          styles.inputContainerStyle,
-        ]}
-        inputStyle={styles.inputStyle}
         value={typer}
         placeholder="unknown"
         onChangeText={value => setTyper(value)}
