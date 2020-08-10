@@ -6,9 +6,34 @@ import Icon from '../components/Icon';
 export const levelWithdrawal = [-0.01, -0.02, -0.05, -0.666];
 
 export const navIcons = {
-  Game: <Icon name="play-square" type="IconOutline" />,
-  Settings: <Icon name="setting" type="IconOutline" />,
-  About: <Icon name="question-circle" type="IconOutline" />,
+  Game: isFocued => (
+    <Icon
+      name="play-square"
+      type="IconOutline"
+      color={!isFocued ? '#666' : '#444'}
+    />
+  ),
+  ScoreBoard: isFocued => (
+    <Icon
+      name="trophy"
+      type="IconOutline"
+      color={!isFocued ? '#666' : '#444'}
+    />
+  ),
+  Settings: isFocued => (
+    <Icon
+      name="setting"
+      type="IconOutline"
+      color={!isFocued ? '#666' : '#444'}
+    />
+  ),
+  About: isFocued => (
+    <Icon
+      name="question-circle"
+      type="IconOutline"
+      color={!isFocued ? '#666' : '#444'}
+    />
+  ),
 };
 
 export const dynamicMsg = {

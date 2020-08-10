@@ -1,5 +1,13 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import library from './library';
+
+export const usePrev = val => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = val;
+  });
+  return ref.current;
+};
 
 export const mathRandInc = (...args) => {
   let min, max;

@@ -57,6 +57,8 @@ const initialState = {
     caseSensitive: false,
     typer: '',
   },
+
+  pushNav: false,
 };
 
 class GameState extends Component {
@@ -71,13 +73,14 @@ class GameState extends Component {
     this.endGame = this.endGame.bind(this);
     this.togglePauseGame = this.togglePauseGame.bind(this);
 
+    this.addTick = this.addTick.bind(this);
     this.setMaterial = this.setMaterial.bind(this);
     this.setLevel = this.setLevel.bind(this);
     this.setCaseSens = this.setCaseSens.bind(this);
     this.setTyper = this.setTyper.bind(this);
     this.setTyped = this.setTyped.bind(this);
     this.setPoints = this.setPoints.bind(this);
-    this.addTick = this.addTick.bind(this);
+    this.setPushNav = this.setPushNav.bind(this);
 
     this.setters = {
       resetGame: this.resetGame,
@@ -86,13 +89,14 @@ class GameState extends Component {
       endGame: this.endGame,
       togglePauseGame: this.togglePauseGame,
 
+      addTick: this.addTick,
       setMaterial: this.setMaterial,
       setLevel: this.setLevel,
       setCaseSens: this.setCaseSens,
       setTyper: this.setTyper,
       setTyped: this.setTyped,
       setPoints: this.setPoints,
-      addTick: this.addTick,
+      setPushNav: this.setPushNav,
     };
   }
 
@@ -145,6 +149,10 @@ class GameState extends Component {
     this.setState(ps => ({ time: ps.time + 1 }));
   }
 
+  setPushNav(pushNav = false) {
+    this.setState({ pushNav });
+  }
+
   resetGame() {
     if (!this.state.gameON && !this.state.gamePaused) return;
 
@@ -179,6 +187,7 @@ class GameState extends Component {
       ...ps,
       ...endGameState,
       gameFinished: ps.typed.remaining.length <= 0,
+      pushNav: ps.typed.remaining.length <= 0 ? 'ScoreBoard' : false,
       msg: ps.typed.remaining.length <= 0 ? 'Game finished' : 'Game ended',
     }));
   }

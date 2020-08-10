@@ -7,6 +7,8 @@ import theme from '../../constants/theme';
 import styles from './styles';
 import { levels } from '../../constants/options';
 import library from '../../constants/library';
+import Teleprompter from './Teleprompter';
+import ScoreBoard from '../ScoreBoard';
 
 const localStyles = StyleSheet.create({
   material: { fontSize: 20, flexShrink: 1 },
@@ -131,21 +133,6 @@ const Material = ({ gameState, gameSetters, ...props }) => {
     </View>
   );
 
-  const TextMaterial = () => (
-    <View>
-      <Text style={localStyles.material}>
-        <Text style={localStyles.typed}>{typed.output}</Text>
-        <Text style={localStyles.notTyped}>{typed.remaining}</Text>
-      </Text>
-    </View>
-  );
-
-  const ScoreBoard = () => (
-    <View>
-      <Text>SCORE BOARD</Text>
-    </View>
-  );
-
   return (
     <View style={[styles.section, {}]}>
       <Card
@@ -158,10 +145,8 @@ const Material = ({ gameState, gameSetters, ...props }) => {
         ]}
       >
         <View>
-          {gamePaused ? null : gameFinished ? (
-            <ScoreBoard />
-          ) : gameStandby || gameON ? (
-            <TextMaterial />
+          {gamePaused ? null : gameStandby || gameON ? (
+            <Teleprompter />
           ) : title && text ? (
             <TextInfo />
           ) : (

@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { Card as RNECard } from 'react-native-elements';
 
 export default StyleSheet.create({
   view: {
@@ -33,3 +34,16 @@ export default StyleSheet.create({
     minWidth: '100%',
   },
 });
+
+const cardStyle = StyleSheet.create({
+  container: {},
+  wrapper: {},
+});
+
+export const Card = props => (
+  <RNECard
+    containerStyle={cardStyle.container}
+    wrapperStyle={cardStyle.wrapper}
+    {...props}
+  />
+);
