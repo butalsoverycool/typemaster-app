@@ -1,7 +1,7 @@
 import React from 'react';
 import keyboardIcon from '../assets/keyboard.png';
 import settingsIcon from '../assets/settings.png';
-import Icon from '../components/Icon';
+import Icon from '../components/Elements/Icon';
 
 export const levelWithdrawal = [-0.01, -0.02, -0.04, -0.666];
 

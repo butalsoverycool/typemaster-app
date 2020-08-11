@@ -1,12 +1,12 @@
 import React from 'react';
 import { withState } from '../GameState';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Button, Image } from 'react-native-elements';
 import { IconFill, IconOutline } from '@ant-design/icons-react-native';
 import styles from './styles';
-import Icon from '../Icon';
 import theme from '../../constants/theme';
-import Card from '../Elements/Card';
+
+import { Section, Card, Icon } from '../Elements';
 
 const localStyles = {
   section: {
@@ -41,8 +41,8 @@ const CancelGame = ({ gameState, gameSetters }) => {
   const { prepareGame, togglePauseGame, endGame } = gameSetters;
 
   return (
-    <View style={theme.section}>
-      <View style={[styles.section, localStyles.section]}>
+    <Section style={theme.section}>
+      <Section style={[styles.section, localStyles.section]}>
         <Card
           containerStyle={styles.card}
           wrapperStyle={[
@@ -67,8 +67,8 @@ const CancelGame = ({ gameState, gameSetters }) => {
             label="quit"
           />
         </Card>
-      </View>
-    </View>
+      </Section>
+    </Section>
   );
 };
 

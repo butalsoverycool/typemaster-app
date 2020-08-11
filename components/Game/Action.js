@@ -1,10 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import styles from './styles';
 import theme from '../../constants/theme';
-import Card from '../Elements/Card';
+import { Section, Card, Button, Btn } from '../Elements';
 
 const Action = ({ gameState, gameSetters, ...props }) => {
   if (!gameState || !gameSetters) return null;
@@ -13,26 +12,22 @@ const Action = ({ gameState, gameSetters, ...props }) => {
   const { prepareGame, endGame } = gameSetters;
 
   return (
-    <View style={styles.section}>
+    <Section>
       <Card containerStyle={styles.card} wrapperStyle={styles.cardWrapper}>
-        <View style={styles.contentContainer}>
+        <Section row justify="center" align="center">
           {!gameStandby && !gamePaused /*  || gameON */ && (
-            <Button
-              title={gameFinished ? 'Play again' : !gameON ? 'Start' : 'Stop'}
-              type="solid"
-              containerStyle={{
-                alignItems: 'center',
-                width: '90%',
-                borderRadius: 10,
-              }}
-              buttonStyle={{ backgroundColor: '#444' }}
-              titleStyle={{ fontSize: 40, width: '100%' }}
+            <Btn
+              content={gameFinished ? 'Play again' : !gameON ? 'Start' : 'Stop'}
+              type="outline"
+              buttonStyle={{ maxWidth: '80%' }}
+              w={400}
+              h={100}
               onPress={!gameON ? prepareGame : endGame}
             />
           )}
-        </View>
+        </Section>
       </Card>
-    </View>
+    </Section>
   );
 };
 

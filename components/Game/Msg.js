@@ -5,9 +5,8 @@ import { withState } from '../GameState';
 import lightIcon from '../../assets/lightbulb.png';
 import styles from './styles';
 import theme from '../../constants/theme';
-import Icon from '../Icon';
-import Card from '../Elements/Card';
-import Section from '../Elements/Section';
+
+import { Section, Card, Icon } from '../Elements';
 
 const localStyles = StyleSheet.create({
   container: {},

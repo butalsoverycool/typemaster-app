@@ -2,14 +2,7 @@ import React from 'react';
 import * as ICON from '@ant-design/icons-react-native';
 import { StyleSheet, View, Text } from 'react-native';
 
-const styles = StyleSheet.create({
-  label: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
-});
-
-const Icon = ({
+export default ({
   type = 'IconFill',
   size = 50,
   label,
@@ -29,4 +22,9 @@ const Icon = ({
   );
 };
 
-export default Icon;
+const styles = StyleSheet.create({
+  label: {
+    fontSize: 12,
+    textAlign: 'center',
+  },
+});

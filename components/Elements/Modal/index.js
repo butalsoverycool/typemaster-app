@@ -1,13 +1,5 @@
-import React, { Component, useState } from 'react';
-import {
-  Alert,
-  Modal as RNModal,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
-import { pure } from 'recompose';
+import React, { Component } from 'react';
+import { Modal as RNModal, StyleSheet, View } from 'react-native';
 
 class Modal extends Component {
   constructor(props) {
