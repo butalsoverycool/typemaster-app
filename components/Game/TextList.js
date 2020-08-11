@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, SafeAreaView, ScrollView } from 'react-native';
-import { Card, ListItem, Button } from 'react-native-elements';
+import { ListItem, Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
 import library from '../../constants/library';

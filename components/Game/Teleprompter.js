@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import { StyleSheet, Animated, View, Text } from 'react-native';
-import { Card } from 'react-native-elements';
 import { usePrev } from '../../constants/helperFuncs';
 import { withState } from '../GameState';
 

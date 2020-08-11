@@ -1,11 +1,12 @@
 import React from 'react';
 import { withState } from '../GameState';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Card, Button, Image } from 'react-native-elements';
+import { Button, Image } from 'react-native-elements';
 import { IconFill, IconOutline } from '@ant-design/icons-react-native';
 import styles from './styles';
 import Icon from '../Icon';
 import theme from '../../constants/theme';
+import Card from '../Elements/Card';
 
 const localStyles = {
   section: {

@@ -6,9 +6,10 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import Modal from '../Modal';
+import Modal from '../Elements/Modal';
 import { withState } from '../GameState';
-import theme, { Input } from '../../constants/theme';
+import theme from '../../constants/theme';
+import Input from '../Elements/Input';
 
 const NameInput = ({
   gameState: { gameFinished, settings },

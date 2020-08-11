@@ -1,5 +1,5 @@
 import React, { Component, createContext } from 'react';
-import { AsyncStorage, Alert, TextInput } from 'react-native';
+import { AsyncStorage, Alert } from 'react-native';
 import {
   clone,
   pickMaterial,

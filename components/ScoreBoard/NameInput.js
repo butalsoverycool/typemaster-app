@@ -6,9 +6,10 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import Modal from '../Modal';
+import Modal from '../Elements/Modal';
 import { withState } from '../GameState';
-import theme, { Input } from '../../constants/theme';
+import theme from '../../constants/theme';
+import Input from '../Elements/Input';
 
 class NameInput extends Component {
   constructor(props) {
@@ -100,27 +101,6 @@ class NameInput extends Component {
 export default withState(NameInput);
 
 const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
   openButton: {
     backgroundColor: '#F194FF',
     borderRadius: 10,

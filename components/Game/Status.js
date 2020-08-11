@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Card } from 'react-native-elements';
 import { withState } from '../GameState';
 import styles from './styles';
 import Time from './Time';
@@ -8,6 +7,7 @@ import Points from './Points';
 import TypoCount from './TypoCount';
 import Remaining from './Remaining';
 import theme from '../../constants/theme';
+import Card from '../Elements/Card';
 
 const localStyles = StyleSheet.create({
   section: {

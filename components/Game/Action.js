@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { Card, Button } from 'react-native-elements';
+import { Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import styles from './styles';
 import theme from '../../constants/theme';
+import Card from '../Elements/Card';
 
 const Action = ({ gameState, gameSetters, ...props }) => {
   if (!gameState || !gameSetters) return null;

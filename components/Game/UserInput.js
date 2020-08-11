@@ -8,7 +8,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import { Input } from 'react-native-elements';
 import { withState } from '../GameState';
 import {
   dynamicMsg,
@@ -16,6 +15,7 @@ import {
   bannedKeys,
 } from '../../constants/preset';
 import { randOfArr } from '../../constants/helperFuncs';
+import Input from '../Elements/Input';
 
 const { gameOverText } = dynamicMsg;
 

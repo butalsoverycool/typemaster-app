@@ -1,11 +1,13 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
-import { Card, ListItem, Badge } from 'react-native-elements';
+import { ListItem, Badge } from 'react-native-elements';
 import { withState } from '../GameState';
 import lightIcon from '../../assets/lightbulb.png';
 import styles from './styles';
 import theme from '../../constants/theme';
 import Icon from '../Icon';
+import Card from '../Elements/Card';
+import Section from '../Elements/Section';
 
 const localStyles = StyleSheet.create({
   container: {},
@@ -36,7 +38,7 @@ const Msg = ({ gameState, ...props }) => {
   }));
 
   return (
-    <View style={theme.section}>
+    <Section>
       <Card
         containerStyle={[styles.card, localStyles.card]}
         wrapperStyle={[styles.cardWrapper, localStyles.cardWrapper]}
@@ -56,7 +58,7 @@ const Msg = ({ gameState, ...props }) => {
           />
         ))}
       </Card>
-    </View>
+    </Section>
   );
 };
 

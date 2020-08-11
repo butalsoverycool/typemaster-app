@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, SafeAreaView, ScrollView } from 'react-native';
-import { Card, ListItem, Button } from 'react-native-elements';
+import { ListItem, Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import UserInput from './UserInput';
 import theme from '../../constants/theme';
@@ -10,6 +10,7 @@ import library from '../../constants/library';
 import Teleprompter from './Teleprompter';
 import Preview from './Preview';
 import TextList from './TextList';
+import Card from '../Elements/Card';
 
 import ScoreBoard from '../ScoreBoard';
 

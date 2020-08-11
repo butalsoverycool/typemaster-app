@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import { withState } from '../GameState';
 import styles from './styles';
-import theme, { Input } from '../../constants/theme';
+import theme from '../../constants/theme';
+import Input from '../Elements/Input';
 
 const Typer = ({ gameState, gameSetters, ...props }) => {
   if (!gameState) return null;
