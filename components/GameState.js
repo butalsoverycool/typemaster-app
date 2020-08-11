@@ -1,6 +1,11 @@
 import React, { Component, createContext } from 'react';
 import { AsyncStorage, Alert, TextInput } from 'react-native';
-import { clone, pickMaterial, randOfArr } from '../constants/helperFuncs';
+import {
+  clone,
+  pickMaterial,
+  randOfArr,
+  timeStamp,
+} from '../constants/helperFuncs';
 import { dynamicMsg } from '../constants/preset';
 import { Value } from 'react-native-reanimated';
 
@@ -48,6 +53,8 @@ const initialState = {
   msg: [],
 
   material: {},
+
+  timeStamp: {},
 
   typed: {
     index: 0,
@@ -157,12 +164,13 @@ class GameState extends Component {
     } = this.state;
 
     const newScore = {
-      typer: typer || 'unknown',
+      typer: typer || 'Unknown',
       level,
       time: time / 10,
       points,
       title,
       text: title,
+      timeStamp: timeStamp(),
     };
 
     const unsorted = clone(this.state.scoreboard);
@@ -171,7 +179,7 @@ class GameState extends Component {
     unsorted.push(newScore);
 
     // sort scores
-    const newBoard = unsorted.sort((a, b) =>
+    const sorted = unsorted.sort((a, b) =>
       a.points > b.points
         ? -1
         : a.time < b.time
@@ -180,6 +188,9 @@ class GameState extends Component {
         ? -1
         : 1
     );
+
+    // limit to top 5
+    const newBoard = sorted.length <= 5 ? sorted : sorted.slice(0, 5);
 
     // save
     this.save('scoreboard', newBoard);
@@ -217,8 +228,13 @@ class GameState extends Component {
     }));
   }
 
-  setTyper(typer) {
-    this.setState(ps => ({ settings: { ...ps.settings, typer } }));
+  setTyper({ typer, callback }) {
+    this.setState(
+      ps => ({ settings: { ...ps.settings, typer } }),
+      () => {
+        this.tryCallback(callback);
+      }
+    );
   }
 
   setPoints(toAdd) {

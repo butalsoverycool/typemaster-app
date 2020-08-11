@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';
 import {
   Alert,
   Modal as RNModal,
@@ -7,27 +7,34 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
+import { pure } from 'recompose';
 
-const Modal = ({ visible, ...props }) => {
-  return (
-    <View style={styles.centeredView}>
+class Modal extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  shouldComponentUpdate(np, ns) {
+    return this.props.visible !== np.visible ? true : false;
+  }
+
+  render() {
+    console.log('Modal render');
+
+    return (
       <RNModal
         animationType="slide"
         transparent={true}
-        visible={visible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-        }}
+        visible={this.props.visible}
+        onRequestClose={null}
       >
         <View style={styles.centeredView}>
-          <View style={styles.modalView}>{props.children}</View>
+          <View style={styles.modalView}>{this.props.children}</View>
         </View>
       </RNModal>
-
-      {props.containerContent}
-    </View>
-  );
-};
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   centeredView: {

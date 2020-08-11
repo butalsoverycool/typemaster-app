@@ -35,7 +35,7 @@ export const pickMaterial = () =>
 export const printStr = item =>
   typeof item === 'string' ? item : String(item);
 
-export const timestamp = (tag = null) => {
+export const timeStamp = (tag = null) => {
   const d = new Date();
   const date = d.toLocaleDateString(),
     time = d.toLocaleTimeString();

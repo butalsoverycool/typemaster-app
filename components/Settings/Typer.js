@@ -18,7 +18,7 @@ const Typer = ({ gameState, gameSetters, ...props }) => {
       <Input
         value={typer}
         placeholder="unknown"
-        onChangeText={value => setTyper(value)}
+        onChangeText={typer => setTyper({ typer })}
       />
     </View>
   );
