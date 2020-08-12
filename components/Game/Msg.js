@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import { ListItem, Badge } from 'react-native-elements';
 import { withState } from '../GameState';
-import lightIcon from '../../assets/lightbulb.png';
+import { propsChanged } from '../../constants/helperFuncs';
 import styles from './styles';
-import theme from '../../constants/theme';
-
 import { Section, Card, Icon } from '../Elements';
 
 const localStyles = StyleSheet.create({
@@ -22,43 +20,55 @@ const localStyles = StyleSheet.create({
 
 const iconStyle = { color: 'grey', width: 30, height: 30 };
 
-const Msg = ({ gameState, ...props }) => {
-  if (!gameState) return null;
+class Msg extends Component {
+  constructor(props) {
+    super(props);
+  }
 
-  const { msg, gameStandby, gameON } = gameState;
+  shouldComponentUpdate = np =>
+    propsChanged(this.props.gameState, np.gameState, ['msg']);
 
-  if (!msg || !msg.length || msg === '') return null;
+  render() {
+    const { gameState } = this.props;
 
-  const msgArr = Array.isArray(msg) ? msg : msg.split();
+    if (!gameState) return null;
 
-  const list = msgArr.map((title, nth) => ({
-    title,
-    icon: <Icon type="IconOutline" name="info-circle" color="#444" size={20} />,
-  }));
+    const { msg } = gameState;
 
-  return (
-    <Section>
-      <Card
-        containerStyle={[styles.card, localStyles.card]}
-        wrapperStyle={[styles.cardWrapper, localStyles.cardWrapper]}
-      >
-        {list.map((item, nth) => (
-          <ListItem
-            key={nth}
-            containerStyle={{
-              height: 40,
-              backgroundColor: '#eee',
-              width: '100%',
-              minWidth: '100%',
-            }}
-            title={item.title}
-            leftIcon={item.icon}
-            titleStyle={localStyles.line}
-          />
-        ))}
-      </Card>
-    </Section>
-  );
-};
+    if (!msg || !msg.length || msg === '') return null;
 
+    const msgArr = Array.isArray(msg) ? msg : msg.split();
+
+    const list = msgArr.map((title, nth) => ({
+      title,
+      icon: (
+        <Icon type="IconOutline" name="info-circle" color="#444" size={20} />
+      ),
+    }));
+
+    return (
+      <Section>
+        <Card
+          containerStyle={[styles.card, localStyles.card]}
+          wrapperStyle={[styles.cardWrapper, localStyles.cardWrapper]}
+        >
+          {list.map((item, nth) => (
+            <ListItem
+              key={nth}
+              containerStyle={{
+                height: 40,
+                backgroundColor: '#eee',
+                width: '100%',
+                minWidth: '100%',
+              }}
+              title={item.title}
+              leftIcon={item.icon}
+              titleStyle={localStyles.line}
+            />
+          ))}
+        </Card>
+      </Section>
+    );
+  }
+}
 export default withState(Msg);

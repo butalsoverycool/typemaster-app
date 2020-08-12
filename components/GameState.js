@@ -61,6 +61,7 @@ const initialState = {
     input: '',
     output: '',
     remaining: '',
+    typoCount: 0,
   },
 
   settings: {

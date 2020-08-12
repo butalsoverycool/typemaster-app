@@ -9,6 +9,44 @@ export const usePrev = val => {
   return ref.current;
 };
 
+export const deepEqual = (x, y, propName) => {
+  if (x === y) {
+    return true;
+  } else if (
+    typeof x == 'object' &&
+    x != null &&
+    typeof y == 'object' &&
+    y != null
+  ) {
+    if (Object.keys(x).length != Object.keys(y).length) return false;
+
+    for (var prop in x) {
+      if (y.hasOwnProperty(prop)) {
+        if (!deepEqual(x[prop], y[prop], prop)) return false;
+      } else return false;
+    }
+
+    return true;
+  } else return false;
+};
+
+export const propsChanged = (a, b, keys) => {
+  const x = {};
+  const y = {};
+
+  if (typeof keys === 'string') {
+    x[keys] = a[keys];
+    y[keys] = b[keys];
+  } else if (Array.isArray(keys) || !keys) {
+    keys.forEach(key => {
+      x[key] = a[key];
+      y[key] = b[key];
+    });
+  }
+
+  return !deepEqual(x, y);
+};
+
 export const mathRandInc = (...args) => {
   let min, max;
 

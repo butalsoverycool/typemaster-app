@@ -1,79 +1,72 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ScrollView } from 'react-native';
-import { ListItem, Button } from 'react-native-elements';
+import React, { Component, useState } from 'react';
 import { withState } from '../GameState';
+import { propsChanged } from '../../constants/helperFuncs';
 import UserInput from './UserInput';
-import theme from '../../constants/theme';
 import styles from './styles';
-import { levels } from '../../constants/options';
-import library from '../../constants/library';
 import Teleprompter from './Teleprompter';
 import Preview from './Preview';
 import TextList from './TextList';
-import Card from '../Elements/Card';
+import { View, Section, Card } from '../Elements';
 
-import ScoreBoard from '../ScoreBoard';
+class Material extends Component {
+  constructor(props) {
+    super(props);
+  }
 
-const localStyles = StyleSheet.create({
-  material: { fontSize: 20, flexShrink: 1 },
-  typed: {
-    backgroundColor: 'green',
-    color: 'white',
-    fontWeight: '700',
-  },
-  notTyped: {},
+  shouldComponentUpdate = np =>
+    propsChanged(this.props.gameState, np.gameState, [
+      'gameON,',
+      'gameStandby',
+      'gamePaused',
+      'material',
+    ]);
 
-  textItem: { fontSize: 20, color: 'black' },
-});
+  render() {
+    const { gameState, gameSetters } = this.props;
 
-const Material = ({ gameState, gameSetters, ...props }) => {
-  if (!gameState) return null;
+    if (!gameState) return null;
 
-  const {
-    gameStandby,
-    gameON,
-    gamePaused,
-    gameFinished,
-    material: { title = '', text = '' },
-    typed,
-    settings,
-  } = gameState;
-  const { endGame, setMaterial } = gameSetters;
+    const {
+      gameON,
+      gameStandby,
+      gamePaused,
+      material: { title = '', text = '' },
+    } = gameState;
+    const { endGame } = gameSetters;
 
-  /* const typed = text.substring(0, charIndex);
+    /* const typed = text.substring(0, charIndex);
   const notTyped = text.substring(charIndex); */
 
-  const [choice, setChoice] = useState({});
+    const clickHandler = () => {
+      alert('Sorry, game ended');
+      endGame();
+    };
 
-  const clickHandler = () => {
-    alert('Sorry, game ended');
-    endGame();
-  };
-
-  return (
-    <View style={[styles.section, {}]}>
-      <Card
-        containerStyle={styles.card}
-        wrapperStyle={[
-          styles.cardWrapper,
-          {
-            alignItems: 'flex-start',
-          },
-        ]}
-      >
-        <View>
-          {gamePaused ? null : gameStandby || gameON ? (
-            <Teleprompter />
-          ) : title && text ? (
-            <Preview />
-          ) : (
-            <TextList />
-          )}
-        </View>
-      </Card>
-      <UserInput />
-    </View>
-  );
-};
+    return (
+      <Section>
+        <Card
+          containerStyle={styles.card}
+          wrapperStyle={[
+            styles.cardWrapper,
+            {
+              alignItems: 'flex-start',
+            },
+          ]}
+        >
+          <View>
+            {gamePaused ? null : gameStandby || gameON ? (
+              <Teleprompter />
+            ) : title && text ? (
+              <Preview />
+            ) : (
+              <TextList />
+            )}
+          </View>
+        </Card>
+        <UserInput />
+      </Section>
+    );
+  }
+}
 
 export default withState(Material);

@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { Component, useRef, useEffect } from 'react';
 import { StyleSheet, Animated, View, Text } from 'react-native';
-import { usePrev } from '../../constants/helperFuncs';
+import { usePrev, propsChanged } from '../../constants/helperFuncs';
 import { withState } from '../GameState';
 
 const localStyles = StyleSheet.create({
@@ -13,7 +13,7 @@ const localStyles = StyleSheet.create({
   notTyped: {},
 });
 
-const Teleprompter = ({ gameState: { typed }, gameSetters }) => {
+const AnimatedView = ({ typed, ...props }) => {
   let bgAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
   let firstRender = useRef(true); // Initial value for opacity: 0
 
@@ -58,5 +58,19 @@ const Teleprompter = ({ gameState: { typed }, gameSetters }) => {
     </Animated.View>
   );
 };
+
+class Teleprompter extends Component {
+  constructor(props) {
+    super(props);
+  }
+  shouldComponentUpdate = np =>
+    propsChanged(this.props.gameState, np.gameState, ['typed']);
+
+  render() {
+    const { typed } = this.props.gameState;
+
+    return <AnimatedView typed={typed} />;
+  }
+}
 
 export default withState(Teleprompter);

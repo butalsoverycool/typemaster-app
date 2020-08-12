@@ -5,6 +5,7 @@ import { withState } from '../GameState';
 import * as PRESET from '../../constants/preset';
 import styles from './styles';
 import StatusData from './StatusData';
+import { propsChanged } from '../../constants/helperFuncs';
 
 class Time extends Component {
   constructor(props) {
@@ -23,6 +24,15 @@ class Time extends Component {
     this.tickingMs = 100;
 
   } */
+
+  shouldComponentUpdate = np =>
+    propsChanged(this.props.gameState, np.gameState, [
+      'gameON,',
+      'gamePaused',
+      'time',
+      'typed',
+      'settings',
+    ]);
 
   componentDidUpdate = (pp, ps) => {
     const {

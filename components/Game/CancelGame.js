@@ -1,10 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { withState } from '../GameState';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { Button, Image } from 'react-native-elements';
-import { IconFill, IconOutline } from '@ant-design/icons-react-native';
 import styles from './styles';
 import theme from '../../constants/theme';
+import { propsChanged } from '../../constants/helperFuncs';
 
 import { Section, Card, Icon } from '../Elements';
 
@@ -36,40 +34,50 @@ const localStyles = {
   },
 };
 
-const CancelGame = ({ gameState, gameSetters }) => {
-  const { gameON, gamePaused } = gameState;
-  const { prepareGame, togglePauseGame, endGame } = gameSetters;
+class CancelGame extends Component {
+  constructor(props) {
+    super(props);
+  }
 
-  return (
-    <Section style={theme.section}>
-      <Section style={[styles.section, localStyles.section]}>
-        <Card
-          containerStyle={styles.card}
-          wrapperStyle={[
-            styles.cardWrapper,
-            { flexDirection: 'row', justifyContent: 'space-around' },
-          ]}
-        >
-          {gameON ? (
+  shouldComponentUpdate = np =>
+    propsChanged(this.props.gameState, np.gameState, ['gameON,', 'gamePaused']);
+
+  render() {
+    const { gameState, gameSetters } = this.props;
+    const { gameON, gamePaused } = gameState;
+    const { togglePauseGame, endGame } = gameSetters;
+
+    return (
+      <Section style={theme.section}>
+        <Section style={[styles.section, localStyles.section]}>
+          <Card
+            containerStyle={styles.card}
+            wrapperStyle={[
+              styles.cardWrapper,
+              { flexDirection: 'row', justifyContent: 'space-around' },
+            ]}
+          >
+            {gameON ? (
+              <Icon
+                name={gamePaused ? 'play-circle' : 'pause-circle'}
+                color={gamePaused ? 'green' : 'orange'}
+                onPress={togglePauseGame}
+                label={gamePaused ? 'continue' : 'pause'}
+              />
+            ) : null}
+
             <Icon
-              name={gamePaused ? 'play-circle' : 'pause-circle'}
-              color={gamePaused ? 'green' : 'orange'}
-              onPress={togglePauseGame}
-              label={gamePaused ? 'continue' : 'pause'}
+              name="stop"
+              size={50}
+              color="red"
+              onPress={endGame}
+              label="quit"
             />
-          ) : null}
-
-          <Icon
-            name="stop"
-            size={50}
-            color="red"
-            onPress={endGame}
-            label="quit"
-          />
-        </Card>
+          </Card>
+        </Section>
       </Section>
-    </Section>
-  );
-};
+    );
+  }
+}
 
 export default withState(CancelGame);
