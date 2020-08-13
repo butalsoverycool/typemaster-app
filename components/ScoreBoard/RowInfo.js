@@ -11,7 +11,9 @@ import { withState } from '../GameState';
 import theme from '../../constants/theme';
 import Input from '../Elements/Input';
 
-const NameInput = ({
+/* WIP */
+
+const RowInfo = ({
   gameState: { gameFinished, settings },
   gameSetters: { setTyper },
   visible,
@@ -59,7 +61,7 @@ const NameInput = ({
   );
 };
 
-export default withState(NameInput);
+export default RowInfo;
 
 const styles = StyleSheet.create({
   centeredView: {

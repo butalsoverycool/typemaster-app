@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
@@ -29,10 +28,35 @@ export default StyleSheet.create({
     minWidth: '100%',
   },
   subtitle: {
+    textAlign: 'center',
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
     width: '100%',
     minWidth: '100%',
+  },
+  label: {
+    fontWeight: 'bold',
+  },
+});
+
+export const buttonGroupStyle = StyleSheet.create({
+  containerStyle: { borderWidth: 0 },
+  buttonContainerStyle: { backgroundColor: '#eee' },
+  buttonStyle: {
+    backgroundColor: 'rgba(0,0,0,0)',
+    marginRight: 5,
+    marginLeft: 5,
+    borderRadius: 5,
+  },
+  innerBorderStyle: { width: 0 },
+  selectedButtonStyle: {
+    backgroundColor: '#444',
+    marginRight: 5,
+  },
+  textStyle: { fontSize: 12, textAlign: 'center' },
+  selectedTextStyle: {
+    fontWeight: 'bold',
+    color: 'whitesmoke',
   },
 });

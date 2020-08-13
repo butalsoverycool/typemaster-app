@@ -1,30 +1,10 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { Button, Image } from 'react-native-elements';
-import { withState } from '../GameState';
-import { printStr } from '../../constants/helperFuncs';
-import Level from './Level';
-import CaseSens from './CaseSens';
-import Typer from './Typer';
+import React from 'react';
+import { View, Text } from 'react-native';
+import Level from '../Game/Level';
+import Typer from '../Game/Typer';
 import theme from '../../constants/theme';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: '#eee',
-  },
-  icon: {
-    width: 40,
-    height: 40,
-  },
-});
-
-const Settings = ({ gameState, gameSetters, ...props }) => {
-  if (!gameState) return null;
-
-  const { settings } = gameState;
-
+const Settings = props => {
   return (
     <View style={theme.view}>
       <Text style={theme.title}>SETTINGS</Text>
@@ -32,9 +12,8 @@ const Settings = ({ gameState, gameSetters, ...props }) => {
       <Typer />
 
       <Level />
-      {/* <CaseSens /> */}
     </View>
   );
 };
 
-export default withState(Settings);
+export default Settings;

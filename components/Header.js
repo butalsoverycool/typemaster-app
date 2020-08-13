@@ -17,20 +17,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const Header = ({ gameState, ...props }) => {
-  if (!gameState) return null;
-
-  const { gameStandby, gameON, msg } = gameState;
-
-  //if (gameStandby || gameON) return null;
-
+export default props => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Type Master</Text>
-
       {props.children}
     </View>
   );
 };
-
-export default withState(Header);

@@ -24,14 +24,18 @@ const About = props => {
             </View>
 
             <View style={theme.box}>
-              <Text style={theme.subtitle}>How to play</Text>
+              <Text style={[theme.subtitle, { textAlign: 'left' }]}>
+                How to play
+              </Text>
               <Text>- Pick a text to type</Text>
               <Text>- Hit Start-button</Text>
               <Text>- The game begins when you start typing</Text>
             </View>
 
             <View style={theme.box}>
-              <Text style={theme.subtitle}>Some Hints</Text>
+              <Text style={[theme.subtitle, { textAlign: 'left' }]}>
+                Some Hints
+              </Text>
               <Text>- Fast and correct typing = higher points</Text>
               <Text>- Game is indeed caSE SENsitive</Text>
               <Text>- All characters you see are mandatory</Text>
@@ -39,27 +43,35 @@ const About = props => {
             </View>
 
             <View style={theme.box}>
-              <Text style={theme.subtitle}>About points</Text>
+              <Text style={[theme.subtitle, { textAlign: 'left' }]}>
+                About points
+              </Text>
               <Text>- 1 correct character = +1p</Text>
               <Text>- 1 typo/incorrect character = -1p</Text>
               <Text>- ...also, time will eat your points :)</Text>
             </View>
 
             <View style={theme.box}>
-              <Text style={theme.subtitle}>Game Over =</Text>
+              <Text style={[theme.subtitle, { textAlign: 'left' }]}>
+                Game Over =
+              </Text>
               <Text>- Interaction outside keyboard area while playing</Text>
               <Text>- ...or hitting "Enter"-key while playing</Text>
               <Text>- If points drop below -10</Text>
             </View>
 
             <View style={theme.box}>
-              <Text style={theme.subtitle}>About Levels</Text>
+              <Text style={[theme.subtitle, { textAlign: 'left' }]}>
+                About Levels
+              </Text>
               <Text>- Harder level = faster point-drop over time</Text>
               <Text>- Stella Pajunas = "Super Hard"</Text>
             </View>
 
             <View style={theme.box}>
-              <Text style={theme.subtitle}>Time punishments</Text>
+              <Text style={[theme.subtitle, { textAlign: 'left' }]}>
+                Time punishments
+              </Text>
               <Text>- Easy: 0.1 p/sec</Text>
               <Text>- Medium: 0.2 p/sec</Text>
               <Text>- Hard: 0.4 p/sec</Text>
@@ -67,7 +79,9 @@ const About = props => {
             </View>
 
             <View style={theme.box}>
-              <Text style={theme.subtitle}>Typo punishments</Text>
+              <Text style={[theme.subtitle, { textAlign: 'left' }]}>
+                Typo punishments
+              </Text>
               <Text>- Easy: -1p</Text>
               <Text>- Medium: -2p</Text>
               <Text>- Hard: -4p</Text>
@@ -75,7 +89,9 @@ const About = props => {
             </View>
 
             <View style={theme.box}>
-              <Text style={theme.subtitle}>Speed Standard</Text>
+              <Text style={[theme.subtitle, { textAlign: 'left' }]}>
+                Speed Standard
+              </Text>
               <Text>- Easy: 2 correct inputs/sec</Text>
               <Text>- Medium: 4 correct inputs/sec</Text>
               <Text>- Hard: 6 correct inputs/sec</Text>

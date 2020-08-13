@@ -7,11 +7,11 @@ import Points from './Points';
 import TypoCount from './TypoCount';
 import Remaining from './Remaining';
 import theme from '../../constants/theme';
-import Card from '../Elements/Card';
+import { Section, Card } from '../Elements';
 
 const Status = props => {
   return (
-    <View style={theme.section}>
+    <Section>
       <Card
         containerStyle={styles.card}
         wrapperStyle={[styles.cardWrapper, { flexWrap: 'wrap' }]}
@@ -24,7 +24,7 @@ const Status = props => {
 
         <Remaining />
       </Card>
-    </View>
+    </Section>
   );
 };
 

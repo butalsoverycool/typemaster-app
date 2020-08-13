@@ -69,6 +69,9 @@ const initialState = {
     typer: '',
   },
 
+  latestScore: null,
+  latestQualified: false,
+
   pushNav: false,
 };
 
@@ -96,8 +99,10 @@ class GameState extends Component {
 
     this.load = this.load.bind(this);
     this.save = this.save.bind(this);
+    this.createLatestScore = this.createLatestScore.bind(this);
     this.saveScore = this.saveScore.bind(this);
     this.clearScore = this.clearScore.bind(this);
+    this.tryCallback = this.tryCallback.bind(this);
 
     this.setters = {
       resetGame: this.resetGame,
@@ -116,6 +121,7 @@ class GameState extends Component {
       setPoints: this.setPoints,
       setPushNav: this.setPushNav,
 
+      createLatestScore: this.createLatestScore,
       saveScore: this.saveScore,
       clearScore: this.clearScore,
     };
@@ -155,29 +161,45 @@ class GameState extends Component {
     }
   }
 
-  saveScore() {
+  createLatestScore(props) {
     // curr score
     const {
       settings: { typer, level },
       time,
       points,
       material: { title },
+      typed: { typoCount },
     } = this.state;
 
-    const newScore = {
+    const latestScore = {
       typer: typer || 'Unknown',
       level,
       time: time / 10,
       points,
       title,
       text: title,
+      typos: typoCount,
       timeStamp: timeStamp(),
     };
+
+    this.setState({ latestScore, latestQualified: props.qualified }, () => {
+      if (typeof props === 'object') {
+        this.tryCallback(props.cb);
+      }
+    });
+  }
+
+  saveScore() {
+    const { latestScore } = this.state;
+
+    console.log('saving', latestScore);
+
+    if (!latestScore) return this.createLatestScore({ cb: this.saveScore });
 
     const unsorted = clone(this.state.scoreboard);
 
     // append new score
-    unsorted.push(newScore);
+    unsorted.push(latestScore);
 
     // sort scores
     const sorted = unsorted.sort((a, b) =>
@@ -195,7 +217,12 @@ class GameState extends Component {
 
     // save
     this.save('scoreboard', newBoard);
-    this.setState(ps => ({ ...ps, ...newGameState(ps), scoreboard: newBoard }));
+    this.setState(ps => ({
+      ...ps,
+      ...endGameState,
+      gameFinished: false,
+      scoreboard: newBoard,
+    }));
   }
 
   async clearScore() {
@@ -298,6 +325,7 @@ class GameState extends Component {
     this.setState(ps => ({
       ...newGameState(this.state),
       msg: ['When you are ready, just start typing...'],
+      pushNav: 'Game',
       gamePaused: false,
       gameStandby: true,
     }));

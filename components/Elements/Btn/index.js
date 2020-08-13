@@ -9,13 +9,22 @@ export default ({
   fontSize,
   buttonStyle,
   textStyle,
+  spaceTop,
+  spaceBottom,
   content,
+  children,
   ...props
 }) => {
   const buttonOverride = {
     width: w || styles.button.width,
-    height: h || 'auto',
+    height: h || styles.button.height,
     backgroundColor: bg || styles.button.backgroundColor,
+    marginTop: spaceTop
+      ? typeof spaceTop === 'number'
+        ? spaceTop
+        : 20
+      : styles.button.margin,
+    marginBottom: spaceBottom ? spaceBottom || 20 : styles.button.margin,
   };
 
   const textOverride = {
@@ -23,12 +32,13 @@ export default ({
     fontSize: fontSize || styles.text.fontSize,
   };
 
-  const child =
-    typeof content === 'string' ? (
-      <Text style={[styles.text, textOverride, textStyle]}>{content}</Text>
-    ) : (
-      content
-    );
+  const child = children ? (
+    children
+  ) : typeof content === 'string' ? (
+    <Text style={[styles.text, textOverride, textStyle]}>{content}</Text>
+  ) : (
+    content
+  );
 
   return (
     <TouchableHighlight
@@ -42,9 +52,11 @@ export default ({
 
 const styles = StyleSheet.create({
   button: {
-    width: '100%',
+    width: '80%',
+    height: 100,
     borderRadius: 10,
     padding: 5,
+    margin: 10,
     backgroundColor: '#444',
   },
   contentContainer: {

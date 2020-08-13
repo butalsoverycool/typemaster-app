@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
     width: '100%',
     borderWidth: 0,
     shadowOpacity: 0,
-    backgroundColor: '#eee',
   },
   cardWrapper: {
     /* height: '100%', */

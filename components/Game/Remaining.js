@@ -9,10 +9,18 @@ class Remaining extends Component {
   }
 
   shouldComponentUpdate = np =>
-    propsChanged(this.props.gameState, np.gameState, ['typed']);
+    propsChanged(this.props.gameState, np.gameState, [
+      'typed',
+      'gameStandby',
+      'gameON',
+    ]);
 
   render() {
-    const { remaining } = this.props.gameState.typed;
+    const {
+      typed: { remaining = 0 },
+      gameStandby,
+      gameON,
+    } = this.props.gameState;
 
     const status = remaining.length < 5 ? 'warning' : 'primary';
 
@@ -20,7 +28,7 @@ class Remaining extends Component {
       <StatusData
         label="To go"
         index={3}
-        data={remaining.length || '0'}
+        data={gameStandby || gameON ? remaining.length : ''}
         status={status}
       />
     );

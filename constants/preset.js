@@ -9,35 +9,17 @@ export const speedStandard = [2, 4, 6, 8];
 
 export const bannedKeys = ['Backspace', 'Enter'];
 
+export const navIconName = [
+  {
+    name: 'play',
+  },
+];
+
 export const navIcons = {
-  Game: isFocued => (
-    <Icon
-      name="play-square"
-      type="IconOutline"
-      color={!isFocued ? '#666' : '#444'}
-    />
-  ),
-  ScoreBoard: isFocued => (
-    <Icon
-      name="trophy"
-      type="IconOutline"
-      color={!isFocued ? '#666' : '#444'}
-    />
-  ),
-  Settings: isFocued => (
-    <Icon
-      name="setting"
-      type="IconOutline"
-      color={!isFocued ? '#666' : '#444'}
-    />
-  ),
-  About: isFocued => (
-    <Icon
-      name="question-circle"
-      type="IconOutline"
-      color={!isFocued ? '#666' : '#444'}
-    />
-  ),
+  Game: 'play-square',
+  ScoreBoard: 'trophy',
+  Settings: 'setting',
+  About: 'question-circle',
 };
 
 export const dynamicMsg = {

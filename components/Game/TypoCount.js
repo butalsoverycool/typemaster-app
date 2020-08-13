@@ -5,16 +5,27 @@ import { withState } from '../GameState';
 import * as PRESET from '../../constants/preset';
 import styles from './styles';
 import StatusData from './StatusData';
+import { propsChanged } from '../../constants/helperFuncs';
 
 class TypoCount extends Component {
   constructor(props) {
     super(props);
   }
   shouldComponentUpdate = np =>
-    this.props.gameState.typed.typoCount !== np.gameState.typed.typoCount;
+    propsChanged(this.props.gameState, np.gameState, [
+      'typed',
+      'gameStandby',
+      'gameON',
+      'latestScore',
+    ]);
 
   render() {
-    const { typoCount } = this.props.gameState.typed;
+    const {
+      typed: { typoCount },
+      gameStandby,
+      gameON,
+      latestScore,
+    } = this.props.gameState;
 
     const status =
       typoCount <= 0
@@ -29,7 +40,13 @@ class TypoCount extends Component {
       <StatusData
         label="Errors"
         index={2}
-        data={typoCount || '0'}
+        data={
+          gameStandby || gameON
+            ? typoCount || '0'
+            : latestScore
+            ? String(latestScore.typos)
+            : '0'
+        }
         status={status}
       />
     );

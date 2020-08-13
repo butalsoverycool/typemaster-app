@@ -40,11 +40,15 @@ class CancelGame extends Component {
   }
 
   shouldComponentUpdate = np =>
-    propsChanged(this.props.gameState, np.gameState, ['gameON,', 'gamePaused']);
+    propsChanged(this.props.gameState, np.gameState, [
+      'gameStandby',
+      'gameON',
+      'gamePaused',
+    ]);
 
   render() {
     const { gameState, gameSetters } = this.props;
-    const { gameON, gamePaused } = gameState;
+    const { gameStandby, gameON, gamePaused } = gameState;
     const { togglePauseGame, endGame } = gameSetters;
 
     return (
@@ -60,18 +64,20 @@ class CancelGame extends Component {
             {gameON ? (
               <Icon
                 name={gamePaused ? 'play-circle' : 'pause-circle'}
-                color={gamePaused ? 'green' : 'orange'}
+                type="IconOutline"
+                color="#444"
                 onPress={togglePauseGame}
                 label={gamePaused ? 'continue' : 'pause'}
               />
             ) : null}
 
             <Icon
-              name="stop"
+              name="close-circle"
+              type="IconOutline"
               size={50}
-              color="red"
+              color="#444"
               onPress={endGame}
-              label="quit"
+              label={gameON ? 'stop' : 'back'}
             />
           </Card>
         </Section>

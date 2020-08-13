@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { Modal as RNModal, StyleSheet, View } from 'react-native';
+import {
+  Modal as RNModal,
+  StyleSheet,
+  View,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
 
 class Modal extends Component {
   constructor(props) {
@@ -20,29 +26,34 @@ class Modal extends Component {
         visible={this.props.visible}
         onRequestClose={null}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>{this.props.children}</View>
-        </View>
+        <SafeAreaView style={styles.background}>
+          <ScrollView contentContainerStyle={styles.scrollView}>
+            <View style={styles.content}>{this.props.children}</View>
+          </ScrollView>
+        </SafeAreaView>
       </RNModal>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  centeredView: {
+  background: {
     flex: 1,
     width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
+    maxWidth: '100%',
   },
-  modalView: {
-    margin: 20,
-    width: '95%',
-    height: '60%',
+  scrollView: {
+    width: '100%',
+    flex: 1,
+  },
+  content: {
+    width: '100%',
+
+    flex: 1,
+    justifyContent: 'flex-start',
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
+
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {

@@ -19,6 +19,6 @@ export default ({ wrapperStyle, containerStyle, row, children, ...props }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: { backgroundColor: 'rgba(0,0,0,0)' },
   wrapper: {},
 });

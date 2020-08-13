@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import {
   Alert,
   StyleSheet,
@@ -6,10 +6,12 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import Modal from '../Elements/Modal';
+import { Modal, Section, Input, Btn } from '../Elements';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
-import Input from '../Elements/Input';
+import { propsChanged } from '../../constants/helperFuncs';
+
+import Status from '../Game/Status';
 
 class NameInput extends Component {
   constructor(props) {
@@ -20,79 +22,95 @@ class NameInput extends Component {
     };
   }
 
-  shouldComponentUpdate(np, ns) {
-    return this.props.visible !== np.visible ||
-      this.props.typerExists !== np.typerExists ||
-      this.props.gameState.settings.typer !== np.gameState.settings.typer
-      ? true
-      : false;
-  }
+  shouldComponentUpdate = (np, ns) =>
+    propsChanged(this.props, np, ['visible', 'typerExists']) ||
+    this.props.gameState.settings.typer !== np.gameState.settings.typer ||
+    this.state.newTyper !== ns.newTyper;
 
   render() {
     const {
       gameState: {
         settings: { typer },
       },
-      gameSetters: { setTyper, saveScore },
+
+      gameSetters: { setTyper, createLatestScore, saveScore },
       visible,
       typerExists,
       ...props
     } = this.props;
 
-    // const [newTyper, setNewTyper] = useState('');
-
-    const title = typerExists
-      ? 'Same name for the Scoreboard?'
+    const nameTitle = typerExists
+      ? 'Same player? Otherwise change name'
       : 'Now type your name for the scoreboard!';
 
-    const confirm = typerExists && this.state.newTyper === '' ? 'Yes' : 'Save';
+    const confirm = typerExists && !this.state.newTyper ? 'Yes' : 'Save';
 
     return (
       <Modal visible={visible}>
-        <View style={theme.section}>
-          <Text style={theme.title}>{title}</Text>
-        </View>
+        <Section>
+          <Text style={theme.title}>SAVE YOUR SCORE</Text>
 
-        <View style={theme.section}>
+          <Section spaceTop>
+            <Status />
+          </Section>
+        </Section>
+
+        <Section spaceTop>
+          <Text style={[theme.subtitle, { textAlign: 'center' }]}>
+            {nameTitle}
+          </Text>
+
           <Input
+            focus={!typerExists}
+            triggerUpdate={visible}
             placeholder={typerExists ? typer : 'Unknown'}
             onChangeText={newTyper => this.setState({ newTyper })}
           />
-        </View>
+        </Section>
 
-        <View style={[theme.section, { justifyContent: 'flex-start' }]}>
-          <TouchableHighlight
-            style={{
-              ...styles.openButton,
-              backgroundColor: '#444',
-              marginTop: 30,
-            }}
+        <Section row justify="center">
+          <Btn
+            w="40%"
+            bg="red"
+            onPress={() =>
+              setTyper({
+                typer: '',
+                callback: () => {
+                  createLatestScore({
+                    qualified: true,
+                    cb: () => {
+                      saveScore();
+                    },
+                  });
+                },
+              })
+            }
+          >
+            <Text style={styles.textStyle}>No name</Text>
+          </Btn>
+
+          <Btn
+            w="40%"
             onPress={() => {
               if (typerExists || this.state.newTyper !== '') {
                 setTyper({
                   typer: this.state.newTyper || typer,
                   callback: () => {
-                    saveScore();
-                    this.setState({ newTyper: '' });
+                    createLatestScore({
+                      qualified: true,
+                      cb: () => {
+                        saveScore();
+                        this.setState({ newTyper: '' });
+                      },
+                    });
                   },
                 });
               }
             }}
           >
-            <Text style={styles.textStyle}>{confirm}</Text>
-          </TouchableHighlight>
-
-          <TouchableHighlight
-            style={{
-              ...styles.openButton,
-              backgroundColor: 'red',
-              marginTop: 50,
-            }}
-            onPress={() => setTyper({ typer: '', callback: () => saveScore() })}
-          >
-            <Text style={styles.textStyle}>No name</Text>
-          </TouchableHighlight>
-        </View>
+            <Text style={[styles.textStyle, { fontSize: 30 }]}>Save</Text>
+          </Btn>
+        </Section>
       </Modal>
     );
   }

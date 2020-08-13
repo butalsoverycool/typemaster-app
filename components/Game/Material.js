@@ -43,7 +43,7 @@ class Material extends Component {
     };
 
     return (
-      <Section>
+      <Section flex={1}>
         <Card
           containerStyle={styles.card}
           wrapperStyle={[
@@ -53,15 +53,13 @@ class Material extends Component {
             },
           ]}
         >
-          <View>
-            {gamePaused ? null : gameStandby || gameON ? (
-              <Teleprompter />
-            ) : title && text ? (
-              <Preview />
-            ) : (
-              <TextList />
-            )}
-          </View>
+          {gamePaused ? null : gameStandby || gameON ? (
+            <Teleprompter />
+          ) : title && text ? (
+            <Preview />
+          ) : (
+            <TextList />
+          )}
         </Card>
         <UserInput />
       </Section>

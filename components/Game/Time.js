@@ -27,11 +27,13 @@ class Time extends Component {
 
   shouldComponentUpdate = np =>
     propsChanged(this.props.gameState, np.gameState, [
+      'gameStandby',
       'gameON,',
       'gamePaused',
       'time',
       'typed',
       'settings',
+      'latestScore',
     ]);
 
   componentDidUpdate = (pp, ps) => {
@@ -57,6 +59,7 @@ class Time extends Component {
       let timer = setInterval(this.tick, tickingMs);
       this.setState({ timer });
     }
+
     // run once att game stop
     // clear ticking-interval
     else if ((prevGameON && !gameON) || (!prevGamePaused && gamePaused)) {
@@ -85,7 +88,14 @@ class Time extends Component {
 
     const { gameState } = this.props;
 
-    const { time, typed, settings } = gameState;
+    const {
+      time,
+      typed,
+      settings,
+      gameStandby,
+      gameON,
+      latestScore,
+    } = gameState;
 
     //const timeConvert = () => {
     //const h = Math.floor(time / 10 / 3600);
@@ -112,7 +122,13 @@ class Time extends Component {
       <StatusData
         label="Time"
         index={0}
-        data={`${mStr}:${sStr}:${ds}` || '00:00:00:00'}
+        data={
+          gameStandby || gameON
+            ? `${mStr}:${sStr}:${ds}` || '00:00:00:00'
+            : latestScore
+            ? String(latestScore.time)
+            : '00:00:00:00'
+        }
         statusColor={statusColor}
       />
     );

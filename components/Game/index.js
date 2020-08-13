@@ -10,6 +10,8 @@ import Material from './Material';
 import Action from './Action';
 
 import CancelGame from './CancelGame';
+import Typer from './Typer';
+import Level from './Level';
 
 import { View, Section } from '../Elements';
 
@@ -44,6 +46,10 @@ class Game extends Component {
         {(gameStandby || gameON || gamePaused) && <Status />}
 
         {(gameStandby || gameON || gamePaused) && <CancelGame />}
+
+        {!gameStandby && !gameON && <Typer />}
+
+        {!gameStandby && !gameON && <Level />}
 
         <Material />
 

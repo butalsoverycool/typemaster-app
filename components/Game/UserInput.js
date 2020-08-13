@@ -35,6 +35,7 @@ class UserInput extends Component {
   constructor(props) {
     super(props);
   }
+
   shouldComponentUpdate = np =>
     propsChanged(this.props.gameState, np.gameState, [
       'gameON,',
@@ -64,6 +65,7 @@ class UserInput extends Component {
       startGame,
       endGame,
       togglePauseGame,
+      createLatestScore,
     } = gameSetters;
 
     if (!gameStandby) return null;
@@ -122,6 +124,7 @@ class UserInput extends Component {
 
       // finish-line
       if (newTyped.remaining.length <= 0) {
+        createLatestScore({ qualified: false });
         endGame();
       }
     };

@@ -1,114 +1,115 @@
-import React, { useEffect } from 'react';
+import React, { Component, useEffect } from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
 import * as PRESET from '../../constants/preset';
-import { usePrev } from '../../constants/helperFuncs';
+import { usePrev, propsChanged } from '../../constants/helperFuncs';
 import { withState } from '../GameState';
+import { Icon } from '../Elements';
 
-function TabBar({
-  state,
-  descriptors,
-  navigation,
-  gameState: { pushNav },
-  gameSetters: { setPushNav },
-  ...props
-}) {
-  const prevPushNav = usePrev(pushNav);
+class TabBar extends Component {
+  constructor(props) {
+    super(props);
+  }
 
-  /* if (pushNav && typeof pushNav === 'string') {
-    setPushNav(pushNav);
-    navigation.navigate(force);
+  shouldComponentUpdate = np =>
+    propsChanged(this.props, np, ['state', 'descriptors', 'navigation']) ||
+    this.props.gameState.pushNav !== np.gameState.pushNav;
 
-    if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
-          }
-  } */
+  componentDidUpdate(pp) {
+    const { pushNav: prevPushNav } = pp.gameState;
+    const { pushNav } = this.props.gameState;
 
-  useEffect(() => {
     if (prevPushNav !== pushNav) {
       if (pushNav && typeof pushNav === 'string') {
-        navigation.navigate(pushNav);
-        setPushNav(false);
+        this.props.navigation.navigate(pushNav);
 
-        return;
+        this.props.gameSetters.setPushNav(false);
       }
     }
-  }, [pushNav]);
+  }
 
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        height: 80,
-        alignItems: 'center',
-      }}
-    >
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const label =
-          options.tabBarLabel !== undefined
-            ? options.tabBarLabel
-            : options.title !== undefined
-            ? options.title
-            : route.name;
+  render() {
+    const { state, descriptors, navigation, ...props } = this.props;
 
-        const isFocused = state.index === index;
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          height: 80,
+          alignItems: 'center',
+        }}
+      >
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const label =
+            options.tabBarLabel !== undefined
+              ? options.tabBarLabel
+              : options.title !== undefined
+              ? options.title
+              : route.name;
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-          });
+          const isFocused = state.index === index;
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
-          }
-        };
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+            });
 
-        const onLongPress = () => {
-          navigation.emit({
-            type: 'tabLongPress',
-            target: route.key,
-          });
-        };
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            }
+          };
 
-        const preFocused = state.index - 1 === index;
-        const postFocused = state.index + 1 === index;
+          const onLongPress = () => {
+            navigation.emit({
+              type: 'tabLongPress',
+              target: route.key,
+            });
+          };
 
-        return (
-          <TouchableOpacity
-            key={index}
-            accessibilityRole="button"
-            accessibilityStates={isFocused ? ['selected'] : []}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarTestID}
-            onPress={onPress}
-            onLongPress={onLongPress}
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              backgroundColor: isFocused ? '#eee' : '#f7f7f7',
-              height: '100%',
-              borderTopRightRadius: preFocused ? 10 : 0,
-              borderTopLeftRadius: postFocused ? 10 : 0,
-              shadowOffset: {
-                height: 10,
-                width: preFocused ? 1 : postFocused ? -1 : 0,
-              },
-              shadowColor: preFocused || postFocused ? '#ddd' : null,
-              shadowOpacity: postFocused || preFocused ? 1 : 0,
-              position: 'relative',
-              zIndex: preFocused || postFocused ? 99 : 1,
-              shadowRadius: 1,
-            }}
-          >
-            <View style={{ height: '100%', paddingTop: 10 }}>
-              {PRESET.navIcons[route.name](isFocused)}
-            </View>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  );
+          const preFocused = state.index - 1 === index;
+          const postFocused = state.index + 1 === index;
+
+          return (
+            <TouchableOpacity
+              key={index}
+              accessibilityRole="button"
+              accessibilityStates={isFocused ? ['selected'] : []}
+              accessibilityLabel={options.tabBarAccessibilityLabel}
+              testID={options.tabBarTestID}
+              onPress={onPress}
+              onLongPress={onLongPress}
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                backgroundColor: isFocused ? '#eee' : '#f7f7f7',
+                height: '100%',
+                borderTopRightRadius: preFocused ? 10 : 0,
+                borderTopLeftRadius: postFocused ? 10 : 0,
+                shadowOffset: {
+                  height: 10,
+                  width: preFocused ? 1 : postFocused ? -1 : 0,
+                },
+                shadowColor: preFocused || postFocused ? '#ddd' : null,
+                shadowOpacity: postFocused || preFocused ? 1 : 0,
+                position: 'relative',
+                zIndex: preFocused || postFocused ? 99 : 1,
+                shadowRadius: 1,
+              }}
+            >
+              <View style={{ height: '100%', paddingTop: 10 }}>
+                <Icon
+                  name={PRESET.navIcons[route.name]}
+                  type="IconOutline"
+                  color={isFocused ? '#666' : '#444'}
+                />
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    );
+  }
 }
 
 export default withState(TabBar);

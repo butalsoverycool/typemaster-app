@@ -32,7 +32,7 @@ class Action extends Component {
             {!gameStandby && !gamePaused /*  || gameON */ && (
               <Btn
                 content={
-                  gameFinished ? 'Play again' : !gameON ? 'Start' : 'Stop'
+                  gameFinished ? 'Play again' : !gameON ? 'Play' : 'Stop'
                 }
                 type="outline"
                 buttonStyle={{ maxWidth: '80%' }}

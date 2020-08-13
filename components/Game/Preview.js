@@ -5,6 +5,7 @@ import { withState } from '../GameState';
 import { levels } from '../../constants/options';
 import theme from '../../constants/theme';
 import { propsChanged } from '../../constants/helperFuncs';
+import { Section } from '../Elements';
 
 const localStyles = StyleSheet.create({
   container: {
@@ -46,43 +47,36 @@ class Preview extends Component {
       material: { title, text },
     } = this.props.gameState;
 
+    const { setMaterial } = this.props.gameSetters;
+
     return (
-      <View style={theme.section}>
-        <View style={localStyles.container}>
-          <Text style={[localStyles.label, { fontSize: 22 }]}>
-            Text to type
-          </Text>
+      <Section spaceTop={0}>
+        <Text style={theme.subtitle}>Text to type</Text>
 
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderWidth: 1,
-              borderColor: 'black',
-              marginTop: 5,
-              marginBottom: 5,
-            }}
-          >
-            <Text style={localStyles.label}>Title</Text>
-            <Text style={localStyles.text}>{title}</Text>
-            <Text style={localStyles.label}>Length</Text>
-            <Text style={localStyles.text}>{text.length}</Text>
-            <Text style={localStyles.label}>Level</Text>
-            <Text style={localStyles.text}>{levels[settings.level]}</Text>
-          </View>
+        <Section row>
+          <Section align="space-around" flex={1}>
+            <Text style={theme.label}>Title</Text>
+            <Text style={theme.label}>Length</Text>
+            <Text style={theme.label}>Level</Text>
+          </Section>
+          <Section align="flex-start" flex={1}>
+            <Text>{title}</Text>
+            <Text>{text.length}</Text>
+            <Text>{levels[settings.level]}</Text>
+          </Section>
+        </Section>
 
-          <Button
-            buttonStyle={{
-              marginTop: 5,
-              borderRadius: 5,
-              backgroundColor: '#444',
-            }}
-            titleStyle={{ color: 'whitesmoke' }}
-            title="change text"
-            onPress={() => setMaterial()}
-          />
-        </View>
-      </View>
+        <Button
+          buttonStyle={{
+            marginTop: 5,
+            borderRadius: 5,
+            backgroundColor: '#444',
+          }}
+          titleStyle={{ color: 'whitesmoke' }}
+          title="change text"
+          onPress={setMaterial}
+        />
+      </Section>
     );
   }
 }

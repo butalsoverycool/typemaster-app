@@ -6,6 +6,14 @@ const VIEW = ({
   row,
   justify,
   align,
+  fillW,
+  fillH,
+  w,
+  h,
+  bg,
+  flex,
+  spaceTop,
+  spaceBottom,
   children,
   ...props
 }) => {
@@ -13,6 +21,14 @@ const VIEW = ({
     flexDirection: row ? 'row' : 'column',
     justifyContent: justify ? justify : 'flex-start',
     alignItems: align ? align : 'center',
+    minWidth: fillW ? '100%' : null,
+    minHeight: fillH ? '100%' : null,
+    backgroundColor: bg ? bg : styles.section.backgroundColor,
+    marginTop: spaceTop ? spaceTop || 20 : 0,
+    marginBottom: spaceBottom ? spaceBottom || 20 : 0,
+    width: w ? w : '100%',
+    height: h ? h : 'auto',
+    flex,
   };
 
   return (
@@ -31,5 +47,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     margin: 0,
     padding: 5,
+    backgroundColor: 'rgba(0,0,0,0)',
   },
 });

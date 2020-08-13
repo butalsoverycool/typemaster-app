@@ -1,80 +1,33 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
 import { DataTable } from 'react-native-paper';
 import NameInput from './NameInput';
 import { levels } from '../../constants/options';
-import { timeStamp } from '../../constants/helperFuncs';
+import { propsChanged } from '../../constants/helperFuncs';
+import { Section, ScrollView, Btn } from '../Elements';
+import Status from '../Game/Status';
 
 const localStyles = StyleSheet.create({
   title: { justifyContent: 'flex-start' },
   cell: { justifyContent: 'flex-start' },
 });
 
-const score = [
-  {
-    typer: 'Lasse',
-    points: 5,
-    time: 23.3,
-    level: 'medium',
-    text: 'Margareta',
-  },
-  {
-    typer: 'Orvar',
-    points: 2.6,
-    time: 23.3,
-    level: 'medium',
-    text: 'Margareta',
-  },
-  {
-    typer: 'Jesus',
-    points: 5.6,
-    time: 23.3,
-    level: 'medium',
-    text: 'Margareta',
-  },
-  {
-    typer: 'Maja',
-    points: 6,
-    time: 23.3,
-    level: 'medium',
-    text: 'Margareta',
-  },
-  {
-    typer: 'Wendy',
-    points: 2.1,
-    time: 23.3,
-    level: 'medium',
-    text: 'Margareta',
-  },
-];
-
 class ScoreBoard extends Component {
   constructor(props) {
     super(props);
   }
 
-  shouldComponentUpdate(np, ns) {
-    const {
-      gameFinished,
-      scoreboard,
-      settings: { typer },
-    } = this.props.gameState;
-
-    const {
-      gameFinished: nextGameFinished,
-      scoreboard: nextScoreboard,
-      settings: { typer: nextTyper },
-    } = np.gameState;
-
-    return gameFinished !== nextGameFinished ||
-      scoreboard.length !== nextScoreboard.length ||
-      typer !== nextTyper
-      ? true
-      : false;
-  }
+  shouldComponentUpdate = np =>
+    propsChanged(this.props.gameState, np.gameState, [
+      'gameFinished',
+      'scoreboard',
+      'settings',
+      'time',
+      'latestScore',
+    ]) || this.props.visible !== np.visible;
 
   render() {
     const { gameState, gameSetters, visible, ...props } = this.props;
@@ -82,16 +35,14 @@ class ScoreBoard extends Component {
       gameFinished,
       scoreboard: unsortedScoreboard,
       settings: { typer },
-      points,
-    } = gameState;
 
-    const { saveScore, clearScore } = gameSetters;
+      latestScore,
+    } = gameState;
+    const { clearScore, prepareGame } = gameSetters;
 
     const scoreboard = unsortedScoreboard.sort((a, b) =>
       a.points > b.points ? -1 : 1
     );
-
-    // const [activeRow, setActiveRow] = useState(false);
 
     const typerExists =
       typer &&
@@ -100,64 +51,73 @@ class ScoreBoard extends Component {
       typer !== ' ' &&
       typer !== 'Unknown';
 
-    //if (gameFinished && typerExists) saveScore();
-
     const qualified =
-      scoreboard.some(score => score.points < points) || scoreboard.length < 5;
+      scoreboard.some(score =>
+        latestScore ? score.points < latestScore.points : false
+      ) || scoreboard.length < 5;
 
     return (
-      <View style={theme.view}>
+      <SafeAreaView style={theme.view}>
         {qualified && (
           <NameInput visible={gameFinished} typerExists={typerExists} />
         )}
 
         {/* {activeRow && <RowInfo data={scoreboard[activeRow]} />} */}
 
-        <View style={theme.section}>
-          <Text style={theme.title}>LOCAL SCOREBOARD</Text>
-        </View>
+        <ScrollView>
+          <View style={theme.section}>
+            <Text style={theme.title}>LOCAL SCOREBOARD</Text>
+          </View>
 
-        <View style={theme.section}>
-          <DataTable>
-            <DataTable.Header>
-              <DataTable.Title style={localStyles.title}>Typer</DataTable.Title>
-              <DataTable.Title numeric style={localStyles.title}>
-                Points
-              </DataTable.Title>
-              <DataTable.Title numeric style={localStyles.title}>
-                Time
-              </DataTable.Title>
-              <DataTable.Title style={localStyles.title}>Level</DataTable.Title>
-              <DataTable.Title style={localStyles.title}>Text</DataTable.Title>
-              <DataTable.Title style={localStyles.title}>When</DataTable.Title>
-            </DataTable.Header>
+          <View style={theme.section}>
+            <DataTable>
+              <DataTable.Header>
+                <DataTable.Title style={localStyles.title}>
+                  Typer
+                </DataTable.Title>
+                <DataTable.Title numeric style={localStyles.title}>
+                  Points
+                </DataTable.Title>
+                <DataTable.Title numeric style={localStyles.title}>
+                  Time
+                </DataTable.Title>
+                <DataTable.Title style={localStyles.title}>
+                  Level
+                </DataTable.Title>
+                <DataTable.Title style={localStyles.title}>
+                  Text
+                </DataTable.Title>
+                <DataTable.Title style={localStyles.title}>
+                  When
+                </DataTable.Title>
+              </DataTable.Header>
 
-            {scoreboard.map(
-              ({ typer, points, time, level, text, timeStamp }, nth) => (
-                <DataTable.Row key={nth}>
-                  <DataTable.Cell style={localStyles.cell}>
-                    {typer}
-                  </DataTable.Cell>
-                  <DataTable.Cell numeric static style={localStyles.cell}>
-                    {points}
-                  </DataTable.Cell>
-                  <DataTable.Cell numeric style={localStyles.cell}>
-                    {time}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={localStyles.cell}>
-                    {levels[level].substring(0, 6)}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={localStyles.cell}>
-                    {text}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={localStyles.cell}>
-                    {timeStamp && timeStamp.date}
-                  </DataTable.Cell>
-                </DataTable.Row>
-              )
-            )}
+              {scoreboard.map(
+                ({ typer, points, time, level, text, timeStamp }, nth) => (
+                  <DataTable.Row key={nth}>
+                    <DataTable.Cell style={localStyles.cell}>
+                      {typer}
+                    </DataTable.Cell>
+                    <DataTable.Cell numeric static style={localStyles.cell}>
+                      {points}
+                    </DataTable.Cell>
+                    <DataTable.Cell numeric style={localStyles.cell}>
+                      {time}
+                    </DataTable.Cell>
+                    <DataTable.Cell style={localStyles.cell}>
+                      {levels[level].substring(0, 6)}
+                    </DataTable.Cell>
+                    <DataTable.Cell style={localStyles.cell}>
+                      {text}
+                    </DataTable.Cell>
+                    <DataTable.Cell style={localStyles.cell}>
+                      {timeStamp && timeStamp.date}
+                    </DataTable.Cell>
+                  </DataTable.Row>
+                )
+              )}
 
-            {/* <DataTable.Pagination
+              {/* <DataTable.Pagination
             style={{ justifyContent: 'center', flexWrap: 'nowrap', padding: 0 }}
             page={1}
             numberOfPages={3}
@@ -166,17 +126,40 @@ class ScoreBoard extends Component {
             }}
             label=""
           /> */}
-          </DataTable>
-        </View>
+            </DataTable>
+          </View>
 
-        {/* <View style={theme.section}>
+          {latestScore && !qualified && (
+            <Section>
+              <Text style={[theme.subtitle, { textAlign: 'center' }]}>
+                Your latest score didn't qualify
+              </Text>
+
+              <Status />
+            </Section>
+          )}
+
+          {/* <View style={theme.section}>
         <Button title="save something" onPress={saveScore} />
       </View> */}
+          <Section>
+            <Btn
+              content={latestScore ? 'Play again' : 'Play'}
+              onPress={prepareGame}
+            />
+          </Section>
 
-        <View style={theme.section}>
-          <Button title="clear scores" onPress={clearScore} />
-        </View>
-      </View>
+          <Section>
+            <Btn
+              w={200}
+              h={50}
+              fontSize={12}
+              content="clear scores"
+              onPress={clearScore}
+            />
+          </Section>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }

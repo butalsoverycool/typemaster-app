@@ -11,10 +11,15 @@ class Points extends Component {
     super(props);
   }
   shouldComponentUpdate = np =>
-    propsChanged(this.props.gameState, np.gameState, ['points']);
+    propsChanged(this.props.gameState, np.gameState, [
+      'points',
+      'gameStandby',
+      'gameON',
+      'latestScore',
+    ]);
 
   render() {
-    const { points } = this.props.gameState;
+    const { points, gameStandby, gameON, latestScore } = this.props.gameState;
 
     const status =
       points < 0
@@ -29,7 +34,13 @@ class Points extends Component {
       <StatusData
         label="Points"
         index={1}
-        data={points || '0'}
+        data={
+          gameStandby || gameON
+            ? points || '0'
+            : latestScore
+            ? latestScore.points
+            : ''
+        }
         status={status}
       />
     );
