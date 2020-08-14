@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, memo } from 'react';
 import { withState } from '../GameState';
 import StatusData from './StatusData';
 import { propsChanged } from '../../constants/helperFuncs';
@@ -34,4 +34,7 @@ class Remaining extends Component {
     );
   }
 }
-export default withState(Remaining);
+
+const Memo = memo(p => <Remaining {...p} />);
+
+export default withState(Memo);

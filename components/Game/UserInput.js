@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, memo } from 'react';
 import {
   StyleSheet,
   View,
@@ -47,6 +47,7 @@ class UserInput extends Component {
     ]);
 
   render() {
+    console.log('Rendering <UserInput />');
     const { gameState, gameSetters } = this.props;
     if (!gameState) return null;
 
@@ -62,30 +63,29 @@ class UserInput extends Component {
     const {
       setPoints,
       setTyped,
+      prepareGame,
       startGame,
       endGame,
       togglePauseGame,
       createLatestScore,
     } = gameSetters;
 
-    if (!gameStandby) return null;
+    if (!gameStandby && !gameON) return null;
 
     const inputHandler = e => {
+      if (gameStandby && !gameON && !gamePaused) startGame();
+
       const char = e.nativeEvent.key;
 
+      // bail if undefined input
       if (!char || char === undefined) return;
 
+      // bail if banned key
       for (let nth = 0; nth < bannedKeys.length; nth++) {
         if (char === bannedKeys[nth]) {
-          const res = randOfArr(gameOverText);
-
           return;
         }
       }
-
-      if (!gameON) startGame();
-
-      if (gameON && gamePaused) togglePauseGame();
 
       // update typed and points based on isTypo
       const isTypo = char !== material.text[typed.index];
@@ -168,4 +168,6 @@ class UserInput extends Component {
   }
 }
 
-export default withState(UserInput);
+const Memo = memo(props => <UserInput {...props} />);
+
+export default withState(Memo);

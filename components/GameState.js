@@ -285,7 +285,6 @@ class GameState extends Component {
   setTyped({ index, output, remaining, ...props }) {
     if (!props.input) return console.log('Missing input to update typed-state');
 
-    index = index || this.state.typed.index + 1;
     output = output || this.state.material.text.substring(0, index);
     remaining = remaining || this.state.material.text.substring(index);
 
@@ -311,6 +310,7 @@ class GameState extends Component {
   }
 
   resetGame() {
+    console.log('resetGame()');
     if (!this.state.gameON && !this.state.gamePaused) return;
 
     this.setState(ps => ({
@@ -320,6 +320,7 @@ class GameState extends Component {
   }
 
   prepareGame() {
+    console.log('prepareGame()');
     if (this.state.gameON || this.state.gameStandby) return;
 
     this.setState(ps => ({
@@ -332,12 +333,14 @@ class GameState extends Component {
   }
 
   startGame() {
+    console.log('startGame()');
     if (this.state.gameON || !this.state.gameStandby) return;
 
     this.setState({ gameON: true, msg: 'Game is ON!' });
   }
 
   endGame() {
+    console.log('endGame()');
     if (!this.state.gameON && !this.state.gameStandby && !this.state.gamePaused)
       return;
 
@@ -351,6 +354,7 @@ class GameState extends Component {
   }
 
   togglePauseGame() {
+    console.log('togglePauseGame()');
     if (!this.state.gameON && !this.state.gameStandby) return;
 
     const msg = this.state.gamePaused

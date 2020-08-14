@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, memo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { withState } from '../GameState';
@@ -135,4 +135,6 @@ class Time extends Component {
   }
 }
 
-export default withState(Time);
+const Memo = memo(p => <Time {...p} />);
+
+export default withState(Memo);

@@ -12,19 +12,6 @@ const styles = StyleSheet.create({
     padding: 10,
     /* flex: 1, */
   },
-  card: {
-    marginTop: 0,
-    width: '100%',
-    borderWidth: 0,
-    shadowOpacity: 0,
-  },
-  cardWrapper: {
-    /* height: '100%', */
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   contentContainer: {
     flexDirection: 'row',
     alignItems: 'center',

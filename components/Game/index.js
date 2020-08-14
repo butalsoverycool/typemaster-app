@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, memo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import theme from '../../constants/theme';
 import { withState } from '../GameState';
@@ -53,10 +53,16 @@ class Game extends Component {
 
         <Material />
 
-        {material.title && <Action />}
+        {material.title && (
+          <Section flex={1} justify="center">
+            <Action />
+          </Section>
+        )}
       </View>
     );
   }
 }
 
-export default withState(Game);
+const Memo = memo(p => <Game {...p} />);
+
+export default withState(Memo);

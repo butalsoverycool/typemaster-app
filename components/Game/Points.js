@@ -1,8 +1,5 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Badge } from 'react-native-elements';
+import React, { Component, memo } from 'react';
 import { withState } from '../GameState';
-import styles from './styles';
 import StatusData from './StatusData';
 import { propsChanged } from '../../constants/helperFuncs';
 
@@ -46,4 +43,7 @@ class Points extends Component {
     );
   }
 }
-export default withState(Points);
+
+const Memo = memo(p => <Points {...p} />);
+
+export default withState(Memo);

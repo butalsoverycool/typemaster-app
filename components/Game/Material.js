@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, memo } from 'react';
 import { withState } from '../GameState';
 import { propsChanged } from '../../constants/helperFuncs';
 import UserInput from './UserInput';
@@ -6,7 +6,7 @@ import styles from './styles';
 import Teleprompter from './Teleprompter';
 import Preview from './Preview';
 import TextList from './TextList';
-import { View, Section, Card } from '../Elements';
+import { Section } from '../Elements';
 
 class Material extends Component {
   constructor(props) {
@@ -43,28 +43,20 @@ class Material extends Component {
     };
 
     return (
-      <Section flex={1}>
-        <Card
-          containerStyle={styles.card}
-          wrapperStyle={[
-            styles.cardWrapper,
-            {
-              alignItems: 'flex-start',
-            },
-          ]}
-        >
-          {gamePaused ? null : gameStandby || gameON ? (
-            <Teleprompter />
-          ) : title && text ? (
-            <Preview />
-          ) : (
-            <TextList />
-          )}
-        </Card>
+      <Section>
+        {gamePaused ? null : gameStandby || gameON ? (
+          <Teleprompter />
+        ) : title && text ? (
+          <Preview />
+        ) : (
+          <TextList />
+        )}
         <UserInput />
       </Section>
     );
   }
 }
 
-export default withState(Material);
+const Memo = memo(p => <Material {...p} />);
+
+export default withState(Memo);

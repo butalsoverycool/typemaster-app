@@ -1,7 +1,6 @@
-import React, { Component, useState } from 'react';
+import React, { Component, memo } from 'react';
 import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import { withState } from '../GameState';
-import styles from '../Settings/styles';
 import theme from '../../constants/theme';
 import { Section, Input } from '../Elements';
 
@@ -34,4 +33,6 @@ class Typer extends Component {
   }
 }
 
-export default withState(Typer);
+const Memo = memo(p => <Typer {...p} />);
+
+export default withState(Memo);

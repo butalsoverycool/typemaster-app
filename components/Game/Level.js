@@ -1,7 +1,7 @@
-import React, { Component, useState } from 'react';
-import { View, Text } from 'react-native';
+import React, { Component, memo } from 'react';
+import { Text } from 'react-native';
 import { withState } from '../GameState';
-import { ButtonGroup, TouchableHighlight } from 'react-native-elements';
+import { ButtonGroup } from 'react-native-elements';
 import * as OPTIONS from '../../constants/options';
 import styles from './styles';
 import theme, { buttonGroupStyle } from '../../constants/theme';
@@ -44,4 +44,6 @@ class Level extends Component {
   }
 }
 
-export default withState(Level);
+const Memo = memo(p => <Level {...p} />);
+
+export default withState(Memo);

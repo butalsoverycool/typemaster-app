@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import GameState from './components/GameState';
 import Header from './components/Header';
@@ -10,15 +10,11 @@ import Nav from './components/Nav';
 
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
+import { Section } from './components/Elements';
+import { colors } from './constants/theme';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#eee',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-});
+const REACT_VERSION = React.version;
+console.log('react version:', REACT_VERSION);
 
 export default function App() {
   const [appReady, setAppReady] = useState(false);
@@ -51,11 +47,11 @@ export default function App() {
     <NavigationContainer>
       <GameState>
         <PaperProvider>
-          <View style={styles.container}>
+          <Section flex={1} padding={0}>
             <Header />
 
             <Nav />
-          </View>
+          </Section>
         </PaperProvider>
       </GameState>
     </NavigationContainer>

@@ -1,5 +1,10 @@
 import { StyleSheet } from 'react-native';
 
+export const colors = {
+  light: '#eee',
+  dark: '#444',
+};
+
 export default StyleSheet.create({
   view: {
     flex: 1,

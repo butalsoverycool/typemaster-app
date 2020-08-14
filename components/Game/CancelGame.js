@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, memo } from 'react';
 import { withState } from '../GameState';
 import styles from './styles';
 import theme from '../../constants/theme';
 import { propsChanged } from '../../constants/helperFuncs';
 
-import { Section, Card, Icon } from '../Elements';
+import { Section, Icon } from '../Elements';
 
 const localStyles = {
   section: {
@@ -54,14 +54,8 @@ class CancelGame extends Component {
     return (
       <Section style={theme.section}>
         <Section style={[styles.section, localStyles.section]}>
-          <Card
-            containerStyle={styles.card}
-            wrapperStyle={[
-              styles.cardWrapper,
-              { flexDirection: 'row', justifyContent: 'space-around' },
-            ]}
-          >
-            {gameON ? (
+          <Section row justify="space-around">
+            {(gameON || gamePaused) && (
               <Icon
                 name={gamePaused ? 'play-circle' : 'pause-circle'}
                 type="IconOutline"
@@ -69,7 +63,7 @@ class CancelGame extends Component {
                 onPress={togglePauseGame}
                 label={gamePaused ? 'continue' : 'pause'}
               />
-            ) : null}
+            )}
 
             <Icon
               name="close-circle"
@@ -79,11 +73,13 @@ class CancelGame extends Component {
               onPress={endGame}
               label={gameON ? 'stop' : 'back'}
             />
-          </Card>
+          </Section>
         </Section>
       </Section>
     );
   }
 }
 
-export default withState(CancelGame);
+const Memo = memo(p => <CancelGame {...p} />);
+
+export default withState(Memo);

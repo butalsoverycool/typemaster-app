@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { colors } from '../../../constants/theme';
 
 const VIEW = ({
   style: customStyle,
@@ -12,6 +13,7 @@ const VIEW = ({
   h,
   bg,
   flex,
+  wrap,
   spaceTop,
   spaceBottom,
   children,
@@ -29,6 +31,7 @@ const VIEW = ({
     width: w ? w : '100%',
     height: h ? h : 'auto',
     flex,
+    flexWrap: wrap,
   };
 
   return (
@@ -47,6 +50,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     margin: 0,
     padding: 5,
-    backgroundColor: 'rgba(0,0,0,0)',
+    backgroundColor: colors.light,
   },
 });

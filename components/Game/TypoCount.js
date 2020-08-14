@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, memo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { withState } from '../GameState';
@@ -20,6 +20,8 @@ class TypoCount extends Component {
     ]);
 
   render() {
+    console.log('Rendering <TypoCount />');
+
     const {
       typed: { typoCount },
       gameStandby,
@@ -52,4 +54,7 @@ class TypoCount extends Component {
     );
   }
 }
-export default withState(TypoCount);
+
+const Memo = memo(p => <TypoCount {...p} />);
+
+export default withState(Memo);

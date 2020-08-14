@@ -1,11 +1,7 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, memo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { propsChanged } from '../../constants/helperFuncs';
-import { withState } from '../GameState';
-import * as PRESET from '../../constants/preset';
-//import styles from './styles';
-import theme from '../../constants/theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,7 +17,7 @@ const styles = StyleSheet.create({
   badge: { height: 30, width: 90, marginLeft: 5, marginRight: 5 },
 });
 
-export default class StatusData extends Component {
+class StatusData extends Component {
   constructor(props) {
     super(props);
   }
@@ -86,3 +82,5 @@ export default class StatusData extends Component {
     );
   }
 }
+
+export default memo(p => <StatusData {...p} />);

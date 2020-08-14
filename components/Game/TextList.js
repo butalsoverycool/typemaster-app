@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, View, Text, SafeAreaView, ScrollView } from 'react-native';
 import { ListItem, Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
 import library from '../../constants/library';
+import { Section } from '../Elements';
 
 const TextList = ({ gameSetters: { setMaterial } }) => (
-  <View style={theme.section}>
-    <SafeAreaView>
+  <Section>
+    <SafeAreaView style={{}}>
       <Text style={[theme.title, { textAlign: 'center' }]}>Pick a text</Text>
-      <ScrollView
-        centerContent={true}
-        contentContainerStyle={{ width: '100%', minWidth: '100%' }}
-      >
+      <ScrollView centerContent={true}>
         {library.map((item, nth) => (
           <ListItem
             key={nth}
@@ -25,7 +23,9 @@ const TextList = ({ gameSetters: { setMaterial } }) => (
         ))}
       </ScrollView>
     </SafeAreaView>
-  </View>
+  </Section>
 );
 
-export default withState(TextList);
+const Memo = memo(p => <TextList {...p} />);
+
+export default withState(Memo);

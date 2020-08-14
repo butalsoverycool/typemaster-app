@@ -1,4 +1,4 @@
-import React, { Component, useRef, useEffect } from 'react';
+import React, { Component, useRef, useEffect, memo } from 'react';
 import { StyleSheet, Animated, View, Text } from 'react-native';
 import { usePrev, propsChanged } from '../../constants/helperFuncs';
 import { withState } from '../GameState';
@@ -59,6 +59,8 @@ const AnimatedView = ({ typed, ...props }) => {
   );
 };
 
+const MemoAnimated = memo(p => <AnimatedView {...p} />);
+
 class Teleprompter extends Component {
   constructor(props) {
     super(props);
@@ -69,8 +71,10 @@ class Teleprompter extends Component {
   render() {
     const { typed } = this.props.gameState;
 
-    return <AnimatedView typed={typed} />;
+    return <MemoAnimated typed={typed} />;
   }
 }
 
-export default withState(Teleprompter);
+const Memo = memo(p => <Teleprompter {...p} />);
+
+export default withState(Memo);

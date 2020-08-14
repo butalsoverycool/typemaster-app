@@ -1,31 +1,25 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { memo } from 'react';
 import { withState } from '../GameState';
-import styles from './styles';
 import Time from './Time';
 import Points from './Points';
 import TypoCount from './TypoCount';
 import Remaining from './Remaining';
-import theme from '../../constants/theme';
-import { Section, Card } from '../Elements';
+import { Section } from '../Elements';
 
-const Status = props => {
+const Status = () => {
   return (
-    <Section>
-      <Card
-        containerStyle={styles.card}
-        wrapperStyle={[styles.cardWrapper, { flexWrap: 'wrap' }]}
-      >
-        <Time />
+    <Section row wrap="wrap">
+      <Time />
 
-        <Points />
+      <Points />
 
-        <TypoCount />
+      <TypoCount />
 
-        <Remaining />
-      </Card>
+      <Remaining />
     </Section>
   );
 };
 
-export default withState(Status);
+const Memo = memo(p => <Status {...p} />);
+
+export default withState(Memo);

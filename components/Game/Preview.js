@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { Component, memo } from 'react';
+import { StyleSheet, Text } from 'react-native';
 import { Button } from 'react-native-elements';
 import { withState } from '../GameState';
 import { levels } from '../../constants/options';
@@ -80,4 +80,7 @@ class Preview extends Component {
     );
   }
 }
-export default withState(Preview);
+
+const Memo = memo(p => <Preview {...p} />);
+
+export default withState(Memo);
