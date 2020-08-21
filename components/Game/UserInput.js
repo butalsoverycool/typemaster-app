@@ -43,7 +43,7 @@ class UserInput extends Component {
       'gamePaused',
       'material',
       'typed',
-      'settings',
+      'level',
     ]);
 
   render() {
@@ -58,8 +58,9 @@ class UserInput extends Component {
       material,
       typed,
       points,
-      settings,
+      level,
     } = gameState;
+
     const {
       setPoints,
       setTyped,
@@ -91,7 +92,7 @@ class UserInput extends Component {
       const isTypo = char !== material.text[typed.index];
 
       // game over
-      if (isTypo && settings.level >= 3) {
+      if (isTypo && level >= 3) {
         const res = randOfArr(gameOverText);
 
         Alert.alert('Game Over', "Stella Pajunas doesn't accept errors", [
@@ -114,7 +115,7 @@ class UserInput extends Component {
         typoCount: isTypo ? typed.typoCount + 1 : typed.typoCount,
       };
 
-      const newPoints = isTypo ? levelWithdrawal[settings.level] * 100 : 1;
+      const newPoints = isTypo ? levelWithdrawal[level] * 100 : 1;
 
       // points
       setPoints(newPoints);
@@ -124,8 +125,9 @@ class UserInput extends Component {
 
       // finish-line
       if (newTyped.remaining.length <= 0) {
-        createLatestScore({ qualified: false });
-        endGame();
+        //createLatestScore({ qualified: false });
+        createLatestScore();
+        endGame({ override: { gameFinished: true } });
       }
     };
 
@@ -157,9 +159,7 @@ class UserInput extends Component {
               autoFocus={gameStandby}
               containerStyle={styles.inputContainer}
               inputStyle={styles.input}
-              /* onChangeText={value => inputHandler(value[value.length - 1], value)} */
-              onBlur={blurHandler}
-              onKeyPress={inputHandler}
+              on={{ onKeyPress: inputHandler, onBlur: blurHandler }}
             />
           </View>
         </TouchableWithoutFeedback>

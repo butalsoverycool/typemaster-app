@@ -10,5 +10,6 @@ export default props => (
 const styles = StyleSheet.create({
   scrollView: {
     maxWidth: '100%',
+    maxHeight: '100%',
   },
 });

@@ -14,12 +14,12 @@ class Level extends Component {
     super(props);
   }
   shouldComponentUpdate = np =>
-    propsChanged(this.props.gameState, np.gameState, ['settings']);
+    propsChanged(this.props.gameState, np.gameState, ['level']);
 
   render() {
     const {
-      gameState: { settings },
-      gameSetters: { setLevel },
+      gameState: { level },
+      gameSetters: { setGameState },
     } = this.props;
 
     return (
@@ -35,8 +35,8 @@ class Level extends Component {
           selectedButtonStyle={buttonGroupStyle.selectedButtonStyle}
           innerBorderStyle={buttonGroupStyle.innerBorderStyle}
           textStyle={buttonGroupStyle.textStyle}
-          onPress={setLevel}
-          selectedIndex={settings.level}
+          onPress={level => setGameState({ level })}
+          selectedIndex={level}
           buttons={OPTIONS.levels}
         />
       </Section>

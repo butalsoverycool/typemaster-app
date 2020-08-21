@@ -7,26 +7,33 @@ import { Section, Input } from '../Elements';
 class Typer extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      name: this.props.authUser.name || '',
+    };
   }
 
-  shouldComponentUpdate = np =>
-    this.props.gameState.settings.typer !== np.gameState.settings.typer;
+  //shouldComponentUpdate = np => this.props.gameState.name !== np.gameState.name;
 
   render() {
-    const {
-      gameState: {
-        settings: { typer },
-      },
-      gameSetters: { setTyper },
-    } = this.props;
+    const { authUser } = this.props;
+
+    const { updateTyper } = this.props.gameSetters;
 
     return (
       <Section>
         <Text style={[theme.subtitle, { textAlign: 'center' }]}>Typer</Text>
         <Input
-          value={typer}
+          value={authUser.name}
           placeholder="unknown"
-          onChangeText={typer => setTyper({ typer })}
+          on={{
+            onChangeText: name => this.setState({ name }),
+
+            onBlur: () =>
+              updateTyper(authUser.uid, { name: this.state.name }, err => {
+                console.log(err ? err : 'Typer successfully updated!');
+              }),
+          }}
         />
       </Section>
     );

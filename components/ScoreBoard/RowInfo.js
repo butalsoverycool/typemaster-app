@@ -27,7 +27,7 @@ const RowInfo = ({
       </View>
 
       <View style={theme.section}>
-        <Input placeholder="Unknown" onChangeText={setNewTyper} />
+        <Input placeholder="Unknown" on={{}} />
       </View>
 
       <View style={[theme.section, { justifyContent: 'flex-start' }]}>

@@ -24,16 +24,14 @@ class NameInput extends Component {
 
   shouldComponentUpdate = (np, ns) =>
     propsChanged(this.props, np, ['visible', 'typerExists']) ||
-    this.props.gameState.settings.typer !== np.gameState.settings.typer ||
+    this.props.gameState.authUser.name !== np.gameState.authUser.name ||
     this.state.newTyper !== ns.newTyper;
 
   render() {
     const {
-      gameState: {
-        settings: { typer },
-      },
+      authUser,
 
-      gameSetters: { setTyper, createLatestScore, saveScore },
+      gameSetters: { setGameState, prepareGame },
       visible,
       typerExists,
       ...props
@@ -48,7 +46,7 @@ class NameInput extends Component {
     return (
       <Modal visible={visible}>
         <Section>
-          <Text style={theme.title}>SAVE YOUR SCORE</Text>
+          <Text style={theme.title}>YOUR SCORE</Text>
 
           <Section spaceTop>
             <Status />
@@ -56,59 +54,61 @@ class NameInput extends Component {
         </Section>
 
         <Section spaceTop>
-          <Text style={[theme.subtitle, { textAlign: 'center' }]}>
+          <Text style={[theme.subtitle, { color: 'green' }]}>
+            On scoreboard? .../true/false
+          </Text>
+          {/* <Text style={[theme.subtitle, { textAlign: 'center' }]}>
             {nameTitle}
           </Text>
 
           <Input
-            focus={!typerExists}
+            focus={false}
             triggerUpdate={visible}
-            placeholder={typerExists ? typer : 'Unknown'}
-            onChangeText={newTyper => this.setState({ newTyper })}
-          />
+            placeholder={authUser.name || 'Unknown'}
+            on={{ onChangeText: newTyper => this.setState({ newTyper }) }}
+          /> */}
         </Section>
 
         <Section row justify="center">
           <Btn
             w="40%"
-            bg="red"
-            onPress={() =>
-              setTyper({
-                typer: '',
-                callback: () => {
-                  createLatestScore({
-                    qualified: true,
-                    cb: () => {
-                      saveScore();
-                    },
-                  });
+            bg="orange"
+            onPress={
+              () => setGameState({ pushNav: 'ScoreBoard', gameFinished: false })
+              /* setGameState(
+                {
+                  typer: '',
                 },
-              })
+                () => {
+                  createLatestScore(saveScore);
+                }
+              ) */
             }
           >
-            <Text style={styles.textStyle}>No name</Text>
+            <Text style={styles.textStyle}>See scoreboard</Text>
           </Btn>
 
           <Btn
             w="40%"
             onPress={() => {
-              if (typerExists || this.state.newTyper !== '') {
-                setTyper({
-                  typer: this.state.newTyper || typer,
-                  callback: () => {
-                    createLatestScore({
-                      qualified: true,
-                      cb: () => {
-                        saveScore();
-                        this.setState({ newTyper: '' });
-                      },
-                    });
+              prepareGame();
+              /* if (typerExists || this.state.newTyper !== '') {
+                setGameState(
+                  {
+                    typer: this.state.newTyper || authUser.name,
                   },
-                });
-              }
+                  () => {
+                    createLatestScore(() => {
+                      saveScore(() => {
+                        this.setState({ newTyper: '' });
+                      });
+                    });
+                  }
+                );
+              } */
             }}
           >
-            <Text style={[styles.textStyle, { fontSize: 30 }]}>Save</Text>
+            <Text style={[styles.textStyle, { fontSize: 30 }]}>Play again</Text>
           </Btn>
         </Section>
       </Modal>

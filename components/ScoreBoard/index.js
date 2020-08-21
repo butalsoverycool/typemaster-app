@@ -24,37 +24,43 @@ class ScoreBoard extends Component {
     propsChanged(this.props.gameState, np.gameState, [
       'gameFinished',
       'scoreboard',
-      'settings',
+      'level',
       'time',
       'latestScore',
+      'material',
     ]) || this.props.visible !== np.visible;
 
   render() {
-    const { gameState, gameSetters, visible, ...props } = this.props;
+    const { gameState, gameSetters, visible, authUser, ...props } = this.props;
     const {
       gameFinished,
       scoreboard: unsortedScoreboard,
-      settings: { typer },
 
       latestScore,
+      material,
+      level,
     } = gameState;
-    const { clearScore, prepareGame } = gameSetters;
+
+    const { clearScore, prepareGame, createLatestScore } = gameSetters;
 
     const scoreboard = unsortedScoreboard.sort((a, b) =>
-      a.points > b.points ? -1 : 1
+      a.highscore > b.highscore ? -1 : 1
     );
 
     const typerExists =
-      typer &&
-      typeof typer === 'string' &&
-      typer !== '' &&
-      typer !== ' ' &&
-      typer !== 'Unknown';
+      authUser.name &&
+      typeof authUser.name === 'string' &&
+      authUser.name !== '' &&
+      authUser.name !== ' ' &&
+      authUser.name !== 'Unknown';
 
-    const qualified =
-      scoreboard.some(score =>
-        latestScore ? score.points < latestScore.points : false
-      ) || scoreboard.length < 5;
+    const qualified = true; //*** */
+
+    /* if (gameFinished && !qualified) {
+      this.setState({ gameFinished: false }, () => {
+        createLatestScore(() => console.log('Created latest score'));
+      });
+    } */
 
     return (
       <SafeAreaView style={theme.view}>
@@ -78,44 +84,26 @@ class ScoreBoard extends Component {
                 <DataTable.Title numeric style={localStyles.title}>
                   Points
                 </DataTable.Title>
-                <DataTable.Title numeric style={localStyles.title}>
-                  Time
-                </DataTable.Title>
-                <DataTable.Title style={localStyles.title}>
-                  Level
-                </DataTable.Title>
-                <DataTable.Title style={localStyles.title}>
-                  Text
-                </DataTable.Title>
+
                 <DataTable.Title style={localStyles.title}>
                   When
                 </DataTable.Title>
               </DataTable.Header>
 
-              {scoreboard.map(
-                ({ typer, points, time, level, text, timeStamp }, nth) => (
-                  <DataTable.Row key={nth}>
-                    <DataTable.Cell style={localStyles.cell}>
-                      {typer}
-                    </DataTable.Cell>
-                    <DataTable.Cell numeric static style={localStyles.cell}>
-                      {points}
-                    </DataTable.Cell>
-                    <DataTable.Cell numeric style={localStyles.cell}>
-                      {time}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={localStyles.cell}>
-                      {levels[level].substring(0, 6)}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={localStyles.cell}>
-                      {text}
-                    </DataTable.Cell>
-                    <DataTable.Cell style={localStyles.cell}>
-                      {timeStamp && timeStamp.date}
-                    </DataTable.Cell>
-                  </DataTable.Row>
-                )
-              )}
+              {scoreboard.map(({ name, highscore, timeStamp }, nth) => (
+                <DataTable.Row key={nth}>
+                  <DataTable.Cell style={localStyles.cell}>
+                    {name}
+                  </DataTable.Cell>
+                  <DataTable.Cell numeric static style={localStyles.cell}>
+                    {highscore}
+                  </DataTable.Cell>
+
+                  <DataTable.Cell style={localStyles.cell}>
+                    {timeStamp && timeStamp.date}
+                  </DataTable.Cell>
+                </DataTable.Row>
+              ))}
 
               {/* <DataTable.Pagination
             style={{ justifyContent: 'center', flexWrap: 'nowrap', padding: 0 }}
@@ -142,12 +130,14 @@ class ScoreBoard extends Component {
           {/* <View style={theme.section}>
         <Button title="save something" onPress={saveScore} />
       </View> */}
-          <Section>
-            <Btn
-              content={latestScore ? 'Play again' : 'Play'}
-              onPress={prepareGame}
-            />
-          </Section>
+          {material.title && (
+            <Section>
+              <Btn
+                content={latestScore ? 'Play again' : 'Play'}
+                onPress={prepareGame}
+              />
+            </Section>
+          )}
 
           <Section>
             <Btn

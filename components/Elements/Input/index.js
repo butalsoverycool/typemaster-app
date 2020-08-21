@@ -32,8 +32,20 @@ export default class Input extends Component {
       color,
       triggerUpdate,
       focus = false,
+      onChangeText,
+      onKeyPress,
+      value,
+      on,
       ...props
     } = this.props;
+
+    const propRes = {};
+
+    Object.keys(this.props).forEach(key => {
+      if (this.props[key]) {
+        propRes[key] = this.props[key];
+      }
+    });
 
     return (
       <RNEInput
@@ -41,6 +53,8 @@ export default class Input extends Component {
         focus={focus}
         inputContainerStyle={[inputStyle.container, props.containerStyle]}
         inputStyle={[inputStyle.input, props.style]}
+        defaultValue={value}
+        {...on}
         {...props}
       />
     );
@@ -57,5 +71,6 @@ const inputStyle = StyleSheet.create({
   input: {
     textAlign: 'center',
     borderBottomWidth: 0,
+    color: '#444',
   },
 });

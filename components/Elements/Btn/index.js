@@ -12,23 +12,29 @@ export default ({
   spaceTop,
   spaceBottom,
   content,
+  outline,
   children,
   ...props
 }) => {
   const buttonOverride = {
+    ...styles.button,
     width: w || styles.button.width,
     height: h || styles.button.height,
-    backgroundColor: bg || styles.button.backgroundColor,
+    backgroundColor: outline
+      ? color || '#eee'
+      : bg || styles.button.backgroundColor,
     marginTop: spaceTop
       ? typeof spaceTop === 'number'
         ? spaceTop
         : 20
       : styles.button.margin,
     marginBottom: spaceBottom ? spaceBottom || 20 : styles.button.margin,
+    borderColor: '#444',
+    borderWidth: outline ? 2 : 0,
   };
 
   const textOverride = {
-    color: color || styles.text.color,
+    color: outline ? bg || '#444' : color || styles.text.color,
     fontSize: fontSize || styles.text.fontSize,
   };
 
@@ -41,10 +47,7 @@ export default ({
   );
 
   return (
-    <TouchableHighlight
-      style={[styles.button, buttonOverride, buttonStyle]}
-      {...props}
-    >
+    <TouchableHighlight style={[buttonOverride, buttonStyle]} {...props}>
       <View style={styles.contentContainer}>{child}</View>
     </TouchableHighlight>
   );

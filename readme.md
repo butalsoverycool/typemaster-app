@@ -20,7 +20,7 @@
 
 ## TODO
 
+- Setup middleware API for firebase db-requests (to replace ignored env.js)
 - Fix bugs
 - Official scoreboard
-- Challenge friends
-- Design
+- Layout

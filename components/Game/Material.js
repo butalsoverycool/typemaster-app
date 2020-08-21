@@ -43,7 +43,7 @@ class Material extends Component {
     };
 
     return (
-      <Section>
+      <Section flex={1}>
         {gamePaused ? null : gameStandby || gameON ? (
           <Teleprompter />
         ) : title && text ? (

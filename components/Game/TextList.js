@@ -7,8 +7,8 @@ import library from '../../constants/library';
 import { Section } from '../Elements';
 
 const TextList = ({ gameSetters: { setMaterial } }) => (
-  <Section>
-    <SafeAreaView style={{}}>
+  <Section flex={1}>
+    <SafeAreaView>
       <Text style={[theme.title, { textAlign: 'center' }]}>Pick a text</Text>
       <ScrollView centerContent={true}>
         {library.map((item, nth) => (

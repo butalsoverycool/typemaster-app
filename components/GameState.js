@@ -1,13 +1,9 @@
 import React, { Component, createContext } from 'react';
 import { AsyncStorage, Alert } from 'react-native';
-import {
-  clone,
-  pickMaterial,
-  randOfArr,
-  timeStamp,
-} from '../constants/helperFuncs';
+import { clone, randOfArr, timeStamp } from '../constants/helperFuncs';
 import { dynamicMsg } from '../constants/preset';
-import { Value } from 'react-native-reanimated';
+import { withFirebase } from './Firebase';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 const Ctx = createContext();
 
@@ -40,6 +36,11 @@ const endGameState = {
 };
 
 const initialState = {
+  loading: false,
+  authUser: null,
+
+  orientation: null,
+
   scoreboard: [],
   gameStandby: false,
   gameON: false,
@@ -64,15 +65,17 @@ const initialState = {
     typoCount: 0,
   },
 
-  settings: {
-    level: 0,
-    typer: '',
-  },
+  level: 0,
 
   latestScore: null,
   latestQualified: false,
 
   pushNav: false,
+
+  highscore: 0,
+
+  signInForm: false,
+  signUpForm: false,
 };
 
 class GameState extends Component {
@@ -80,6 +83,8 @@ class GameState extends Component {
     super(props);
 
     this.state = clone(initialState);
+
+    this.setGameState = this.setGameState.bind(this);
 
     this.resetGame = this.resetGame.bind(this);
     this.prepareGame = this.prepareGame.bind(this);
@@ -89,22 +94,26 @@ class GameState extends Component {
 
     this.addTick = this.addTick.bind(this);
     this.setMaterial = this.setMaterial.bind(this);
-    this.setLevel = this.setLevel.bind(this);
-    this.setCaseSens = this.setCaseSens.bind(this);
-    this.setTyper = this.setTyper.bind(this);
     this.setTyped = this.setTyped.bind(this);
     this.setTypoCount = this.setTypoCount.bind(this);
     this.setPoints = this.setPoints.bind(this);
     this.setPushNav = this.setPushNav.bind(this);
 
-    this.load = this.load.bind(this);
-    this.save = this.save.bind(this);
+    this.loadAsyncStorage = this.loadAsyncStorage.bind(this);
+    this.saveAsyncStorage = this.saveAsyncStorage.bind(this);
     this.createLatestScore = this.createLatestScore.bind(this);
     this.saveScore = this.saveScore.bind(this);
     this.clearScore = this.clearScore.bind(this);
     this.tryCallback = this.tryCallback.bind(this);
 
+    this.updateTyper = this.updateTyper.bind(this);
+    this.loadScoreBoard = this.loadScoreBoard.bind(this);
+
+    this.lockOrientation = this.lockOrientation.bind(this);
+
     this.setters = {
+      setGameState: this.setGameState,
+
       resetGame: this.resetGame,
       prepareGame: this.prepareGame,
       startGame: this.startGame,
@@ -113,9 +122,7 @@ class GameState extends Component {
 
       addTick: this.addTick,
       setMaterial: this.setMaterial,
-      setLevel: this.setLevel,
-      setCaseSens: this.setCaseSens,
-      setTyper: this.setTyper,
+
       setTyped: this.setTyped,
       setTypoCount: this.setTypoCount,
       setPoints: this.setPoints,
@@ -124,22 +131,107 @@ class GameState extends Component {
       createLatestScore: this.createLatestScore,
       saveScore: this.saveScore,
       clearScore: this.clearScore,
+
+      updateTyper: this.updateTyper,
+      loadScoreBoard: this.loadScoreBoard,
     };
   }
 
   componentDidMount() {
-    this.load('scoreboard');
+    /// listen
+
+    // scoreboard-changes
+    this.props.firebase.scoreBoardListener(this.loadScoreBoard);
+
+    /// get
+
+    // scoreboard
+    this.loadScoreBoard();
+
+    /// set
+    // orientation
+    this.lockOrientation('portrait');
   }
 
-  componentWillUnmount() {
-    this.setState(clone(initialState));
+  componentWillUnmount() {}
+
+  async lockOrientation(input = 'portrait') {
+    const {
+      lockAsync,
+      OrientationLock,
+      getOrientationAsync,
+    } = ScreenOrientation;
+
+    const orientation = OrientationLock[input.toUpperCase()];
+
+    if (!orientation) {
+      return console.log(
+        'Desired orientation lock',
+        orientation,
+        'could not be applied.'
+      );
+    }
+
+    // lock
+    await lockAsync(OrientationLock.PORTRAIT_UP);
+
+    // get new orientation to confirm
+    const code = await getOrientationAsync();
+    const newOrientation =
+      code >= 3 ? 'LANDSCAPE' : code >= 1 ? 'PORTRAIT' : 'UNKNOWN';
+
+    this.setState({ orientation: newOrientation }, () =>
+      console.log('Orientation locked to', this.state.orientation)
+    );
   }
 
-  async load(key) {
+  setGameState = (keyVal, cb) => {
+    this.setState({ ...keyVal }, () => {
+      this.tryCallback(cb);
+    });
+  };
+
+  loadScoreBoard(changes) {
+    this.props.firebase
+      .typers()
+      .once('value')
+      .then(snap => {
+        const typers = snap.val();
+
+        this.setState({
+          scoreboard: Object.values(typers).map(({ email, ...props }) => props),
+        });
+      });
+  }
+
+  updateTyper(uid, payload, cb) {
+    this.props.firebase.update('typers', uid, payload, err => {
+      this.props.firebase.getAuth(
+        this.state.authUser,
+        authUser => this.setState({ authUser }),
+        () => {
+          cb(err);
+        }
+      );
+    });
+  }
+
+  async loadAsyncStorage({ key, cb, onSuccess, onFail }) {
     try {
-      const value = JSON.parse(await AsyncStorage.getItem(key)) || [];
+      const value = JSON.parse(await AsyncStorage.getItem('typemaster_' + key));
 
-      this.setState({ [key]: value });
+      if (!value) {
+        console.log('Fail:', key, 'could not be loaded');
+
+        const param = onFail ? onFail : cb;
+        this.tryCallback(param);
+        return;
+      }
+
+      this.setState({ [key]: value }, () => {
+        const param = onSuccess || cb;
+        this.tryCallback(param);
+      });
     } catch (error) {
       Alert('Oh no', 'Failed to load ' + key, {
         text: 'Ok',
@@ -148,11 +240,16 @@ class GameState extends Component {
     }
   }
 
-  async save(key, val) {
+  async saveAsyncStorage(key, val, cb) {
     try {
-      const saved = await AsyncStorage.setItem(key, JSON.stringify(val));
+      const saved = await AsyncStorage.setItem(
+        'typemaster_' + key,
+        JSON.stringify(val)
+      );
 
       if (saved !== null) console.log(key, 'was saved!');
+
+      this.tryCallback(cb);
     } catch (error) {
       Alert('Oh no', 'Failed to save ' + key, {
         text: 'Ok',
@@ -161,40 +258,66 @@ class GameState extends Component {
     }
   }
 
-  createLatestScore(props) {
+  createLatestScore(cb) {
+    console.log('creating latest...');
     // curr score
     const {
-      settings: { typer, level },
+      level,
       time,
       points,
       material: { title },
       typed: { typoCount },
+      authUser,
     } = this.state;
 
     const latestScore = {
-      typer: typer || 'Unknown',
+      typer: this.state.authUser.name || 'Unknown',
       level,
       time: time / 10,
       points,
-      title,
       text: title,
       typos: typoCount,
       timeStamp: timeStamp(),
     };
 
-    this.setState({ latestScore, latestQualified: props.qualified }, () => {
-      if (typeof props === 'object') {
-        this.tryCallback(props.cb);
-      }
+    this.setState({ latestScore }, () => {
+      // new highscore?
+      console.log('points', points, 'auth high', authUser.highscore);
+      if (points > authUser.highscore) this.saveScore();
+
+      this.tryCallback(cb);
     });
   }
 
-  saveScore() {
-    const { latestScore } = this.state;
+  saveScore(cb) {
+    const { latestScore, authUser } = this.state;
 
     console.log('saving', latestScore);
 
-    if (!latestScore) return this.createLatestScore({ cb: this.saveScore });
+    if (!latestScore) return this.createLatestScore(this.saveScore);
+
+    // new highscore!
+    this.props.firebase.update(
+      'typers',
+      this.state.authUser.uid,
+      { highscore: this.state.latestScore.points },
+      () => {
+        console.log('highscore saved to db!');
+
+        this.loadScoreBoard();
+
+        this.setState(
+          ps => ({
+            ...ps,
+            ...endGameState,
+            gameFinished: false,
+          }),
+          () => {
+            this.tryCallback(cb);
+          }
+        );
+      }
+    );
 
     const unsorted = clone(this.state.scoreboard);
 
@@ -216,19 +339,24 @@ class GameState extends Component {
     const newBoard = sorted.length <= 5 ? sorted : sorted.slice(0, 5);
 
     // save
-    this.save('scoreboard', newBoard);
-    this.setState(ps => ({
-      ...ps,
-      ...endGameState,
-      gameFinished: false,
-      scoreboard: newBoard,
-    }));
+    // this.saveAsyncStorage('scoreboard', newBoard);
+    this.setState(
+      ps => ({
+        ...ps,
+        ...endGameState,
+        gameFinished: false,
+        scoreboard: newBoard,
+      }),
+      () => {
+        this.tryCallback(cb);
+      }
+    );
   }
 
   async clearScore() {
     try {
       await AsyncStorage.removeItem('scoreboard', () => {
-        this.load('scoreboard');
+        this.loadAsyncStorage({ key: 'scoreboard' });
       });
     } catch (error) {
       Alert('Oh no', 'Failed to clear score', { text: 'Ok', style: 'cancel' });
@@ -245,25 +373,6 @@ class GameState extends Component {
       typed: { ...clone(initialState.typed), remaining: material.text },
     });
   };
-
-  setLevel(level) {
-    this.setState(ps => ({ settings: { ...ps.settings, level } }));
-  }
-
-  setCaseSens() {
-    this.setState(ps => ({
-      settings: { ...ps.settings, caseSensitive: !ps.settings.caseSensitive },
-    }));
-  }
-
-  setTyper({ typer, callback }) {
-    this.setState(
-      ps => ({ settings: { ...ps.settings, typer } }),
-      () => {
-        this.tryCallback(callback);
-      }
-    );
-  }
 
   setPoints(toAdd) {
     if (this.state.points + toAdd < -10) {
@@ -339,7 +448,7 @@ class GameState extends Component {
     this.setState({ gameON: true, msg: 'Game is ON!' });
   }
 
-  endGame() {
+  endGame({ override, ...props }) {
     console.log('endGame()');
     if (!this.state.gameON && !this.state.gameStandby && !this.state.gamePaused)
       return;
@@ -347,9 +456,10 @@ class GameState extends Component {
     this.setState(ps => ({
       ...ps,
       ...endGameState,
-      gameFinished: ps.typed.remaining.length <= 0,
-      pushNav: ps.typed.remaining.length <= 0 ? 'ScoreBoard' : false,
-      msg: ps.typed.remaining.length <= 0 ? 'Game finished' : 'Game ended',
+      gameFinished: override.gameFinished,
+      pushNav: override.gameFinished ? 'ScoreBoard' : false,
+      msg: override.gameFinished ? 'Game finished' : 'Game ended',
+      ...override,
     }));
   }
 
@@ -372,7 +482,12 @@ class GameState extends Component {
   render() {
     return (
       <Ctx.Provider
-        value={{ gameState: this.state, gameSetters: this.setters }}
+        value={{
+          gameState: this.state,
+          gameSetters: this.setters,
+          authUser: this.state.authUser,
+          loading: this.state.loading,
+        }}
       >
         {this.props.children}
       </Ctx.Provider>
@@ -380,12 +495,18 @@ class GameState extends Component {
   }
 }
 
-export default GameState;
+export default withFirebase(GameState);
 
 export const withState = Component => props => (
   <Ctx.Consumer>
-    {({ gameState, gameSetters }) => (
-      <Component {...props} gameState={gameState} gameSetters={gameSetters} />
+    {({ gameState, gameSetters, authUser, loading }) => (
+      <Component
+        {...props}
+        gameState={gameState}
+        gameSetters={gameSetters}
+        authUser={authUser}
+        loading={loading}
+      />
     )}
   </Ctx.Consumer>
 );

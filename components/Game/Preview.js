@@ -43,7 +43,7 @@ class Preview extends Component {
 
   render() {
     const {
-      settings,
+      level,
       material: { title, text },
     } = this.props.gameState;
 
@@ -62,7 +62,7 @@ class Preview extends Component {
           <Section align="flex-start" flex={1}>
             <Text>{title}</Text>
             <Text>{text.length}</Text>
-            <Text>{levels[settings.level]}</Text>
+            <Text>{levels[level]}</Text>
           </Section>
         </Section>
 

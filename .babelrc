@@ -1,0 +1,17 @@
+// without options
+/* {
+    "plugins": [
+        "transform-inline-environment-variables"
+    ]
+} */
+// with options
+{
+  "plugins": [
+    [
+      "transform-inline-environment-variables",
+      {
+        "include": ["NODE_ENV"]
+      }
+    ]
+  ]
+}

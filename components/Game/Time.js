@@ -32,7 +32,7 @@ class Time extends Component {
       'gamePaused',
       'time',
       'typed',
-      'settings',
+      'level',
       'latestScore',
     ]);
 
@@ -44,12 +44,7 @@ class Time extends Component {
     } = pp.gameState;
     const { timer, tickingMs } = this.state;
 
-    const {
-      gameON,
-      gamePaused,
-      time,
-      settings: { level },
-    } = this.props.gameState;
+    const { gameON, gamePaused, time, level } = this.props.gameState;
 
     const { setPoints } = this.props.gameSetters;
 
@@ -88,14 +83,7 @@ class Time extends Component {
 
     const { gameState } = this.props;
 
-    const {
-      time,
-      typed,
-      settings,
-      gameStandby,
-      gameON,
-      latestScore,
-    } = gameState;
+    const { time, typed, level, gameStandby, gameON, latestScore } = gameState;
 
     //const timeConvert = () => {
     //const h = Math.floor(time / 10 / 3600);
@@ -112,9 +100,9 @@ class Time extends Component {
     const TPS = typed.output.length / sTot;
 
     const statusColor =
-      TPS <= PRESET.speedStandard[settings.level] / 2
+      TPS <= PRESET.speedStandard[level] / 2
         ? 'red'
-        : TPS < PRESET.speedStandard[settings.level]
+        : TPS < PRESET.speedStandard[level]
         ? 'gold'
         : '#444';
 
