@@ -48,11 +48,9 @@ export default () => {
       <FirebaseContext.Provider value={new Firebase()}>
         <GameState>
           <PaperProvider>
-            <Section flex={1} padding={0}>
-              <Header />
+            <Header />
 
-              <Nav />
-            </Section>
+            <Nav />
           </PaperProvider>
         </GameState>
       </FirebaseContext.Provider>

@@ -33,13 +33,13 @@ const withAuthentication = Component => {
     }
 
     getAuthUser() {
+      console.log('getting auth');
+
       const onSuccess = authUser => {
         console.log('Auth user found in db!');
 
-        this.save('authUser', authUser);
-
         this.props.gameSetters.setGameState(
-          { authUser, loading: false },
+          { authUser, form: null, loading: false },
           () => {
             console.log('AuthUser set in game state');
 
@@ -52,8 +52,9 @@ const withAuthentication = Component => {
         console.log('Auth user not found in db');
 
         this.props.gameSetters.setGameState({
+          authUser: null,
+          form: 'SignIn',
           loading: false,
-          signInForm: true,
         });
 
         // signin/signup...

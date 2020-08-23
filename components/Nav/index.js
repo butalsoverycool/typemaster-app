@@ -13,16 +13,16 @@ const styles = StyleSheet.create({
   container: { width: '100%', flex: 1, backgroundColor: '#eee' },
 });
 
-const Nav = props => {
+const Nav = ({ authUser, ...props }) => {
   return (
     <View style={styles.container}>
       <Tab.Navigator tabBar={props => <TabBar {...props} />}>
         <Tab.Screen name="Game" component={Game} />
-        <Tab.Screen name="ScoreBoard" component={ScoreBoard} />
+        {authUser && <Tab.Screen name="ScoreBoard" component={ScoreBoard} />}
         <Tab.Screen name="About" component={About} />
       </Tab.Navigator>
     </View>
   );
 };
 
-export default Nav;
+export default withState(Nav);

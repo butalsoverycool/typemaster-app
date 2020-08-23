@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, memo } from 'react';
 import {
   Modal as RNModal,
   StyleSheet,
@@ -11,15 +11,31 @@ import Section from '../Section';
 class Modal extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      forceClose: false,
+      forceOpen: true,
+    };
   }
 
-  shouldComponentUpdate(np, ns) {
-    return this.props.visible !== np.visible ? true : false;
+  /* shouldComponentUpdate(np, ns) {
+    return (
+      this.props.visible !== np.visible ||
+      this.props.updateTrigger !== np.updateTrigger ||
+      this.state.forceClose !== ns.forceClose ||
+      this.state.forceOpen !== ns.forceOpen
+    );
+  } */
+
+  componentDidMount() {
+    this.setState({ forceOpen: false });
+  }
+
+  componentWillUnmount() {
+    this.setState({ forceClose: true });
   }
 
   render() {
-    console.log('Modal render');
-
     const {
       bg,
       bgModal,
@@ -33,7 +49,11 @@ class Modal extends Component {
       paddingModal,
       paddingContent,
       shadow,
+      visible,
+      updateTrigger,
     } = this.props;
+
+    console.log('Modal render. visible', visible);
 
     const bgOverride = {
       ...styles.background,
@@ -63,10 +83,11 @@ class Modal extends Component {
 
     return (
       <RNModal
+        visible={(visible || this.state.forceOpen) && !this.state.forceClose}
         animationType="slide"
         transparent={false}
-        visible={this.props.visible}
-        onRequestClose={null}
+        onShow={() => console.log('modal showiiiing!')}
+        onDismiss={() => this.setState({ forceClose: true })}
       >
         <SafeAreaView style={bgOverride}>
           <ScrollView contentContainerStyle={modalOverride}>
@@ -84,7 +105,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: '100%',
     padding: 0,
-    backgroundColor: '#eee',
+    backgroundColor: 'red', //'#eee',
   },
   modal: {
     justifyContent: 'center',
@@ -114,5 +135,7 @@ const styles = StyleSheet.create({
     padding: 0,
   },
 });
+
+/* const Memo = memo(p => <Modal {...p} />); */
 
 export default Modal;

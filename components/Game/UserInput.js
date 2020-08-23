@@ -34,6 +34,9 @@ const styles = StyleSheet.create({
 class UserInput extends Component {
   constructor(props) {
     super(props);
+
+    this.onInput = this.onInput.bind(this);
+    this.onBlur = this.onBlur.bind(this);
   }
 
   shouldComponentUpdate = np =>
@@ -46,107 +49,106 @@ class UserInput extends Component {
       'level',
     ]);
 
-  render() {
-    console.log('Rendering <UserInput />');
-    const { gameState, gameSetters } = this.props;
-    if (!gameState) return null;
-
+  onInput = e => {
     const {
       gameStandby,
       gameON,
       gamePaused,
       material,
       typed,
-      points,
       level,
-    } = gameState;
+    } = this.props.gameState;
 
     const {
-      setPoints,
-      setTyped,
-      prepareGame,
+      inputHandler,
       startGame,
       endGame,
-      togglePauseGame,
       createLatestScore,
-    } = gameSetters;
+    } = this.props.gameSetters;
 
-    if (!gameStandby && !gameON) return null;
+    if (gameStandby && !gameON && !gamePaused) startGame();
 
-    const inputHandler = e => {
-      if (gameStandby && !gameON && !gamePaused) startGame();
+    const char = e.nativeEvent.key;
 
-      const char = e.nativeEvent.key;
+    // bail if undefined input
+    if (!char || char === undefined) return;
 
-      // bail if undefined input
-      if (!char || char === undefined) return;
-
-      // bail if banned key
-      for (let nth = 0; nth < bannedKeys.length; nth++) {
-        if (char === bannedKeys[nth]) {
-          return;
-        }
+    // bail if banned key
+    for (let nth = 0; nth < bannedKeys.length; nth++) {
+      if (char === bannedKeys[nth]) {
+        return;
       }
+    }
 
-      // update typed and points based on isTypo
-      const isTypo = char !== material.text[typed.index];
+    // update typed and points based on isTypo
+    const isTypo = char !== material.text[typed.index];
 
-      // game over
-      if (isTypo && level >= 3) {
-        const res = randOfArr(gameOverText);
-
-        Alert.alert('Game Over', "Stella Pajunas doesn't accept errors", [
-          {
-            text: 'I can do better ' + res.emoji,
-            style: 'cancel',
-          },
-        ]);
-
-        return endGame();
-      }
-
-      const newTyped = {
-        index: isTypo ? typed.index : typed.index + 1,
-        input: typed.input + char,
-        output: isTypo ? typed.output : typed.output + char,
-        remaining: isTypo
-          ? material.text.substring(typed.index)
-          : material.text.substring(typed.index + 1),
-        typoCount: isTypo ? typed.typoCount + 1 : typed.typoCount,
-      };
-
-      const newPoints = isTypo ? levelWithdrawal[level] * 100 : 1;
-
-      // points
-      setPoints(newPoints);
-
-      // update charIndex (+1)
-      setTyped(newTyped);
-
-      // finish-line
-      if (newTyped.remaining.length <= 0) {
-        //createLatestScore({ qualified: false });
-        createLatestScore();
-        endGame({ override: { gameFinished: true } });
-      }
-    };
-
-    const blurHandler = () => {
-      if (gameON) return endGame();
-
-      if (points < -10) return;
-
-      if (typed.index <= 0) return;
-
+    // game over
+    if (isTypo && level >= 3) {
       const res = randOfArr(gameOverText);
 
-      Alert.alert('Game ended', 'Interaction outside keyboard', [
+      Alert.alert('Game Over', "Stella Pajunas doesn't accept errors", [
         {
-          text: res.text + ' ' + res.emoji,
+          text: 'I can do better ' + res.emoji,
           style: 'cancel',
         },
       ]);
+
+      return endGame();
+    }
+
+    const typedProps = {
+      index: isTypo ? typed.index : typed.index + 1,
+      input: typed.input + char,
+      output: isTypo ? typed.output : typed.output + char,
+      remaining: isTypo
+        ? material.text.substring(typed.index)
+        : material.text.substring(typed.index + 1),
+      typoCount: isTypo ? typed.typoCount + 1 : typed.typoCount,
     };
+
+    const pointsToAdd = isTypo ? levelWithdrawal[level] * 100 : 1;
+
+    // points
+    inputHandler({ pointsToAdd, typedProps });
+
+    // finish-line
+    if (typedProps.remaining.length <= 0) {
+      //createLatestScore({ qualified: false });
+      createLatestScore();
+      endGame({ override: { gameFinished: true } });
+    }
+  };
+
+  onBlur = () => {
+    const { gameON, typed, points } = this.props.gameState;
+
+    const { endGame } = thisp.props.gameSetters;
+
+    if (gameON) return endGame();
+
+    if (points < -10) return;
+
+    if (typed.index <= 0) return;
+
+    const res = randOfArr(gameOverText);
+
+    Alert.alert('Game ended', 'Interaction outside keyboard', [
+      {
+        text: res.text + ' ' + res.emoji,
+        style: 'cancel',
+      },
+    ]);
+  };
+
+  render() {
+    console.log('Rendering <UserInput />');
+    const { gameState, gameSetters } = this.props;
+    if (!gameState) return null;
+
+    const { gameStandby, gameON } = gameState;
+
+    if (!gameStandby && !gameON) return null;
 
     return (
       <KeyboardAvoidingView
@@ -159,7 +161,7 @@ class UserInput extends Component {
               autoFocus={gameStandby}
               containerStyle={styles.inputContainer}
               inputStyle={styles.input}
-              on={{ onKeyPress: inputHandler, onBlur: blurHandler }}
+              on={{ onKeyPress: this.onInput, onBlur: this.onBlur }}
             />
           </View>
         </TouchableWithoutFeedback>

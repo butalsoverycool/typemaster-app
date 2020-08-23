@@ -14,19 +14,11 @@ import CancelGame from './CancelGame';
 import Typer from './Typer';
 import Level from './Level';
 
-import { View, Section } from '../Elements';
-
-import SignIn from '../SignIn';
-
 import Spinner from 'react-native-loading-spinner-overlay';
 
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    flex: 1,
-    backgroundColor: '#eee',
-  },
-});
+import { View, Section, Anim } from '../Elements';
+
+import Form from '../Form';
 
 class Game extends Component {
   constructor(props) {
@@ -39,66 +31,100 @@ class Game extends Component {
       'gameStandby',
       'gamePaused',
       'material',
-      'signInForm',
-      'signUpForm',
       'typer',
       'loading',
       'authUser',
+      'form',
+      'nav',
     ]);
 
   render() {
-    const { gameState } = this.props;
-
     const {
       gameON,
       gameStandby,
       gamePaused,
-      material,
-      user,
-      signInForm,
-      signUpForm,
       loading,
       authUser,
-    } = gameState;
-
-    //if (!loading && !authUser) return <SignIn />;
+      form,
+      material,
+      nav,
+    } = this.props.gameState;
 
     return (
       <View>
-        {loading ? (
-          <Section flex={1} justify="center" align="center">
+        <Anim
+          enterOn={!loading && nav === 'Game'}
+          hideOnExit={true}
+          duration={{ in: 300, out: 200 }}
+          easing={{ in: 'ease-out', out: 'ease' }}
+          anim={{
+            opacity: {
+              fromValue: 0,
+              toValue: 1,
+            },
+          }}
+        >
+          <Section justify="center" align="center">
             <Spinner
               visible={loading}
-              color="#444"
-              animation="slide"
+              color="#eee"
+              overlayColor="#444"
+              textStyle={{ color: '#eee' }}
+              animation="fade"
               children={null}
               textContent="Checking last game..."
+              cancelable={false}
             />
-            {/*  <Text style={theme.title}>Checking last game...</Text> */}
           </Section>
-        ) : authUser ? (
-          <Section padding={0} flex={1}>
-            <Msg />
 
-            {(gameStandby || gameON || gamePaused) && <Status />}
+          <Anim
+            enterOn={form !== null && form !== '' && !loading}
+            exitOn={form === null || form === '' || loading}
+            reRunOnChange={form}
+            hideOnExit={true}
+            duration={{ in: 700, out: 200 }}
+            easing={{ in: 'bounce', out: 'ease' }}
+            anim={{
+              opacity: {
+                fromValue: 0,
+                toValue: 1,
+              },
+              transform: [
+                {
+                  key: 'translateY',
+                  fromValue: 250,
+                  toValue: 0,
+                },
+              ],
+            }}
+          >
+            <Section flex={1} justify="center">
+              <Form type={form} />
+            </Section>
+          </Anim>
 
-            {(gameStandby || gameON || gamePaused) && <CancelGame />}
+          {authUser && (
+            <Section padding={0} flex={1}>
+              <Msg />
 
-            {!gameStandby && !gameON && <Typer />}
+              {(gameStandby || gameON || gamePaused) && <Status />}
 
-            {!gameStandby && !gameON && <Level />}
+              {(gameStandby || gameON || gamePaused) && <CancelGame />}
 
-            <Material />
+              {!gameStandby && !gameON && <Typer />}
 
-            {material.title && (
-              <Section flex={1} justify="center">
-                <Action />
-              </Section>
-            )}
-          </Section>
-        ) : (
-          <SignIn />
-        )}
+              {!gameStandby && !gameON && <Level />}
+
+              <Material />
+
+              {material.title && (
+                <Section flex={1} justify="center">
+                  <Action />
+                </Section>
+              )}
+            </Section>
+          )}
+        </Anim>
       </View>
     );
   }
@@ -107,3 +133,11 @@ class Game extends Component {
 const Memo = memo(p => <Game {...p} />);
 
 export default withState(Memo);
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    flex: 1,
+    backgroundColor: '#eee',
+  },
+});

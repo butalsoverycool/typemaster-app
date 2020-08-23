@@ -46,7 +46,7 @@ class Time extends Component {
 
     const { gameON, gamePaused, time, level } = this.props.gameState;
 
-    const { setPoints } = this.props.gameSetters;
+    const { inputHandler } = this.props.gameSetters;
 
     // run once at game start
     // start ticking-interval
@@ -66,7 +66,7 @@ class Time extends Component {
 
     // everytime time changes, update points
     if (gameON && prevTime !== time) {
-      setPoints(withdrawal);
+      inputHandler({ pointsToAdd: withdrawal });
     }
   };
 

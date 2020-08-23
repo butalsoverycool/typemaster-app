@@ -7,7 +7,7 @@ import { DataTable } from 'react-native-paper';
 import NameInput from './NameInput';
 import { levels } from '../../constants/options';
 import { propsChanged } from '../../constants/helperFuncs';
-import { Section, ScrollView, Btn } from '../Elements';
+import { Section, ScrollView, Btn, Anim } from '../Elements';
 import Status from '../Game/Status';
 
 const localStyles = StyleSheet.create({
@@ -28,24 +28,41 @@ class ScoreBoard extends Component {
       'time',
       'latestScore',
       'material',
+      'loading',
+      'nav',
     ]) || this.props.visible !== np.visible;
 
   render() {
     const { gameState, gameSetters, visible, authUser, ...props } = this.props;
-    const {
+    let {
       gameFinished,
-      scoreboard: unsortedScoreboard,
+      scoreboard = [],
 
       latestScore,
       material,
-      level,
+      loading,
+      nav,
     } = gameState;
 
     const { clearScore, prepareGame, createLatestScore } = gameSetters;
 
-    const scoreboard = unsortedScoreboard.sort((a, b) =>
-      a.highscore > b.highscore ? -1 : 1
-    );
+    // ugly safety-net cuz firebase is fucking up scoreboard when saving
+    let scoreboardInvalid = false;
+
+    scoreboard.forEach(score => {
+      if (!score.highscore) {
+        scoreboardInvalid = true;
+      }
+    });
+
+    if (scoreboardInvalid) scoreboard = [];
+
+    scoreboard.sort((a, b) => {
+      if (!a.highscore || !b.highscore) return 0;
+
+      return a.highscore.points > b.highscore.points ? -1 : 1;
+    });
+    //
 
     const typerExists =
       authUser.name &&
@@ -56,56 +73,64 @@ class ScoreBoard extends Component {
 
     const qualified = true; //*** */
 
-    /* if (gameFinished && !qualified) {
-      this.setState({ gameFinished: false }, () => {
-        createLatestScore(() => console.log('Created latest score'));
-      });
-    } */
-
     return (
       <SafeAreaView style={theme.view}>
-        {qualified && (
-          <NameInput visible={gameFinished} typerExists={typerExists} />
-        )}
+        <Anim
+          enterOn={!loading && nav === 'ScoreBoard'}
+          hideOnExit={true}
+          duration={{ in: 300, out: 200 }}
+          easing={{ in: 'ease-out', out: 'ease' }}
+          anim={{
+            opacity: {
+              fromValue: 0,
+              toValue: 1,
+            },
+          }}
+        >
+          {qualified && (
+            <NameInput visible={gameFinished} typerExists={typerExists} />
+          )}
 
-        {/* {activeRow && <RowInfo data={scoreboard[activeRow]} />} */}
+          {/* {activeRow && <RowInfo data={scoreboard[activeRow]} />} */}
 
-        <ScrollView>
-          <View style={theme.section}>
-            <Text style={theme.title}>LOCAL SCOREBOARD</Text>
-          </View>
+          <ScrollView>
+            <View style={theme.section}>
+              <Text style={theme.title}>LOCAL SCOREBOARD</Text>
+            </View>
 
-          <View style={theme.section}>
-            <DataTable>
-              <DataTable.Header>
-                <DataTable.Title style={localStyles.title}>
-                  Typer
-                </DataTable.Title>
-                <DataTable.Title numeric style={localStyles.title}>
-                  Points
-                </DataTable.Title>
+            <View style={theme.section}>
+              <DataTable>
+                <DataTable.Header>
+                  <DataTable.Title numeric style={localStyles.title}>
+                    Points
+                  </DataTable.Title>
 
-                <DataTable.Title style={localStyles.title}>
-                  When
-                </DataTable.Title>
-              </DataTable.Header>
+                  <DataTable.Title style={localStyles.title}>
+                    Typer
+                  </DataTable.Title>
 
-              {scoreboard.map(({ name, highscore, timeStamp }, nth) => (
-                <DataTable.Row key={nth}>
-                  <DataTable.Cell style={localStyles.cell}>
-                    {name}
-                  </DataTable.Cell>
-                  <DataTable.Cell numeric static style={localStyles.cell}>
-                    {highscore}
-                  </DataTable.Cell>
+                  <DataTable.Title style={localStyles.title}>
+                    When
+                  </DataTable.Title>
+                </DataTable.Header>
 
-                  <DataTable.Cell style={localStyles.cell}>
-                    {timeStamp && timeStamp.date}
-                  </DataTable.Cell>
-                </DataTable.Row>
-              ))}
+                {scoreboard.map(({ name, highscore }, nth) => (
+                  <DataTable.Row key={nth}>
+                    <DataTable.Cell numeric static style={localStyles.cell}>
+                      {highscore.points}
+                    </DataTable.Cell>
 
-              {/* <DataTable.Pagination
+                    <DataTable.Cell style={localStyles.cell}>
+                      {name}
+                    </DataTable.Cell>
+
+                    <DataTable.Cell style={localStyles.cell}>
+                      <Text>{highscore.timeStamp.date}</Text>
+                    </DataTable.Cell>
+                  </DataTable.Row>
+                ))}
+
+                {/* <DataTable.Pagination
             style={{ justifyContent: 'center', flexWrap: 'nowrap', padding: 0 }}
             page={1}
             numberOfPages={3}
@@ -114,41 +139,42 @@ class ScoreBoard extends Component {
             }}
             label=""
           /> */}
-            </DataTable>
-          </View>
+              </DataTable>
+            </View>
 
-          {latestScore && !qualified && (
-            <Section>
-              <Text style={[theme.subtitle, { textAlign: 'center' }]}>
-                Your latest score didn't qualify
-              </Text>
+            {latestScore && !qualified && (
+              <Section>
+                <Text style={[theme.subtitle, { textAlign: 'center' }]}>
+                  Your latest score didn't qualify
+                </Text>
 
-              <Status />
-            </Section>
-          )}
+                <Status />
+              </Section>
+            )}
 
-          {/* <View style={theme.section}>
+            {/* <View style={theme.section}>
         <Button title="save something" onPress={saveScore} />
       </View> */}
-          {material.title && (
+            {material.title && (
+              <Section>
+                <Btn
+                  content={latestScore ? 'Play again' : 'Play'}
+                  onPress={prepareGame}
+                />
+              </Section>
+            )}
+
             <Section>
               <Btn
-                content={latestScore ? 'Play again' : 'Play'}
-                onPress={prepareGame}
+                w={200}
+                h={50}
+                fontSize={12}
+                content="clear scores"
+                onPress={clearScore}
               />
             </Section>
-          )}
-
-          <Section>
-            <Btn
-              w={200}
-              h={50}
-              fontSize={12}
-              content="clear scores"
-              onPress={clearScore}
-            />
-          </Section>
-        </ScrollView>
+          </ScrollView>
+        </Anim>
       </SafeAreaView>
     );
   }

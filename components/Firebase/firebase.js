@@ -1,6 +1,8 @@
 import * as firebase from 'firebase';
 import 'firebase/auth';
 import 'firebase/database';
+import { AsyncStorage } from 'react-native';
+import { timeStamp } from '../../constants/helperFuncs';
 
 import getENV from '../../env';
 
@@ -38,6 +40,12 @@ class Firebase {
 
     this.scoreBoardListener = this.scoreBoardListener.bind(this);
     this.getAuth = this.getAuth.bind(this);
+
+    this.loadAsync = this.loadAsync.bind(this);
+    this.saveAsync = this.saveAsync.bind(this);
+
+    this.pushUserToStorage = this.pushUserToStorage.bind(this);
+    this.tryCallback = this.tryCallback.bind(this);
   }
 
   scoreBoardListener(cb) {
@@ -66,15 +74,17 @@ class Firebase {
       });
   };
 
-  createUser = (email, password, displayName) => {
+  createUser = (email, password) => {
     try {
       this.auth.createUserWithEmailAndPassword(email, password).then(res => {
+        /* 
+        // skipping display name in form for now
         if (displayName) {
           this.updateUserProfile({ displayName });
-        }
+        } */
       });
     } catch (err) {
-      alert(err);
+      console.log(err);
     }
   };
 
@@ -87,13 +97,17 @@ class Firebase {
 
   signInTwitter = () => this.auth.signInWithPopup(this.twitterProvider);
 
-  SignOut = props => {
-    this.auth.signOut().then(() => {
+  signOut = cb => {
+    this.auth.signOut().then(cb);
+
+    /* .then(() => {
+      this.tryCallback(cb);
+
       //console.log(window.location, window.location.href, window.location.hostname);
-      window.location.href = window.location.origin;
+      // window.location.href = window.location.origin;
 
       //props.history.push(ROUTES.LANDING);
-    });
+    }); */
   };
 
   restPwd = email => this.auth.sendPasswordResetEmail(email);
@@ -130,33 +144,112 @@ class Firebase {
           highscore: 0,
         };
 
-        // if no typer in db, create new
-        if (!existingTyper) {
-          console.log('Saving new typer to db');
-          this.write('typers', authUser.uid, newTyper);
-        }
-
+        // define typer as new or existing
         const typer = existingTyper || newTyper;
 
+        // update/set last login
+        typer.lastLogin = timeStamp();
+
+        // if no typer in db, create new
+        if (!existingTyper) {
+          this.write('typers', authUser.uid, typer, () => {
+            console.log('Saved new typer to db');
+          });
+        }
+        // else update existing typer with lastLogin-prop
+        else {
+          console.log('Updating lastLogin in db');
+          this.update(
+            'typers',
+            authUser.uid,
+            { lastLogin: typer.lastLogin },
+            () => {
+              console.log('Updated lastLogin in db.');
+            }
+          );
+        }
+
+        // other user data
+        const {
+          phoneNumber: phone,
+          photoURL: photo,
+          providerId: authMethod,
+        } = authUser.providerData[0];
+
         // merge auth and db user
-        authUser = {
+        const formattedAuth = {
           ...typer,
-          roles: typer.roles,
-          emailVerified: authUser.emailVerified,
-          providerData: authUser.providerData,
+          data: {
+            photo,
+            phone,
+            authMethod,
+            emailVerified: authUser.emailVerified,
+            roles: authUser.roles,
+          },
         };
 
-        cb(authUser);
+        this.pushUserToStorage(formattedAuth, () => {
+          cb(formattedAuth);
+        });
       });
   }
 
   // *** Merge Auth and DB User API *** //
   onAuthUserListener = (onSuccess, onFail) =>
     this.auth.onAuthStateChanged(auth => {
-      if (!auth) return onFail();
-
-      this.getAuth(auth, onSuccess);
+      console.log('on auth changed...');
+      if (!auth) {
+        onFail();
+      } else {
+        this.getAuth(auth, onSuccess);
+      }
     });
+
+  async loadAsync(key, cb) {
+    const res = JSON.parse(await AsyncStorage.getItem('typemaster_' + key));
+    this.tryCallback(cb, res);
+  }
+
+  async saveAsync(key, val, cb) {
+    await AsyncStorage.setItem('typemaster_' + key, JSON.stringify(val));
+    console.log('Saved ', key, 'to async storage.');
+    this.tryCallback(cb);
+  }
+
+  async pushUserToStorage({ uid, name, email, lastLogin }, cb) {
+    const user = {
+      uid,
+      name,
+      email,
+      lastLogin,
+    };
+
+    const users = (await this.loadAsync('users')) || [];
+
+    let exists = false;
+
+    // if already saved, replace
+    users.map(item => {
+      if (item.uid === user.uid) {
+        exists = true;
+        return user;
+      }
+      return item;
+    });
+
+    // if not already saved, prepend
+    if (!exists) {
+      users.unshift(user);
+    }
+
+    await this.saveAsync('users', users);
+
+    this.tryCallback(cb, users);
+  }
+
+  tryCallback(cb, args = null) {
+    if (typeof cb === 'function') cb(args);
+  }
 
   // *** User API ***
 

@@ -15,15 +15,33 @@ class TabBar extends Component {
     this.props.gameState.pushNav !== np.gameState.pushNav;
 
   componentDidUpdate(pp) {
+    const {
+      state: { index: prevIndex },
+    } = pp;
+
     const { pushNav: prevPushNav } = pp.gameState;
-    const { pushNav } = this.props.gameState;
+
+    const {
+      state: { index, routes },
+      gameState,
+      gameSetters,
+      navigation,
+    } = this.props;
+
+    const { pushNav } = gameState;
+    const { setGameState, setPushNav } = gameSetters;
 
     if (prevPushNav !== pushNav) {
       if (pushNav && typeof pushNav === 'string') {
-        this.props.navigation.navigate(pushNav);
+        navigation.navigate(pushNav);
+        setGameState({ nav: pushNav });
 
-        this.props.gameSetters.setPushNav(false);
+        setPushNav(false);
       }
+    }
+
+    if (prevIndex !== index) {
+      setGameState({ nav: routes[index].name });
     }
   }
 
@@ -50,6 +68,8 @@ class TabBar extends Component {
           const isFocused = state.index === index;
 
           const onPress = () => {
+            const { setGameState } = this.props.gameSetters;
+
             const event = navigation.emit({
               type: 'tabPress',
               target: route.key,

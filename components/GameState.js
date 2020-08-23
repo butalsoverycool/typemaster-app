@@ -74,8 +74,9 @@ const initialState = {
 
   highscore: 0,
 
-  signInForm: false,
-  signUpForm: false,
+  form: null,
+
+  nav: null,
 };
 
 class GameState extends Component {
@@ -94,9 +95,7 @@ class GameState extends Component {
 
     this.addTick = this.addTick.bind(this);
     this.setMaterial = this.setMaterial.bind(this);
-    this.setTyped = this.setTyped.bind(this);
-    this.setTypoCount = this.setTypoCount.bind(this);
-    this.setPoints = this.setPoints.bind(this);
+    this.inputHandler = this.inputHandler.bind(this);
     this.setPushNav = this.setPushNav.bind(this);
 
     this.loadAsyncStorage = this.loadAsyncStorage.bind(this);
@@ -110,6 +109,9 @@ class GameState extends Component {
     this.loadScoreBoard = this.loadScoreBoard.bind(this);
 
     this.lockOrientation = this.lockOrientation.bind(this);
+    this.switchUser = this.switchUser.bind(this);
+
+    this.getAuth = this.getAuth.bind(this);
 
     this.setters = {
       setGameState: this.setGameState,
@@ -123,9 +125,7 @@ class GameState extends Component {
       addTick: this.addTick,
       setMaterial: this.setMaterial,
 
-      setTyped: this.setTyped,
-      setTypoCount: this.setTypoCount,
-      setPoints: this.setPoints,
+      inputHandler: this.inputHandler,
       setPushNav: this.setPushNav,
 
       createLatestScore: this.createLatestScore,
@@ -134,19 +134,21 @@ class GameState extends Component {
 
       updateTyper: this.updateTyper,
       loadScoreBoard: this.loadScoreBoard,
+
+      switchUser: this.switchUser,
     };
   }
 
   componentDidMount() {
     /// listen
-
     // scoreboard-changes
     this.props.firebase.scoreBoardListener(this.loadScoreBoard);
 
     /// get
-
     // scoreboard
     this.loadScoreBoard();
+
+    this.setState({ loading: true }, this.getAuth);
 
     /// set
     // orientation
@@ -154,6 +156,45 @@ class GameState extends Component {
   }
 
   componentWillUnmount() {}
+
+  getAuth() {
+    console.log('getting auth');
+
+    const onSuccess = authUser => {
+      console.log('Auth user found in db!');
+
+      this.setState(
+        {
+          authUser,
+          form: null,
+          loading: false,
+        },
+        () => {
+          console.log('AuthUser set in game state');
+
+          // get typer...***
+        }
+      );
+    };
+
+    const onFail = () => {
+      console.log('Auth user not found in db...');
+
+      // signin/signup...
+      this.setState({
+        form: 'SignIn',
+        loading: false,
+      });
+    };
+
+    this.listener = this.props.firebase.onAuthUserListener(onSuccess, onFail);
+  }
+
+  switchUser() {
+    this.props.firebase.signOut(() => {
+      console.log('Signed out');
+    });
+  }
 
   async lockOrientation(input = 'portrait') {
     const {
@@ -199,7 +240,9 @@ class GameState extends Component {
         const typers = snap.val();
 
         this.setState({
-          scoreboard: Object.values(typers).map(({ email, ...props }) => props),
+          scoreboard: Object.values(typers).map(
+            ({ email, lastLogin, ...props }) => props
+          ),
         });
       });
   }
@@ -274,16 +317,17 @@ class GameState extends Component {
       typer: this.state.authUser.name || 'Unknown',
       level,
       time: time / 10,
-      points,
+      score: {
+        points,
+        timeStamp: timeStamp(),
+      },
       text: title,
       typos: typoCount,
-      timeStamp: timeStamp(),
     };
 
     this.setState({ latestScore }, () => {
       // new highscore?
-      console.log('points', points, 'auth high', authUser.highscore);
-      if (points > authUser.highscore) this.saveScore();
+      if (true /* points > authUser.highscore.points */) this.saveScore();
 
       this.tryCallback(cb);
     });
@@ -300,7 +344,9 @@ class GameState extends Component {
     this.props.firebase.update(
       'typers',
       this.state.authUser.uid,
-      { highscore: this.state.latestScore.points },
+      {
+        highscore: latestScore.score,
+      },
       () => {
         console.log('highscore saved to db!');
 
@@ -363,8 +409,8 @@ class GameState extends Component {
     }
   }
 
-  tryCallback(cb) {
-    if (typeof cb === 'function') cb();
+  tryCallback(cb, args = null) {
+    if (typeof cb === 'function') cb(args);
   }
 
   setMaterial = (material = {}) => {
@@ -374,8 +420,10 @@ class GameState extends Component {
     });
   };
 
-  setPoints(toAdd) {
-    if (this.state.points + toAdd < -10) {
+  inputHandler({ pointsToAdd = 0, typedProps = {} }) {
+    let { index, input, output, remaining, ...typedRest } = typedProps;
+
+    if (this.state.points + pointsToAdd < -10) {
       const res = randOfArr(dynamicMsg.gameOverText);
 
       return Alert.alert('Game Over', 'Points dropped below -10', [
@@ -386,27 +434,20 @@ class GameState extends Component {
       ]);
     }
 
+    if (typedProps.index) {
+      if (!input) return console.log('Missing input to update typed-state');
+
+      output = output || this.state.material.text.substring(0, index);
+      remaining = remaining || this.state.material.text.substring(index);
+    }
+
+    const typed = typedProps.index
+      ? { ...typedRest, index, output, remaining }
+      : this.state.typed;
+
     this.setState(ps => ({
-      points: Math.round((ps.points + toAdd) * 100) / 100,
-    }));
-  }
-
-  setTyped({ index, output, remaining, ...props }) {
-    if (!props.input) return console.log('Missing input to update typed-state');
-
-    output = output || this.state.material.text.substring(0, index);
-    remaining = remaining || this.state.material.text.substring(index);
-
-    this.setState(ps => ({ typed: { ...props, index, output, remaining } }));
-  }
-
-  setTypoCount(toAdd = 1) {
-    this.setTyped(ps => {});
-    this.setState(ps => ({
-      typed: {
-        ...ps.typed,
-        typoCount: ps.typed.typoCount + toAdd,
-      },
+      points: Math.round((ps.points + pointsToAdd) * 100) / 100,
+      typed,
     }));
   }
 
@@ -418,14 +459,11 @@ class GameState extends Component {
     this.setState({ pushNav });
   }
 
-  resetGame() {
+  resetGame({ override = null, cb }) {
     console.log('resetGame()');
-    if (!this.state.gameON && !this.state.gamePaused) return;
-
-    this.setState(ps => ({
-      ...ps,
-      ...newGameState(this.state),
-    }));
+    this.setState({ ...clone(initialState), ...override }, () => {
+      this.tryCallback(cb);
+    });
   }
 
   prepareGame() {

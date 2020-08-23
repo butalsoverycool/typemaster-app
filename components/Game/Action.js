@@ -31,8 +31,7 @@ class Action extends Component {
           <Btn
             content={gameFinished ? 'Play again' : !gameON ? 'Play' : 'Stop'}
             type="outline"
-            buttonStyle={{ maxWidth: '80%' }}
-            w={400}
+            w="80%"
             h={100}
             onPress={!gameON ? prepareGame : endGame}
           />

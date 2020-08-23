@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
-
-/* import { SignUpLink } from '../SignUp';
-import { PasswordForgetLink } from '../PasswordForget'; */
 import { withFirebase } from '../Firebase';
 import { withState } from '../GameState';
-import { Section, Input, Btn, Form } from '../Elements';
+import { View, Modal, Section, Input, Btn, Form } from '../Elements';
 import { Text } from 'react-native';
 import theme from '../../constants/theme';
-import { withAuthentication } from '../Session';
-/* import { FcGoogle } from 'react-icons/fc';
-import { FaFacebookF, FaTwitter } from 'react-icons/fa'; */
 
 const INITIAL_STATE = {
   email: '',
@@ -45,29 +39,29 @@ class SignIn extends Component {
 
   signIn = event => {
     const { email, password } = this.state;
+    const { setGameState } = this.props.gameSetters;
 
-    this.props.firebase
-      .signIn(email, password)
-      .then(({ user: { uid, ...userProps }, ...props }) => {
-        //if (!props) return console.log('User not found');
+    const firebaseSignIn = () => {
+      this.props.firebase
+        .signIn(email, password)
+        .then(({ user: { uid, ...userProps }, ...props }) => {
+          //if (!props) return console.log('User not found');
 
-        if (!uid) {
-          alert('User not found in firebase db');
-          return;
-        }
-
-        //if (!this.state.mounted) return;
-
-        // get typer from firebase
-        const typer = this.props.firebase.typer(uid);
-
-        this.props.gameSetters.setGameState({
-          typer,
+          if (!uid) {
+            console.log('Login failed. User not found in firebase db');
+          }
+        })
+        .catch(error => {
+          this.setState({ error });
         });
-      })
-      .catch(error => {
-        this.setState({ error });
-      });
+    };
+
+    setGameState(
+      {
+        loading: true,
+      },
+      () => firebaseSignIn()
+    );
 
     event.preventDefault();
   };
@@ -78,19 +72,21 @@ class SignIn extends Component {
 
   render() {
     const { email, password, error } = this.state;
-    const { signInForm } = this.props.gameState;
+    const { setGameState } = this.props.gameSetters;
 
     const valid = password !== '' && email !== '';
 
+    console.log('sign in true?', this.props.gameState.form === 'SignIn');
+
     return (
-      <Form visible={true}>
+      <Section>
         <Text style={theme.subtitle}>SIGN IN TO SAVE SCORE</Text>
 
         <Section>
           <Text>Email</Text>
           <Input
             value={this.state.email}
-            on={{ onChangeText: email => this.setState(email) }}
+            on={{ onChangeText: email => this.setState({ email }) }}
           />
         </Section>
 
@@ -104,13 +100,17 @@ class SignIn extends Component {
         </Section>
 
         <Section>
-          <Btn content="Sign in" onPress={this.signIn} />
+          <Btn content="Sign in!" onPress={this.signIn} />
         </Section>
 
         <Text style={theme.subtitle}>OR</Text>
 
         <Section>
-          <Btn outline content="Sign up" />
+          <Btn
+            outline
+            content="Sign up"
+            onPress={() => setGameState({ form: 'SignUp' })}
+          />
         </Section>
 
         {error && (
@@ -118,12 +118,12 @@ class SignIn extends Component {
             {error.message}
           </Text>
         )}
-      </Form>
+      </Section>
     );
   }
 }
 
-export default withAuthentication(withState(SignIn));
+export default withFirebase(withState(SignIn));
 
 /* class SignInGoogleBase extends Component {
   constructor(props) {

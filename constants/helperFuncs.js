@@ -31,17 +31,20 @@ export const deepEqual = (x, y, propName) => {
 };
 
 export const propsChanged = (a, b, keys) => {
-  const x = {};
-  const y = {};
+  let x = {};
+  let y = {};
 
   if (typeof keys === 'string') {
     x[keys] = a[keys];
     y[keys] = b[keys];
-  } else if (Array.isArray(keys) || !keys) {
+  } else if (Array.isArray(keys)) {
     keys.forEach(key => {
       x[key] = a[key];
       y[key] = b[key];
     });
+  } else if (!keys) {
+    x = a;
+    y = b;
   }
 
   return !deepEqual(x, y);
