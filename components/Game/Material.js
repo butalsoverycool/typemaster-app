@@ -34,14 +34,6 @@ class Material extends Component {
     } = gameState;
     const { endGame } = gameSetters;
 
-    /* const typed = text.substring(0, charIndex);
-  const notTyped = text.substring(charIndex); */
-
-    const clickHandler = () => {
-      alert('Sorry, game ended');
-      endGame();
-    };
-
     return (
       <Section flex={1}>
         {gamePaused ? null : gameStandby || gameON ? (
@@ -51,7 +43,8 @@ class Material extends Component {
         ) : (
           <TextList />
         )}
-        <UserInput />
+
+        {(gameStandby || gameON) && !gamePaused && <UserInput />}
       </Section>
     );
   }

@@ -52,29 +52,26 @@ class CancelGame extends Component {
     const { togglePauseGame, endGame } = gameSetters;
 
     return (
-      <Section style={theme.section}>
-        <Section style={[styles.section, localStyles.section]}>
-          <Section row justify="space-around">
-            {(gameON || gamePaused) && (
-              <Icon
-                name={gamePaused ? 'play-circle' : 'pause-circle'}
-                type="IconOutline"
-                color="#444"
-                onPress={togglePauseGame}
-                label={gamePaused ? 'continue' : 'pause'}
-              />
-            )}
+      <Section row justify="space-around" fillW>
+        {(gameON || gamePaused) && (
+          <Icon
+            size={50}
+            name={gamePaused ? 'play-circle' : 'pause-circle'}
+            type="IconOutline"
+            color="#444"
+            onPress={togglePauseGame}
+            label={gamePaused ? 'continue' : 'pause'}
+          />
+        )}
 
-            <Icon
-              name="close-circle"
-              type="IconOutline"
-              size={50}
-              color="#444"
-              onPress={endGame}
-              label={gameON ? 'stop' : 'back'}
-            />
-          </Section>
-        </Section>
+        <Icon
+          name="close-circle"
+          type="IconOutline"
+          size={50}
+          color="#444"
+          onPress={endGame}
+          label={gameON ? 'stop' : 'back'}
+        />
       </Section>
     );
   }

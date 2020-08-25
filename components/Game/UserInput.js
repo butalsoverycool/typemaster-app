@@ -116,7 +116,7 @@ class UserInput extends Component {
     if (typedProps.remaining.length <= 0) {
       //createLatestScore({ qualified: false });
       createLatestScore();
-      endGame({ override: { gameFinished: true } });
+      endGame({ gameFinished: true });
     }
   };
 
@@ -143,7 +143,8 @@ class UserInput extends Component {
 
   render() {
     console.log('Rendering <UserInput />');
-    const { gameState, gameSetters } = this.props;
+    const { gameState } = this.props;
+
     if (!gameState) return null;
 
     const { gameStandby, gameON } = gameState;

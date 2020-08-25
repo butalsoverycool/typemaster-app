@@ -1,6 +1,7 @@
 import React from 'react';
 import * as ICON from '@ant-design/icons-react-native';
 import { StyleSheet, View, Text } from 'react-native';
+import Section from '../Section';
 
 export default ({
   type = 'IconFill',
@@ -12,13 +13,20 @@ export default ({
   const Component = ICON[type];
 
   return (
-    <View style={{ width: size, height: size }}>
+    <Section
+      style={{
+        width: size,
+        height: size + (label ? 15 : 0),
+        padding: 0,
+        flex: 1,
+      }}
+    >
       {label && labelPos === 'top' && <Text style={styles.label}>{label}</Text>}
       <Component size={size} {...props} />
       {label && labelPos === 'bottom' && (
         <Text style={styles.label}>{label}</Text>
       )}
-    </View>
+    </Section>
   );
 };
 

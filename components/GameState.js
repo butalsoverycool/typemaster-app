@@ -482,17 +482,19 @@ class GameState extends Component {
     this.setState({ gameON: true, msg: 'Game is ON!' });
   }
 
-  endGame({ override, ...props }) {
+  endGame({ gameFinished = false, override = {}, ...props }) {
     console.log('endGame()');
-    if (!this.state.gameON && !this.state.gameStandby && !this.state.gamePaused)
-      return;
+
+    const { gameON, gameStandby, gamePaused } = this.state;
+
+    if (!gameON && !gameStandby && !gamePaused) return;
 
     this.setState(ps => ({
       ...ps,
       ...endGameState,
-      gameFinished: override.gameFinished,
-      pushNav: override.gameFinished ? 'ScoreBoard' : false,
-      msg: override.gameFinished ? 'Game finished' : 'Game ended',
+      pushNav: gameFinished ? 'ScoreBoard' : false,
+      msg: gameFinished ? 'Game finished' : 'Game ended',
+      gameFinished,
       ...override,
     }));
   }
