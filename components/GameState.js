@@ -249,13 +249,9 @@ class GameState extends Component {
 
   updateTyper(uid, payload, cb) {
     this.props.firebase.update('typers', uid, payload, err => {
-      this.props.firebase.getAuth(
-        this.state.authUser,
-        authUser => this.setState({ authUser }),
-        () => {
-          cb(err);
-        }
-      );
+      if (err) console.log('Err when updating typer:', err);
+
+      this.setState(ps => ({ authUser: { ...ps.authUser, ...payload } }), cb);
     });
   }
 

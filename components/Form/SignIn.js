@@ -76,8 +76,6 @@ class SignIn extends Component {
 
     const valid = password !== '' && email !== '';
 
-    console.log('sign in true?', this.props.gameState.form === 'SignIn');
-
     return (
       <Section>
         <Text style={theme.subtitle}>SIGN IN TO SAVE SCORE</Text>

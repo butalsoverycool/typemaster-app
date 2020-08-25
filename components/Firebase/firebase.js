@@ -46,6 +46,7 @@ class Firebase {
 
     this.pushUserToStorage = this.pushUserToStorage.bind(this);
     this.tryCallback = this.tryCallback.bind(this);
+    this.newTyper = this.newTyper.bind(this);
   }
 
   scoreBoardListener(cb) {
@@ -131,34 +132,35 @@ class Firebase {
     });
   }
 
+  newTyper = authUser => ({
+    uid: authUser.uid,
+    name: authUser.providerData[0].displayName,
+    email: authUser.email,
+    highscore: 0,
+  });
+
   getAuth(authUser, cb) {
     this.typer(authUser.uid)
       .once('value')
       .then(snapshot => {
-        const existingTyper = snapshot.val() || null;
-
-        const newTyper = {
-          uid: authUser.uid,
-          name: authUser.providerData[0].displayName,
-          email: authUser.email,
-          highscore: 0,
-        };
-
         // define typer as new or existing
-        const typer = existingTyper || newTyper;
+        const typer = snapshot.val() || this.newTyper(this.authUser);
+
+        const typerExists = typer.lastLogin ? true : false;
+
+        console.log('auth User', authUser);
 
         // update/set last login
         typer.lastLogin = timeStamp();
 
         // if no typer in db, create new
-        if (!existingTyper) {
+        if (!typerExists) {
           this.write('typers', authUser.uid, typer, () => {
             console.log('Saved new typer to db');
           });
         }
         // else update existing typer with lastLogin-prop
         else {
-          console.log('Updating lastLogin in db');
           this.update(
             'typers',
             authUser.uid,
