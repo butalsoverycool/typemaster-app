@@ -148,8 +148,6 @@ class Firebase {
 
         const typerExists = typer.lastLogin ? true : false;
 
-        console.log('auth User', authUser);
-
         // update/set last login
         typer.lastLogin = timeStamp();
 

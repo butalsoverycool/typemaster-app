@@ -1,9 +1,6 @@
 import React, { Component, memo } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { Badge } from 'react-native-elements';
 import { withState } from '../GameState';
 import * as PRESET from '../../constants/preset';
-import styles from './styles';
 import StatusData from './StatusData';
 import { propsChanged } from '../../constants/helperFuncs';
 
@@ -20,12 +17,7 @@ class Time extends Component {
     this.tick = this.tick.bind(this);
   }
 
-  /* componentDidMount = () => {
-    this.tickingMs = 100;
-
-  } */
-
-  shouldComponentUpdate = np =>
+  /* shouldComponentUpdate = (np, ns) =>
     propsChanged(this.props.gameState, np.gameState, [
       'gameStandby',
       'gameON,',
@@ -34,7 +26,7 @@ class Time extends Component {
       'typed',
       'level',
       'latestScore',
-    ]);
+    ]) || propsChanged(this.state, ns, ['timer', 'ticking']); */
 
   componentDidUpdate = (pp, ps) => {
     const {
@@ -42,6 +34,7 @@ class Time extends Component {
       gamePaused: prevGamePaused,
       time: prevTime,
     } = pp.gameState;
+
     const { timer, tickingMs } = this.state;
 
     const { gameON, gamePaused, time, level } = this.props.gameState;
@@ -50,7 +43,9 @@ class Time extends Component {
 
     // run once at game start
     // start ticking-interval
+
     if (!prevGameON && gameON) {
+      console.log('starting timer!!!!!!');
       let timer = setInterval(this.tick, tickingMs);
       this.setState({ timer });
     }
@@ -123,6 +118,4 @@ class Time extends Component {
   }
 }
 
-const Memo = memo(p => <Time {...p} />);
-
-export default withState(Memo);
+export default withState(Time);

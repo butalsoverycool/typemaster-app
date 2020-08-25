@@ -70,6 +70,8 @@ class UserInput extends Component {
 
     const char = e.nativeEvent.key;
 
+    console.log('char', char);
+
     // bail if undefined input
     if (!char || char === undefined) return;
 
@@ -123,9 +125,9 @@ class UserInput extends Component {
   onBlur = () => {
     const { gameON, typed, points } = this.props.gameState;
 
-    const { endGame } = thisp.props.gameSetters;
+    const { endGame } = this.props.gameSetters;
 
-    if (gameON) return endGame();
+    if (gameON) endGame({ gameFinished: false });
 
     if (points < -10) return;
 
