@@ -25,12 +25,13 @@ class NameInput extends Component {
   shouldComponentUpdate = (np, ns) =>
     propsChanged(this.props, np, ['visible', 'typerExists']) ||
     this.props.gameState.authUser.name !== np.gameState.authUser.name ||
-    this.state.newTyper !== ns.newTyper;
+    this.state.newTyper !== ns.newTyper ||
+    this.props.gameState.gameFinished !== np.gameState.gameFinished;
 
   render() {
     const {
       authUser,
-
+      gameFinished,
       gameSetters: { setGameState, prepareGame },
       visible,
       typerExists,
@@ -44,7 +45,7 @@ class NameInput extends Component {
     const confirm = typerExists && !this.state.newTyper ? 'Yes' : 'Save';
 
     return (
-      <Modal visible={visible}>
+      <Section>
         <Section>
           <Text style={theme.title}>YOUR SCORE</Text>
 
@@ -69,9 +70,9 @@ class NameInput extends Component {
           /> */}
         </Section>
 
-        <Section row justify="center">
+        <Section justify="center">
           <Btn
-            w="40%"
+            w="80%"
             bg="orange"
             onPress={
               () => setGameState({ pushNav: 'ScoreBoard', gameFinished: false })
@@ -89,7 +90,7 @@ class NameInput extends Component {
           </Btn>
 
           <Btn
-            w="40%"
+            w="80%"
             onPress={() => {
               prepareGame();
               /* if (typerExists || this.state.newTyper !== '') {
@@ -111,7 +112,7 @@ class NameInput extends Component {
             <Text style={[styles.textStyle, { fontSize: 30 }]}>Play again</Text>
           </Btn>
         </Section>
-      </Modal>
+      </Section>
     );
   }
 }

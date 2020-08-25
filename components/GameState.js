@@ -1,6 +1,12 @@
 import React, { Component, createContext } from 'react';
 import { AsyncStorage, Alert } from 'react-native';
-import { clone, randOfArr, timeStamp } from '../constants/helperFuncs';
+import {
+  clone,
+  randOfArr,
+  timeStamp,
+  timeStampToString,
+  compareTwo,
+} from '../constants/helperFuncs';
 import { dynamicMsg } from '../constants/preset';
 import { withFirebase } from './Firebase';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -72,7 +78,7 @@ const initialState = {
 
   pushNav: false,
 
-  highscore: 0,
+  newHighscore: false,
 
   form: null,
 
@@ -239,10 +245,56 @@ class GameState extends Component {
       .then(snap => {
         const typers = snap.val();
 
+        let scoreboard = Object.values(typers).map(
+          ({ email, lastLogin, ...props }) => props
+        );
+
+        // sort scores
+        scoreboard.sort((a, b) => {
+          const branchResult = {
+            points:
+              a.highscore.points > b.highscore.points
+                ? -1
+                : a.highscore.points < b.highscore.points
+                ? 1
+                : 0,
+            date: (() => {
+              const res = compareTwo(
+                timeStampToString(a.highscore.timeStamp).date,
+                timeStampToString(b.highscore.timeStamp).date
+              );
+              console.log('compare two dates:', res);
+              return res === 'a' ? -1 : res === 'b' ? 1 : 0;
+            })(),
+            time: (() => {
+              const res = compareTwo(
+                timeStampToString(a.highscore.timeStamp).time,
+                timeStampToString(b.highscore.timeStamp).time
+              );
+              console.log('compare two times:', res);
+              return res === 'a' ? -1 : res === 'b' ? 1 : 0;
+            })(),
+          };
+
+          const branchValues = Object.values(branchResult);
+
+          let RES = 0;
+
+          for (let nth = 0; nth < branchValues.length; nth++) {
+            let val = branchValues[nth];
+
+            if (val !== 0) {
+              RES = val;
+              break;
+            }
+          }
+          return RES;
+        });
+
+        // limit to top 5
+        //const newBoard = sorted.length <= 5 ? sorted : sorted.slice(0, 5);
         this.setState({
-          scoreboard: Object.values(typers).map(
-            ({ email, lastLogin, ...props }) => props
-          ),
+          scoreboard,
         });
       });
   }
@@ -322,8 +374,11 @@ class GameState extends Component {
     };
 
     this.setState({ latestScore }, () => {
-      // new highscore?
-      if (true /* points > authUser.highscore.points */) this.saveScore();
+      // new personal highscore?
+      if (points > authUser.highscore.points) {
+        console.log('new highscore', authUser.highscore.points, 'vs', points);
+        return this.saveScore(cb);
+      }
 
       this.tryCallback(cb);
     });
@@ -332,11 +387,9 @@ class GameState extends Component {
   saveScore(cb) {
     const { latestScore, authUser } = this.state;
 
-    console.log('saving', latestScore);
-
     if (!latestScore) return this.createLatestScore(this.saveScore);
 
-    // new highscore!
+    // save new highscore!
     this.props.firebase.update(
       'typers',
       this.state.authUser.uid,
@@ -352,45 +405,13 @@ class GameState extends Component {
           ps => ({
             ...ps,
             ...endGameState,
-            gameFinished: false,
+            newHighscore: true,
+            authUser: { ...authUser, highscore: latestScore.score },
           }),
           () => {
             this.tryCallback(cb);
           }
         );
-      }
-    );
-
-    const unsorted = clone(this.state.scoreboard);
-
-    // append new score
-    unsorted.push(latestScore);
-
-    // sort scores
-    const sorted = unsorted.sort((a, b) =>
-      a.points > b.points
-        ? -1
-        : a.time < b.time
-        ? -1
-        : a.level > b.level
-        ? -1
-        : 1
-    );
-
-    // limit to top 5
-    const newBoard = sorted.length <= 5 ? sorted : sorted.slice(0, 5);
-
-    // save
-    // this.saveAsyncStorage('scoreboard', newBoard);
-    this.setState(
-      ps => ({
-        ...ps,
-        ...endGameState,
-        gameFinished: false,
-        scoreboard: newBoard,
-      }),
-      () => {
-        this.tryCallback(cb);
       }
     );
   }
@@ -482,21 +503,26 @@ class GameState extends Component {
     this.setState({ gameON: true, msg: 'Game is ON!' });
   }
 
-  endGame({ gameFinished = false, override = {}, ...props }) {
+  endGame({ gameFinished = false, override = {}, cb, ...props }) {
     console.log('endGame()');
 
     const { gameON, gameStandby, gamePaused } = this.state;
 
     if (!gameON && !gameStandby && !gamePaused) return;
 
-    this.setState(ps => ({
-      ...ps,
-      ...endGameState,
-      pushNav: gameFinished ? 'ScoreBoard' : false,
-      msg: gameFinished ? 'Game finished' : 'Game ended',
-      gameFinished,
-      ...override,
-    }));
+    this.setState(
+      ps => ({
+        ...ps,
+        ...endGameState,
+        pushNav: gameFinished ? 'ScoreBoard' : false,
+        msg: gameFinished ? 'Game finished' : 'Game ended',
+        gameFinished,
+        ...override,
+      }),
+      () => {
+        this.tryCallback(cb);
+      }
+    );
   }
 
   togglePauseGame() {

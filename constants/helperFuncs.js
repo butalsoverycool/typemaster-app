@@ -1,6 +1,16 @@
 import React, { useRef, useEffect } from 'react';
 import library from './library';
 
+export const timeStampToString = stamp => ({
+  date: stamp.date.replace(/\//g, ''),
+  time: stamp.time.replace(/:/g, ''),
+});
+
+export const compareTwo = (a, b) => {
+  console.log('comparing', a, b);
+  return a < b ? 'a' : a > b ? 'b' : 'same';
+};
+
 export const usePrev = val => {
   const ref = useRef();
   useEffect(() => {

@@ -4,10 +4,12 @@ import { View, Section } from '../Elements';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 import { propsChanged } from '../../constants/helperFuncs';
+import ScorePreview from '../ScoreBoard/ScorePreview';
 
 const Types = {
   SignIn: <SignIn />,
   SignUp: <SignUp />,
+  ScorePreview: <ScorePreview />,
 };
 
 class Form extends Component {

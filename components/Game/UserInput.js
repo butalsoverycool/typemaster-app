@@ -117,8 +117,7 @@ class UserInput extends Component {
     // finish-line
     if (typedProps.remaining.length <= 0) {
       //createLatestScore({ qualified: false });
-      createLatestScore();
-      endGame({ gameFinished: true });
+      endGame({ gameFinished: true, cb: createLatestScore });
     }
   };
 
