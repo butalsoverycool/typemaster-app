@@ -30,12 +30,15 @@ class SignUpFormBase extends Component {
     super(props);
 
     this.state = { ...INITIAL_STATE };
+
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   onSubmit = event => {
     event.preventDefault();
 
     const { email, pwd1, isAdmin } = this.state;
+    const { setTyper } = this.props.gameSetters;
 
     const roles = ['typer'];
     if (isAdmin) roles.push('admin');
@@ -49,13 +52,16 @@ class SignUpFormBase extends Component {
         // Create a user in your Firebase realtime database
         this.props.firebase.typer(authUser.user.uid).set({
           email,
-          highscore: 0,
+          highscore: {
+            points: 0,
+            timeStamp: timeStamp(),
+          },
           lastLogin: timeStamp(),
           name: tempName,
           uid: authUser.uid,
         });
 
-        return this.setState({ ...INITIAL_STATE });
+        return this.setState(ps => ({ ...INITIAL_STATE }));
       })
       .catch(error => {
         if (error.code === ERROR_CODE_ACCOUNT_EXISTS) {
@@ -136,7 +142,7 @@ class SignUpFormBase extends Component {
         <Section>
           <Btn
             outline
-            content="Sign In"
+            content="Sign in?"
             onPress={() => setGameState({ form: 'SignIn' })}
           />
         </Section>

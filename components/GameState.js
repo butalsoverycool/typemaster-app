@@ -8,6 +8,7 @@ import {
   compareTwo,
   getTime,
   propsChanged,
+  formatAuth,
 } from '../constants/helperFuncs';
 import { dynamicMsg, forbiddenAuthDiffs } from '../constants/preset';
 import { withFirebase } from './Firebase';
@@ -34,6 +35,8 @@ const newGameState = (ps, override = null) => ({
     remaining: ps.material.text,
     typoCount: 0,
   },
+
+  newHighscore: false,
   ...override,
 });
 
@@ -120,10 +123,12 @@ class GameState extends Component {
     this.lockOrientation = this.lockOrientation.bind(this);
     this.switchUser = this.switchUser.bind(this);
 
-    this.setAuthUser = this.setAuthUser.bind(this);
+    this.onSignIn = this.onSignIn.bind(this);
+    this.onSignOut = this.onSignOut.bind(this);
     this.setAuthTyper = this.setAuthTyper.bind(this);
+
+    this.onTyperChange = this.onTyperChange.bind(this);
     this.handleAuthDiffs = this.handleAuthDiffs.bind(this);
-    this.init = this.init.bind(this);
 
     this.setters = {
       setGameState: this.setGameState,
@@ -157,7 +162,7 @@ class GameState extends Component {
     // orientation
     this.lockOrientation('portrait');
 
-    /// enter loading state
+    /* /// enter loading state
     this.setState(
       {
         loading: true,
@@ -167,43 +172,39 @@ class GameState extends Component {
           this.setState({ loading: false });
         });
       }
-    );
+    ); */
 
     /// listen
 
+    // auth-changes
+    this.props.firebase.onAuthUserListener(this.onSignIn, this.onSignOut);
+
     // typer-changes
-    this.props.firebase.typerListener(newTyper => {
-      this.handleAuthDiffs(this.state.authUser, newTyper, forbiddenAuthDiffs);
-
-      // update typer
-      this.setAuthTyper(newTyper);
-
-      // update scoreboard
-      this.loadScoreBoard();
-
-      //this.setAuthUser(this.setAuthTyper);
-    });
+    this.props.firebase.typerListener(newTyper => this.onTyperChange(newTyper));
   }
 
   componentWillUnmount() {}
 
-  init(cb) {
-    console.log('init()...');
-
-    // get authUser
-    this.setAuthUser(() => {
-      // get/set typer
-      this.setAuthTyper(null, () => {
-        // get scoreboard
-        this.loadScoreBoard(() => {
-          this.tryCallback(cb);
-        });
-      });
-    });
+  onTyperChange(newTyper) {
+    console.log('onTyperChange()...');
+    // correct auth diffs, update typer, load scoreboard
+    this.handleAuthDiffs(
+      this.state.authUser,
+      newTyper,
+      forbiddenAuthDiffs,
+      () =>
+        this.setAuthTyper(newTyper, () =>
+          this.loadScoreBoard(() => {
+            this.setState({ loading: false });
+          })
+        )
+    );
   }
 
   // handle if typer-data is changed to not match auth
-  handleAuthDiffs(user, typer, keys) {
+  handleAuthDiffs(user, typer, keys, cb) {
+    console.log('handleAuthDiffs()...');
+
     let resetPayload = {};
     let diff = false;
 
@@ -234,8 +235,12 @@ class GameState extends Component {
         )}). Resetting typer.`
       );
 
-      this.updateTyper(this.state.authUser.uid, resetPayload);
+      return this.updateTyper(this.state.authUser.uid, resetPayload, () =>
+        this.tryCallback(cb)
+      );
     }
+
+    this.tryCallback(cb);
   }
 
   setAuthTyper(typer, cb) {
@@ -252,69 +257,63 @@ class GameState extends Component {
         .typer(this.state.authUser.uid)
         .once('value')
         .then(snap => {
-          this.setState({ authTyper: snap.val() }, () => this.tryCallback(cb));
+          this.updateTyper(this.state.authUser.uid, {
+            ...snap.val(),
+            lastLogin: this.state.authUser.lastLogin,
+          });
         });
+      /*  return this.props.firebase
+        .typer(this.state.authUser.uid)
+        .once('value')
+        .then(snap => {
+          this.setState({ authTyper: snap.val() }, () => this.tryCallback(cb));
+        }); */
     }
 
     this.setState({ authTyper: typer }, () => this.tryCallback(cb));
   }
 
-  setAuthUser(cb) {
-    console.log('SetAuthUser()...');
+  onSignIn(auth, cb) {
+    const authUser = formatAuth(auth);
+    console.log(authUser.lastLogin);
 
-    const formatAuth = auth => {
-      const { uid, email, displayName, providerData } = auth;
-      const {
-        displayName: name,
-        phoneNumber: phone,
-        photoURL: photo,
-        providerId: authMethod,
-      } = providerData[0];
+    this.setState(
+      {
+        authUser,
+        form: null,
+        loading: true,
+      },
+      () => {
+        this.setAuthTyper(null, () => {
+          this.loadScoreBoard(() => {
+            this.setState({ loading: false });
+          });
+        });
+        /* //this.setAuthTyper()
+        // update lastLogin
+        if (!this.state.authTyper) {
+          this.setAuthTyper(() => {
+            this.updateTyper(authUser.uid, { lastLogin: clone(authUser.lastLogin) }, () => {
+              this.tryCallback(cb);
+            });
+          });
+          return;
+        }
 
-      // merge auth and db user
-      return {
-        uid,
-        email,
-        name,
-        photo,
-        phone,
-        authMethod,
-        emailVerified: auth.emailVerified,
-        roles: auth.roles,
-        lastLogin: timeStamp(),
-      };
-    };
+        this.tryCallback(cb); */
+      }
+    );
+  }
 
-    const onSuccess = authUser => {
-      this.setState(
-        {
-          authUser: formatAuth(authUser),
-          form: null,
-        },
-        () =>
-          //this.setAuthTyper()
-          // update lastLogin
-          this.updateTyper(authUser.uid, { lastLogin: timeStamp() }, () => {
-            this.tryCallback(cb);
-          })
-      );
-    };
-
-    const onFail = () => {
-      // signin/signup...
-      this.setState(
-        {
-          form: 'SignIn',
-          authUser: null,
-          loading: false,
-        },
-        () => this.tryCallback(cb)
-      );
-    };
-
-    this.authListener = this.props.firebase.onAuthUserListener(
-      onSuccess,
-      onFail
+  onSignOut(cb) {
+    // signin/signup...
+    this.setState(
+      {
+        form: 'SignIn',
+        authUser: null,
+        loading: false,
+      },
+      () => this.tryCallback(cb)
     );
   }
 
@@ -361,6 +360,11 @@ class GameState extends Component {
   };
 
   loadScoreBoard(cb) {
+    const tempTyper = this.state.authTyper || {};
+    if (!tempTyper.highscore) {
+      return this.tryCallback(cb);
+    }
+
     console.log('LoadScoreBoard()...');
     this.props.firebase
       .typers()
@@ -373,52 +377,57 @@ class GameState extends Component {
         );
 
         // sort scores
-        scoreboard.sort((a, b) => {
-          const branchResult = {
-            points:
-              a.highscore.points > b.highscore.points
-                ? -1
-                : a.highscore.points < b.highscore.points
-                ? 1
-                : 0,
-            date: (() => {
-              const res = compareTwo(
-                timeStampToString(a.highscore.timeStamp).date,
-                timeStampToString(b.highscore.timeStamp).date
-              );
-              //console.log('compare two dates:', res);
-              return res === 'a' ? -1 : res === 'b' ? 1 : 0;
-            })(),
-            time: (() => {
-              const res = compareTwo(
-                timeStampToString(a.highscore.timeStamp).time,
-                timeStampToString(b.highscore.timeStamp).time
-              );
-              //console.log('compare two times:', res);
-              return res === 'a' ? -1 : res === 'b' ? 1 : 0;
-            })(),
-          };
+        if (this.state.authUser && scoreboard.length > 0) {
+          scoreboard.sort((a, b) => {
+            if (!a.highscore || !b.highscore) return 0;
 
-          const branchValues = Object.values(branchResult);
+            const branchResult = {
+              points:
+                a.highscore.points > b.highscore.points
+                  ? -1
+                  : a.highscore.points < b.highscore.points
+                  ? 1
+                  : 0,
+              date: (() => {
+                const res = compareTwo(
+                  timeStampToString(a.highscore.timeStamp).date,
+                  timeStampToString(b.highscore.timeStamp).date
+                );
+                //console.log('compare two dates:', res);
+                return res === 'a' ? -1 : res === 'b' ? 1 : 0;
+              })(),
+              time: (() => {
+                const res = compareTwo(
+                  timeStampToString(a.highscore.timeStamp).time,
+                  timeStampToString(b.highscore.timeStamp).time
+                );
+                //console.log('compare two times:', res);
+                return res === 'a' ? -1 : res === 'b' ? 1 : 0;
+              })(),
+            };
 
-          let RES = 0;
+            const branchValues = Object.values(branchResult);
 
-          for (let nth = 0; nth < branchValues.length; nth++) {
-            let val = branchValues[nth];
+            let RES = 0;
 
-            if (val !== 0) {
-              RES = val;
-              break;
+            for (let nth = 0; nth < branchValues.length; nth++) {
+              let val = branchValues[nth];
+
+              if (val !== 0) {
+                RES = val;
+                break;
+              }
             }
-          }
-          return RES;
-        });
+            return RES;
+          });
+        }
 
         // limit to top 5
         //const newBoard = sorted.length <= 5 ? sorted : sorted.slice(0, 5);
         this.setState(
           {
             scoreboard,
+            loading: false,
           },
           () => this.tryCallback(cb)
         );
@@ -431,7 +440,7 @@ class GameState extends Component {
     this.props.firebase.update('typers', uid, payload, err => {
       if (err) console.log('Err when updating typer:', err);
 
-      this.setState(ps => ({ authTyper: { ...ps.authUser, ...payload } }), cb);
+      this.setState(ps => ({ authTyper: { ...ps.authTyper, ...payload } }), cb);
     });
   }
 
@@ -487,6 +496,7 @@ class GameState extends Component {
       material: { title },
       typed: { typoCount, output },
       authUser,
+      authTyper,
     } = this.state;
 
     const latestScore = {
@@ -503,8 +513,8 @@ class GameState extends Component {
 
     this.setState({ latestScore }, () => {
       // new personal highscore?
-      console.log('old', authUser.highscore.points, 'new', points);
-      if (points > authUser.highscore.points) {
+      console.log('old', authTyper.highscore.points, 'new', points);
+      if (points > authTyper.highscore.points) {
         this.setState({ newHighscore: true }, () => {
           return this.saveScore(cb);
         });
@@ -536,7 +546,7 @@ class GameState extends Component {
             ...ps,
             ...endGameState,
             newHighscore: true,
-            authUser: { ...authUser, highscore: latestScore.score },
+            authTyper: { ...ps.authTyper, highscore: latestScore.score },
           }),
           () => {
             this.tryCallback(cb);
@@ -593,7 +603,7 @@ class GameState extends Component {
       : this.state.typed;
 
     this.setState(ps => ({
-      points: Math.round((ps.points + pointsToAdd) * 100) / 100,
+      points: Math.round((ps.points + pointsToAdd) * 100) / 100, //Math.round((ps.points + pointsToAdd) * 100) / 100,
       typed,
     }));
   }

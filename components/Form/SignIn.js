@@ -106,7 +106,7 @@ class SignIn extends Component {
         <Section>
           <Btn
             outline
-            content="Sign up"
+            content="New typer?"
             onPress={() => setGameState({ form: 'SignUp' })}
           />
         </Section>

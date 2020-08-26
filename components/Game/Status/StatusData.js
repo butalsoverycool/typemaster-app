@@ -1,7 +1,7 @@
 import React, { Component, memo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Badge } from 'react-native-elements';
-import { propsChanged } from '../../constants/helperFuncs';
+import { propsChanged } from '../../../constants/helperFuncs';
 
 const styles = StyleSheet.create({
   container: {

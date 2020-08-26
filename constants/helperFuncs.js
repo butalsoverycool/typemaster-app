@@ -21,14 +21,42 @@ export const getTime = (time, typedString = '') => {
   };
 };
 
+export const compareTwo = (a, b) => {
+  //console.log('comparing', a, b);
+  return a < b ? 'a' : a > b ? 'b' : 'same';
+};
+
 export const timeStampToString = stamp => ({
   date: stamp.date.replace(/\//g, ''),
   time: stamp.time.replace(/:/g, ''),
 });
 
-export const compareTwo = (a, b) => {
-  //console.log('comparing', a, b);
-  return a < b ? 'a' : a > b ? 'b' : 'same';
+export const timeStamp = (tag = null) => {
+  const d = new Date();
+
+  const date = d.toLocaleDateString();
+  const time = d.toLocaleTimeString();
+
+  const obj = {
+    year: d.getFullYear(),
+    month: d.getMonth(),
+    date: d.getDate(),
+    weekday: d.getDay() === 0 ? 6 : d.getDay() === 1 ? 0 : d.getDay(),
+    min: d.getMinutes(),
+    sec: d.getSeconds(),
+  };
+
+  let res = {
+    date,
+    time,
+    obj,
+  };
+
+  if (tag && typeof tag === 'string') {
+    res.tag = tag;
+  }
+
+  return res;
 };
 
 export const usePrev = val => {
@@ -106,23 +134,27 @@ export const pickMaterial = () =>
 export const printStr = item =>
   typeof item === 'string' ? item : String(item);
 
-export const timeStamp = (tag = null) => {
-  const d = new Date();
-  const date = d.toLocaleDateString(),
-    time = d.toLocaleTimeString();
+export const formatAuth = auth => {
+  const { uid, email, displayName, providerData } = auth;
+  const {
+    displayName: name,
+    phoneNumber: phone,
+    photoURL: photo,
+    providerId: authMethod,
+  } = providerData[0];
 
-  const weekday = d.getDay() === 0 ? 6 : d.getDay() === 1 ? 0 : d.getDay();
-
-  let res = {
-    date,
-    time,
+  // merge auth and db user
+  return {
+    uid,
+    email,
+    name,
+    photo,
+    phone,
+    authMethod,
+    emailVerified: auth.emailVerified,
+    roles: auth.roles,
+    lastLogin: timeStamp(),
   };
-
-  if (tag && typeof tag === 'string') {
-    res.tag = tag;
-  }
-
-  return res;
 };
 
 export const clone = (obj, keyName) => {

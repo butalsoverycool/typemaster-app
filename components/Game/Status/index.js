@@ -1,12 +1,13 @@
 import React, { memo } from 'react';
-import { withState } from '../GameState';
+import { withState } from '../../GameState';
+import { Section } from '../../Elements';
 import Time from './Time';
 import Points from './Points';
 import TypoCount from './TypoCount';
 import Remaining from './Remaining';
-import { Section } from '../Elements';
+import Speed from './Speed';
 
-const Status = () => {
+const Status = ({ gameState: { gameFinished } }) => {
   return (
     <Section row wrap="wrap">
       <Time />
@@ -15,7 +16,9 @@ const Status = () => {
 
       <TypoCount />
 
-      <Remaining />
+      <Speed />
+
+      {/*  : <Remaining /> */}
     </Section>
   );
 };

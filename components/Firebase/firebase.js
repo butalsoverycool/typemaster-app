@@ -53,8 +53,6 @@ class Firebase {
     const ref = this.db.ref('typers');
 
     ref.on('child_changed', snap => {
-      console.log('Spotted typer update in db');
-
       const changedTyper = snap.val();
 
       cb(changedTyper);
@@ -142,8 +140,6 @@ class Firebase {
     lastLogin: timeStamp(),
   });
 
-  setAuthTyper(authUser) {}
-
   getAuthUser(authUser, cb) {
     this.typer(authUser.uid)
       .once('value')
@@ -202,9 +198,7 @@ class Firebase {
   // *** Merge Auth and DB User API *** //
   onAuthUserListener = (onSuccess, onFail) =>
     this.auth.onAuthStateChanged(auth => {
-      console.log(
-        `Spotted authUser change (${auth ? 'logged in' : 'logget out'})`
-      );
+      console.log(`AuthUser change: ${auth ? 'logged in' : 'logget out'}`);
       if (!auth) return onFail();
 
       onSuccess(auth);

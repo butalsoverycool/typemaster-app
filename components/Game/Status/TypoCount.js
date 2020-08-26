@@ -1,11 +1,7 @@
 import React, { Component, memo } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { Badge } from 'react-native-elements';
-import { withState } from '../GameState';
-import * as PRESET from '../../constants/preset';
-import styles from './styles';
+import { withState } from '../../GameState';
 import StatusData from './StatusData';
-import { propsChanged } from '../../constants/helperFuncs';
+import { propsChanged } from '../../../constants/helperFuncs';
 
 class TypoCount extends Component {
   constructor(props) {

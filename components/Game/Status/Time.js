@@ -1,8 +1,8 @@
 import React, { Component, memo } from 'react';
-import { withState } from '../GameState';
-import * as PRESET from '../../constants/preset';
+import { withState } from '../../GameState';
+import * as PRESET from '../../../constants/preset';
+import { getTime } from '../../../constants/helperFuncs';
 import StatusData from './StatusData';
-import { getTime } from '../../constants/helperFuncs';
 
 class Time extends Component {
   constructor(props) {
@@ -57,12 +57,12 @@ class Time extends Component {
       this.setState({ timer: null });
     }
 
-    const withdrawal = PRESET.levelWithdrawal[level];
+    /* const withdrawal = PRESET.withdrawal[level];
 
     // everytime time changes, update points
     if (gameON && prevTime !== time) {
       inputHandler({ pointsToAdd: withdrawal });
-    }
+    } */
   };
 
   componentWillUnmount = () => {
@@ -88,12 +88,12 @@ class Time extends Component {
       latestScore,
     } = gameState;
 
-    const { TPS, mStr, sStr, ds } = getTime(time, typed.output);
+    const { CCPS, mStr, sStr, ds } = getTime(time, typed.output);
 
     const statusColor =
-      TPS <= PRESET.speedStandard[level] / 2
+      CCPS <= PRESET.speedStandard[level] / 2
         ? 'red'
-        : TPS < PRESET.speedStandard[level]
+        : CCPS < PRESET.speedStandard[level]
         ? 'gold'
         : '#444';
 

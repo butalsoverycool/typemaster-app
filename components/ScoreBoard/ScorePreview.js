@@ -9,7 +9,8 @@ import {
 import { Modal, Section, Input, Btn } from '../Elements';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
-import { propsChanged } from '../../constants/helperFuncs';
+import { propsChanged, randOfArr } from '../../constants/helperFuncs';
+import { dynamicMsg, sadFace } from '../../constants/preset';
 
 import Status from '../Game/Status';
 
@@ -46,6 +47,10 @@ class NameInput extends Component {
 
     const confirm = typerExists && !this.state.newTyper ? 'Yes' : 'Save';
 
+    const highscoreMsg = newHighscore
+      ? 'New personal record!'
+      : randOfArr(dynamicMsg.noHighscore) + ' ' + randOfArr(sadFace);
+
     return (
       <Section>
         <Section>
@@ -57,8 +62,10 @@ class NameInput extends Component {
         </Section>
 
         <Section spaceTop>
-          <Text style={[theme.subtitle, { color: 'green' }]}>
-            New personal highscore: {String(newHighscore)}
+          <Text
+            style={[theme.subtitle, { color: newHighscore ? 'green' : '#444' }]}
+          >
+            {highscoreMsg}
           </Text>
         </Section>
 
@@ -78,7 +85,7 @@ class NameInput extends Component {
               ) */
             }
           >
-            <Text style={styles.textStyle}>See scoreboard</Text>
+            <Text style={styles.textStyle}>View scoreboard</Text>
           </Btn>
 
           <Btn

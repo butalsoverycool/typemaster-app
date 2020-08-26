@@ -11,7 +11,8 @@ import {
 import { withState } from '../GameState';
 import {
   dynamicMsg,
-  levelWithdrawal,
+  withdrawal,
+  reward,
   bannedKeys,
 } from '../../constants/preset';
 import { randOfArr, propsChanged } from '../../constants/helperFuncs';
@@ -109,7 +110,7 @@ class UserInput extends Component {
       typoCount: isTypo ? typed.typoCount + 1 : typed.typoCount,
     };
 
-    const pointsToAdd = isTypo ? levelWithdrawal[level] * 100 : 1;
+    const pointsToAdd = isTypo ? withdrawal : reward;
 
     // points
     inputHandler({ pointsToAdd, typedProps });
