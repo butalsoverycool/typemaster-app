@@ -6,8 +6,10 @@ import {
   timeStamp,
   timeStampToString,
   compareTwo,
+  getTime,
+  propsChanged,
 } from '../constants/helperFuncs';
-import { dynamicMsg } from '../constants/preset';
+import { dynamicMsg, forbiddenAuthDiffs } from '../constants/preset';
 import { withFirebase } from './Firebase';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
@@ -44,6 +46,7 @@ const endGameState = {
 const initialState = {
   loading: false,
   authUser: null,
+  authTyper: null,
 
   orientation: null,
 
@@ -117,7 +120,10 @@ class GameState extends Component {
     this.lockOrientation = this.lockOrientation.bind(this);
     this.switchUser = this.switchUser.bind(this);
 
-    this.getAuth = this.getAuth.bind(this);
+    this.setAuthUser = this.setAuthUser.bind(this);
+    this.setAuthTyper = this.setAuthTyper.bind(this);
+    this.handleAuthDiffs = this.handleAuthDiffs.bind(this);
+    this.init = this.init.bind(this);
 
     this.setters = {
       setGameState: this.setGameState,
@@ -146,54 +152,170 @@ class GameState extends Component {
   }
 
   componentDidMount() {
-    /// listen
-    // scoreboard-changes
-    this.props.firebase.scoreBoardListener(this.loadScoreBoard);
+    /// init
 
-    /// get
-    // scoreboard
-    this.loadScoreBoard();
-
-    this.setState({ loading: true }, this.getAuth);
-
-    /// set
     // orientation
     this.lockOrientation('portrait');
+
+    /// enter loading state
+    this.setState(
+      {
+        loading: true,
+      },
+      () => {
+        this.init(() => {
+          this.setState({ loading: false });
+        });
+      }
+    );
+
+    /// listen
+
+    // typer-changes
+    this.props.firebase.typerListener(newTyper => {
+      this.handleAuthDiffs(this.state.authUser, newTyper, forbiddenAuthDiffs);
+
+      // update typer
+      this.setAuthTyper(newTyper);
+
+      // update scoreboard
+      this.loadScoreBoard();
+
+      //this.setAuthUser(this.setAuthTyper);
+    });
   }
 
   componentWillUnmount() {}
 
-  getAuth() {
-    console.log('getting auth');
+  init(cb) {
+    console.log('init()...');
+
+    // get authUser
+    this.setAuthUser(() => {
+      // get/set typer
+      this.setAuthTyper(null, () => {
+        // get scoreboard
+        this.loadScoreBoard(() => {
+          this.tryCallback(cb);
+        });
+      });
+    });
+  }
+
+  // handle if typer-data is changed to not match auth
+  handleAuthDiffs(user, typer, keys) {
+    let resetPayload = {};
+    let diff = false;
+
+    // compare values, or obj 1 level down
+    const compare = key => {
+      let childDiff = false;
+
+      if (typeof user[key] !== 'object') {
+        childDiff = user[key] !== typer[key];
+      }
+      // obj
+      else {
+        childDiff = propsChanged(user[key], typer[key]);
+      }
+
+      if (childDiff) {
+        diff = true;
+        resetPayload[key] = this.state.authUser[key];
+      }
+    };
+
+    keys.forEach(key => compare(key));
+
+    if (diff) {
+      console.log(
+        `Spotted forbidden diff on user vs typer (${Object.keys(
+          resetPayload
+        )}). Resetting typer.`
+      );
+
+      this.updateTyper(this.state.authUser.uid, resetPayload);
+    }
+  }
+
+  setAuthTyper(typer, cb) {
+    console.log('SetAuthTyper()...');
+
+    if (!this.state.authUser) {
+      return this.setState({ authTyper: null }, () => {
+        this.tryCallback(cb);
+      });
+    }
+
+    if (!typer) {
+      return this.props.firebase
+        .typer(this.state.authUser.uid)
+        .once('value')
+        .then(snap => {
+          this.setState({ authTyper: snap.val() }, () => this.tryCallback(cb));
+        });
+    }
+
+    this.setState({ authTyper: typer }, () => this.tryCallback(cb));
+  }
+
+  setAuthUser(cb) {
+    console.log('SetAuthUser()...');
+
+    const formatAuth = auth => {
+      const { uid, email, displayName, providerData } = auth;
+      const {
+        displayName: name,
+        phoneNumber: phone,
+        photoURL: photo,
+        providerId: authMethod,
+      } = providerData[0];
+
+      // merge auth and db user
+      return {
+        uid,
+        email,
+        name,
+        photo,
+        phone,
+        authMethod,
+        emailVerified: auth.emailVerified,
+        roles: auth.roles,
+        lastLogin: timeStamp(),
+      };
+    };
 
     const onSuccess = authUser => {
-      console.log('Auth user found in db!');
-
       this.setState(
         {
-          authUser,
+          authUser: formatAuth(authUser),
           form: null,
-          loading: false,
         },
-        () => {
-          console.log('AuthUser set in game state');
-
-          // get typer...***
-        }
+        () =>
+          //this.setAuthTyper()
+          // update lastLogin
+          this.updateTyper(authUser.uid, { lastLogin: timeStamp() }, () => {
+            this.tryCallback(cb);
+          })
       );
     };
 
     const onFail = () => {
-      console.log('Auth user not found in db...');
-
       // signin/signup...
-      this.setState({
-        form: 'SignIn',
-        loading: false,
-      });
+      this.setState(
+        {
+          form: 'SignIn',
+          authUser: null,
+          loading: false,
+        },
+        () => this.tryCallback(cb)
+      );
     };
 
-    this.listener = this.props.firebase.onAuthUserListener(onSuccess, onFail);
+    this.authListener = this.props.firebase.onAuthUserListener(
+      onSuccess,
+      onFail
+    );
   }
 
   switchUser() {
@@ -238,7 +360,8 @@ class GameState extends Component {
     });
   };
 
-  loadScoreBoard(changes) {
+  loadScoreBoard(cb) {
+    console.log('LoadScoreBoard()...');
     this.props.firebase
       .typers()
       .once('value')
@@ -263,7 +386,7 @@ class GameState extends Component {
                 timeStampToString(a.highscore.timeStamp).date,
                 timeStampToString(b.highscore.timeStamp).date
               );
-              console.log('compare two dates:', res);
+              //console.log('compare two dates:', res);
               return res === 'a' ? -1 : res === 'b' ? 1 : 0;
             })(),
             time: (() => {
@@ -271,7 +394,7 @@ class GameState extends Component {
                 timeStampToString(a.highscore.timeStamp).time,
                 timeStampToString(b.highscore.timeStamp).time
               );
-              console.log('compare two times:', res);
+              //console.log('compare two times:', res);
               return res === 'a' ? -1 : res === 'b' ? 1 : 0;
             })(),
           };
@@ -293,17 +416,22 @@ class GameState extends Component {
 
         // limit to top 5
         //const newBoard = sorted.length <= 5 ? sorted : sorted.slice(0, 5);
-        this.setState({
-          scoreboard,
-        });
+        this.setState(
+          {
+            scoreboard,
+          },
+          () => this.tryCallback(cb)
+        );
       });
   }
 
   updateTyper(uid, payload, cb) {
+    console.log(`updateTyper()...(${Object.keys(payload)})`);
+
     this.props.firebase.update('typers', uid, payload, err => {
       if (err) console.log('Err when updating typer:', err);
 
-      this.setState(ps => ({ authUser: { ...ps.authUser, ...payload } }), cb);
+      this.setState(ps => ({ authTyper: { ...ps.authUser, ...payload } }), cb);
     });
   }
 
@@ -357,14 +485,14 @@ class GameState extends Component {
       time,
       points,
       material: { title },
-      typed: { typoCount },
+      typed: { typoCount, output },
       authUser,
     } = this.state;
 
     const latestScore = {
       typer: this.state.authUser.name || 'Unknown',
       level,
-      time: time / 10,
+      time: getTime(time, output),
       score: {
         points,
         timeStamp: timeStamp(),
@@ -375,9 +503,11 @@ class GameState extends Component {
 
     this.setState({ latestScore }, () => {
       // new personal highscore?
+      console.log('old', authUser.highscore.points, 'new', points);
       if (points > authUser.highscore.points) {
-        console.log('new highscore', authUser.highscore.points, 'vs', points);
-        return this.saveScore(cb);
+        this.setState({ newHighscore: true }, () => {
+          return this.saveScore(cb);
+        });
       }
 
       this.tryCallback(cb);

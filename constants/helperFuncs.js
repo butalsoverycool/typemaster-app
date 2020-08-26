@@ -1,13 +1,33 @@
 import React, { useRef, useEffect } from 'react';
 import library from './library';
 
+export const getTime = (time, typedString = '') => {
+  const units = {
+    m: Math.floor(((time / 10) % 3600) / 60),
+    s: Math.floor(time / 10) % 60,
+    ds: Math.floor(time % 10),
+    sTot: time / 10,
+  };
+
+  return {
+    ...units,
+
+    // formatted
+    mStr: units.m >= 10 ? units.m : '0' + units.m,
+    sStr: units.s >= 10 ? units.s : '0' + units.s,
+
+    // speed (correct chars per sec)
+    CCPS: typedString.length / units.sTot || null,
+  };
+};
+
 export const timeStampToString = stamp => ({
   date: stamp.date.replace(/\//g, ''),
   time: stamp.time.replace(/:/g, ''),
 });
 
 export const compareTwo = (a, b) => {
-  console.log('comparing', a, b);
+  //console.log('comparing', a, b);
   return a < b ? 'a' : a > b ? 'b' : 'same';
 };
 

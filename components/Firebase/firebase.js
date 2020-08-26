@@ -38,21 +38,23 @@ class Firebase {
     //this.facebookProvider = new firebase.auth.FacebookAuthProvider();
     //this.twitterProvider = new firebase.auth.TwitterAuthProvider();
 
-    this.scoreBoardListener = this.scoreBoardListener.bind(this);
-    this.getAuth = this.getAuth.bind(this);
+    this.typerListener = this.typerListener.bind(this);
+    this.getAuthUser = this.getAuthUser.bind(this);
 
     this.loadAsync = this.loadAsync.bind(this);
     this.saveAsync = this.saveAsync.bind(this);
 
     this.pushUserToStorage = this.pushUserToStorage.bind(this);
     this.tryCallback = this.tryCallback.bind(this);
-    this.newTyper = this.newTyper.bind(this);
+    this.createNewTyper = this.createNewTyper.bind(this);
   }
 
-  scoreBoardListener(cb) {
+  typerListener(cb) {
     const ref = this.db.ref('typers');
 
     ref.on('child_changed', snap => {
+      console.log('Spotted typer update in db');
+
       const changedTyper = snap.val();
 
       cb(changedTyper);
@@ -132,19 +134,22 @@ class Firebase {
     });
   }
 
-  newTyper = authUser => ({
+  createNewTyper = authUser => ({
     uid: authUser.uid,
     name: authUser.providerData[0].displayName,
     email: authUser.email,
     highscore: 0,
+    lastLogin: timeStamp(),
   });
 
-  getAuth(authUser, cb) {
+  setAuthTyper(authUser) {}
+
+  getAuthUser(authUser, cb) {
     this.typer(authUser.uid)
       .once('value')
       .then(snapshot => {
         // define typer as new or existing
-        const typer = snapshot.val() || this.newTyper(this.authUser);
+        const typer = snapshot.val() || this.createNewTyper(this.authUser);
 
         const typerExists = typer.lastLogin ? true : false;
 
@@ -197,12 +202,12 @@ class Firebase {
   // *** Merge Auth and DB User API *** //
   onAuthUserListener = (onSuccess, onFail) =>
     this.auth.onAuthStateChanged(auth => {
-      console.log('on auth changed...');
-      if (!auth) {
-        onFail();
-      } else {
-        this.getAuth(auth, onSuccess);
-      }
+      console.log(
+        `Spotted authUser change (${auth ? 'logged in' : 'logget out'})`
+      );
+      if (!auth) return onFail();
+
+      onSuccess(auth);
     });
 
   async loadAsync(key, cb) {
@@ -256,6 +261,8 @@ class Firebase {
   typer = uid => this.db.ref(`typers/${uid}`);
 
   typers = () => this.db.ref('typers');
+
+  typerDoc = uid => this.db.collection('typers').doc(uid);
 }
 
 export default Firebase;

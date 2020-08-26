@@ -15,6 +15,8 @@ export const navIconName = [
   },
 ];
 
+export const forbiddenAuthDiffs = ['lastLogin', 'email', 'name', 'uid'];
+
 export const navIcons = {
   Game: 'play-square',
   ScoreBoard: 'trophy',

@@ -2,7 +2,7 @@ import React, { Component, memo } from 'react';
 import { withState } from '../GameState';
 import * as PRESET from '../../constants/preset';
 import StatusData from './StatusData';
-import { propsChanged } from '../../constants/helperFuncs';
+import { getTime } from '../../constants/helperFuncs';
 
 class Time extends Component {
   constructor(props) {
@@ -78,21 +78,17 @@ class Time extends Component {
 
     const { gameState } = this.props;
 
-    const { time, typed, level, gameStandby, gameON, latestScore } = gameState;
+    const {
+      time,
+      typed,
+      level,
+      gameStandby,
+      gameON,
+      gameFinished,
+      latestScore,
+    } = gameState;
 
-    //const timeConvert = () => {
-    //const h = Math.floor(time / 10 / 3600);
-    const m = Math.floor(((time / 10) % 3600) / 60);
-    const s = Math.floor(time / 10) % 60;
-    const ds = Math.floor(time % 10);
-
-    const sTot = time / 10;
-
-    const mStr = m >= 10 ? m : '0' + m;
-    const sStr = s >= 10 ? s : '0' + s;
-
-    // speed
-    const TPS = typed.output.length / sTot;
+    const { TPS, mStr, sStr, ds } = getTime(time, typed.output);
 
     const statusColor =
       TPS <= PRESET.speedStandard[level] / 2
@@ -105,13 +101,7 @@ class Time extends Component {
       <StatusData
         label="Time"
         index={0}
-        data={
-          gameStandby || gameON
-            ? `${mStr}:${sStr}:${ds}` || '00:00:00:00'
-            : latestScore
-            ? String(latestScore.time)
-            : '00:00:00:00'
-        }
+        data={`${mStr}:${sStr}.${ds}` || '00:00:00:00'}
         statusColor={statusColor}
       />
     );

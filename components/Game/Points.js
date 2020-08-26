@@ -16,7 +16,7 @@ class Points extends Component {
     ]);
 
   render() {
-    const { points, gameStandby, gameON, latestScore } = this.props.gameState;
+    const { points } = this.props.gameState;
 
     const status =
       points < 0
@@ -31,13 +31,7 @@ class Points extends Component {
       <StatusData
         label="Points"
         index={1}
-        data={
-          gameStandby || gameON
-            ? points || '0'
-            : latestScore
-            ? latestScore.points
-            : ''
-        }
+        data={points || '0'}
         status={status}
       />
     );

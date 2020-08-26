@@ -22,16 +22,18 @@ class NameInput extends Component {
     };
   }
 
-  shouldComponentUpdate = (np, ns) =>
+  /* shouldComponentUpdate = (np, ns) =>
     propsChanged(this.props, np, ['visible', 'typerExists']) ||
+    propsChanged(this.props.gameState, np.gameState, [
+      'gameFinished',
+      'newHighscore',
+    ]) ||
     this.props.gameState.authUser.name !== np.gameState.authUser.name ||
-    this.state.newTyper !== ns.newTyper ||
-    this.props.gameState.gameFinished !== np.gameState.gameFinished;
+    this.state.newTyper !== ns.newTyper; */
 
   render() {
     const {
-      authUser,
-      gameFinished,
+      gameState: { authUser, gameFinished, newHighscore },
       gameSetters: { setGameState, prepareGame },
       visible,
       typerExists,
@@ -56,18 +58,8 @@ class NameInput extends Component {
 
         <Section spaceTop>
           <Text style={[theme.subtitle, { color: 'green' }]}>
-            On scoreboard? .../true/false
+            New personal highscore: {String(newHighscore)}
           </Text>
-          {/* <Text style={[theme.subtitle, { textAlign: 'center' }]}>
-            {nameTitle}
-          </Text>
-
-          <Input
-            focus={false}
-            triggerUpdate={visible}
-            placeholder={authUser.name || 'Unknown'}
-            on={{ onChangeText: newTyper => this.setState({ newTyper }) }}
-          /> */}
         </Section>
 
         <Section justify="center">
