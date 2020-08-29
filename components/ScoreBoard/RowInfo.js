@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import { Alert, StyleSheet, TouchableHighlight, View } from 'react-native';
 import Modal from '../Elements/Modal';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
-import Input from '../Elements/Input';
+import { Input, Text } from '../Elements';
 
 /* WIP */
 

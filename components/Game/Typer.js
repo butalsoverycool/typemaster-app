@@ -1,9 +1,9 @@
 import React, { Component, memo } from 'react';
-import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import { withFirebase } from '../Firebase';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
-import { Section, Input, Icon } from '../Elements';
+import { IconPreset } from '../../constants/preset';
+import { Section, Text, Input, Icon } from '../Elements';
 
 class Typer extends Component {
   constructor(props) {
@@ -49,7 +49,9 @@ class Typer extends Component {
     return (
       <Section row align="flex-start">
         <Section flex={2}>
-          <Text style={[theme.subtitle, { textAlign: 'center' }]}>Typer</Text>
+          <Text style={[theme.subtitle, { textAlign: 'center' }]}>
+            Your name
+          </Text>
           <Input
             value={this.state.name}
             placeholder="unknown"
@@ -61,13 +63,13 @@ class Typer extends Component {
                   console.log(err ? err : 'Typer successfully updated!');
                 }),
             }}
+            style={{ fontSize: 24 }}
           />
         </Section>
         <Section flex={1}>
           <Icon
-            name="user-switch"
-            type="IconOutline"
-            color="#444"
+            brand={IconPreset.userSwitch.brand}
+            name={IconPreset.userSwitch.name}
             label="switch user"
             onPress={this.switchUser}
           />

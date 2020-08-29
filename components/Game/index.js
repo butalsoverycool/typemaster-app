@@ -1,5 +1,5 @@
 import React, { Component, memo } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 import theme from '../../constants/theme';
 import { withFirebase } from '../Firebase/context';
 import { withState } from '../GameState';
@@ -113,7 +113,7 @@ class Game extends Component {
 
               {!gameStandby && !gameON && <Typer />}
 
-              {!gameStandby && !gameON && <Level />}
+              {/* {!gameStandby && !gameON && <Level />} */}
 
               <Material />
 

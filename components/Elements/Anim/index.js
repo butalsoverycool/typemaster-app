@@ -21,10 +21,10 @@ class Anim extends Component {
     this.exit = this.exit.bind(this);
   }
 
+  // lifecycle? let's live here!
   componentDidUpdate(pp) {
-    // lifecycle? let's live here!
     if (pp.enterOn !== true && this.props.enterOn === true) {
-      // console.log('anim entering...');
+      console.log('anim entering...');
       return this.animate();
     } else if (pp.exitOn !== true && this.props.exitOn === true) {
       // console.log('anim exiting...');
@@ -84,7 +84,7 @@ class Anim extends Component {
       anim = this.props.anim,
       duration = this.props.duration,
       easing = this.props.easing,
-      cb = null,
+      cb = this.props.cb || null,
     } = conf;
 
     //const { anim, duration, easing } = this.props;
@@ -148,7 +148,7 @@ class Anim extends Component {
         this.setState({ hasEntered: forwards ? true : false }, () => {
           // if(forwards) console.log('anim Enter done!')
 
-          if (typeof cb === 'function') cb();
+          if (typeof this.props.cb === 'function') cb();
         });
       });
     });
@@ -158,6 +158,7 @@ class Anim extends Component {
     return (
       <Animated.View
         style={[
+          this.props.style,
           {
             padding: 0,
           },

@@ -72,5 +72,7 @@ const inputStyle = StyleSheet.create({
     textAlign: 'center',
     borderBottomWidth: 0,
     color: '#444',
+    fontFamily: 'Monofett_400Regular',
+    fontSize: 14,
   },
 });

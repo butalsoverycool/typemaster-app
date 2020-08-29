@@ -1,14 +1,12 @@
 import React, { Component, memo } from 'react';
 import { StyleSheet } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { withState } from '../GameState';
 import { propsChanged } from '../../constants/helperFuncs';
-import { Section, Icon } from '../Elements';
+import { IconPreset } from '../../constants/preset';
+import { Section, Text, Icon } from '../Elements';
 
-const localStyles = StyleSheet.create({
-  container: {},
-  line: { fontSize: 12, fontStyle: 'italic', height: 15, marginBottom: 0 },
-  icon: { width: 20, height: 20, color: 'black' },
+const styles = StyleSheet.create({
+  msg: { fontSize: 12, fontStyle: 'italic', color: '#444' },
 });
 
 class Msg extends Component {
@@ -30,28 +28,28 @@ class Msg extends Component {
 
     const msgArr = Array.isArray(msg) ? msg : msg.split();
 
-    const list = msgArr.map((title, nth) => ({
-      title,
+    const list = msgArr.map((msg, nth) => ({
+      msg,
       icon: (
-        <Icon type="IconOutline" name="info-circle" color="#444" size={20} />
+        <Icon
+          brand={IconPreset.info.brand}
+          name={IconPreset.info.name}
+          size={20}
+        />
       ),
     }));
 
     return (
-      <Section>
+      <Section margin>
         {list.map((item, nth) => (
-          <ListItem
-            key={nth}
-            containerStyle={{
-              height: 40,
-              backgroundColor: '#eee',
-              width: '100%',
-              minWidth: '100%',
-            }}
-            title={item.title}
-            leftIcon={item.icon}
-            titleStyle={localStyles.line}
-          />
+          <Section key={nth} row fillW h={30} justify="center">
+            <Section w={40} justify="center">
+              {item.icon}
+            </Section>
+            <Section flex={1} h={30} align="flex-start" justify="center">
+              <Text style={styles.msg}>{item.msg}</Text>
+            </Section>
+          </Section>
         ))}
       </Section>
     );

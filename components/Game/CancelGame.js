@@ -3,6 +3,7 @@ import { withState } from '../GameState';
 import styles from './styles';
 import theme from '../../constants/theme';
 import { propsChanged } from '../../constants/helperFuncs';
+import { IconPreset } from '../../constants/preset';
 
 import { Section, Icon } from '../Elements';
 
@@ -37,6 +38,8 @@ const localStyles = {
 class CancelGame extends Component {
   constructor(props) {
     super(props);
+
+    this.handleStop = this.handleStop.bind(this);
   }
 
   shouldComponentUpdate = np =>
@@ -45,6 +48,14 @@ class CancelGame extends Component {
       'gameON',
       'gamePaused',
     ]);
+
+  handleStop() {
+    const { gameState, gameSetters } = this.props;
+    const { typed } = gameState;
+    const finished = typed.output && typed.output !== '';
+
+    gameSetters.endGame({ gameFinished: finished });
+  }
 
   render() {
     const { gameState, gameSetters } = this.props;
@@ -55,21 +66,17 @@ class CancelGame extends Component {
       <Section row justify="space-around" fillW>
         {(gameON || gamePaused) && (
           <Icon
-            size={50}
-            name={gamePaused ? 'play-circle' : 'pause-circle'}
-            type="IconOutline"
-            color="#444"
+            brand={gamePaused ? IconPreset.play.brand : IconPreset.pause.brand}
+            name={gamePaused ? IconPreset.play.name : IconPreset.pause.name}
             onPress={togglePauseGame}
             label={gamePaused ? 'continue' : 'pause'}
           />
         )}
 
         <Icon
-          name="close-circle"
-          type="IconOutline"
-          size={50}
-          color="#444"
-          onPress={endGame}
+          brand={gameON ? IconPreset.stop.brand : IconPreset.back.brand}
+          name={gameON ? IconPreset.stop.name : IconPreset.back.name}
+          onPress={this.handleStop}
           label={gameON ? 'stop' : 'back'}
         />
       </Section>

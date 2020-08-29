@@ -1,13 +1,9 @@
-import React, { Component, useState } from 'react';
-import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
-import { Button } from 'react-native-elements';
+import React, { Component } from 'react';
+import { StyleSheet, View, SafeAreaView } from 'react-native';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
 import { DataTable } from 'react-native-paper';
-import ScorePreview from './ScorePreview';
-import { levels } from '../../constants/options';
-import { propsChanged } from '../../constants/helperFuncs';
-import { Section, ScrollView, Btn, Anim } from '../Elements';
+import { Section, Text, ScrollView, Btn, Anim } from '../Elements';
 import Form from '../Form';
 import Status from '../Game/Status';
 

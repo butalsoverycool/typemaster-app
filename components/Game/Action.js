@@ -1,7 +1,5 @@
 import React, { Component, memo } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
 import { withState } from '../GameState';
-import styles from './styles';
 import { propsChanged } from '../../constants/helperFuncs';
 import { Section, Btn } from '../Elements';
 

@@ -1,6 +1,6 @@
 import React, { Component, useEffect } from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
-import * as PRESET from '../../constants/preset';
+import { IconPreset } from '../../constants/preset';
 import { usePrev, propsChanged } from '../../constants/helperFuncs';
 import { withState } from '../GameState';
 import { Icon } from '../Elements';
@@ -117,11 +117,17 @@ class TabBar extends Component {
                 shadowRadius: 1,
               }}
             >
-              <View style={{ height: '100%', paddingTop: 10 }}>
+              <View
+                style={{
+                  height: '100%',
+                  paddingTop: 10,
+                }}
+              >
                 <Icon
-                  name={PRESET.navIcons[route.name]}
-                  type="IconOutline"
+                  brand={IconPreset[route.name].brand}
+                  name={IconPreset[route.name].name}
                   color={isFocused ? '#666' : '#444'}
+                  bg={isFocused ? '#eee' : '#f7f7f7'}
                 />
               </View>
             </TouchableOpacity>

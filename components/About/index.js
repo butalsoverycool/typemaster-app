@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, View, SafeAreaView, ScrollView } from 'react-native';
 import { withState } from '../GameState';
-import { Anim } from '../Elements';
+import { Anim, Text } from '../Elements';
 import theme from '../../constants/theme';
 
 const styles = StyleSheet.create({

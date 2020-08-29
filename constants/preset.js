@@ -1,8 +1,3 @@
-import React from 'react';
-import keyboardIcon from '../assets/keyboard.png';
-import settingsIcon from '../assets/settings.png';
-import Icon from '../components/Elements/Icon';
-
 export const withdrawal = -0.01;
 
 export const reward = 0.01;
@@ -19,11 +14,55 @@ export const navIconName = [
 
 export const forbiddenAuthDiffs = ['lastLogin', 'email', 'name', 'uid'];
 
-export const navIcons = {
-  Game: 'play-square',
-  ScoreBoard: 'trophy',
-  Settings: 'setting',
-  About: 'question-circle',
+export const IconPreset = {
+  Game: {
+    brand: 'MaterialCommunityIcons',
+    name: 'gamepad-square-outline',
+  },
+  ScoreBoard: {
+    brand: 'MaterialCommunityIcons',
+    name: 'trophy-outline',
+  },
+  About: {
+    brand: 'MaterialCommunityIcons',
+    name: 'comment-question-outline',
+  },
+  userSwitch: {
+    brand: 'Entypo',
+    name: 'users',
+  },
+  info: {
+    brand: 'MaterialCommunityIcons',
+    name: 'information-outline',
+  },
+  stop: {
+    brand: 'MaterialCommunityIcons',
+    name: 'stop-circle-outline',
+  },
+  pause: {
+    brand: 'MaterialCommunityIcons',
+    name: 'pause-circle-outline',
+  },
+  back: {
+    brand: 'Entypo',
+    name: 'back',
+  },
+  play: {
+    brand: 'MaterialCommunityIcons',
+    name: 'play-circle-outline',
+  },
+  replay: {
+    brand: 'MaterialCommunityIcons',
+    name: 'replay',
+  },
+  sound: {
+    brand: 'MaterialCommunityIcons',
+    name: 'volume-high',
+  },
+  mute: {
+    brand: 'MaterialCommunityIcons',
+    name: 'volume-off',
+  },
 };
 
 export const dynamicMsg = {

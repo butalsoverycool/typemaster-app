@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { withFirebase } from '../Firebase';
 import { withState } from '../GameState';
-import { View, Modal, Section, Input, Btn } from '../Elements';
-import { Text } from 'react-native';
+import { View, Modal, Section, Text, Input, Btn } from '../Elements';
 import theme from '../../constants/theme';
 import { timeStamp } from '../../constants/helperFuncs';
 

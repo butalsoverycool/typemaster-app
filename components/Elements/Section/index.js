@@ -17,6 +17,9 @@ const VIEW = ({
   spaceTop,
   spaceBottom,
   children,
+  position,
+  padding,
+  margin,
   ...props
 }) => {
   const flexOverride = {
@@ -32,6 +35,9 @@ const VIEW = ({
     height: h ? h : 'auto',
     flex,
     flexWrap: wrap,
+    position: position || null,
+    padding: padding || styles.section.padding,
+    margin: margin || styles.section.margin,
   };
 
   return (
@@ -49,7 +55,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     margin: 0,
-    padding: 5,
+    padding: 0,
     backgroundColor: colors.light,
   },
 });

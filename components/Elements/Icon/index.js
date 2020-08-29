@@ -1,28 +1,33 @@
 import React from 'react';
-import * as ICON from '@ant-design/icons-react-native';
-import { StyleSheet, View, Text } from 'react-native';
+import * as antdIcons from '@ant-design/icons-react-native';
+import * as ICONS from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
 import Section from '../Section';
+import Text from '../Text';
 
 export default ({
-  type = 'IconFill',
+  brand = 'AntDesign',
   size = 50,
+  color = '#444',
   label,
   labelPos = 'bottom',
+  bg,
+  on,
   ...props
 }) => {
-  const Component = ICON[type];
+  const Component = ICONS[brand];
 
   return (
     <Section
-      style={{
-        width: size,
-        height: size + (label ? 15 : 0),
-        padding: 0,
-        flex: 1,
-      }}
+      justify="center"
+      w={size}
+      h={size + (label ? 15 : 0)}
+      flex={1}
+      bg={bg || null}
+      {...on}
     >
       {label && labelPos === 'top' && <Text style={styles.label}>{label}</Text>}
-      <Component size={size} {...props} />
+      <Component size={size} color={color} {...props} />
       {label && labelPos === 'bottom' && (
         <Text style={styles.label}>{label}</Text>
       )}

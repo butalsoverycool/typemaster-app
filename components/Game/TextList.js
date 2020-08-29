@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ScrollView } from 'react-native';
-import { ListItem, Button } from 'react-native-elements';
+import { SafeAreaView, ScrollView } from 'react-native';
+import { ListItem } from 'react-native-elements';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
 import library from '../../constants/library';
-import { Section } from '../Elements';
+import { Section, Text } from '../Elements';
 
 const TextList = ({ gameSetters: { setMaterial } }) => (
   <Section flex={1}>
@@ -16,7 +16,8 @@ const TextList = ({ gameSetters: { setMaterial } }) => (
             key={nth}
             title={item.title}
             subtitle={String(item.text.length)}
-            /* titleStyle={localStyles.textItem} */
+            titleStyle={{ fontFamily: 'CutiveMono_400Regular' }}
+            subtitleStyle={{ fontFamily: 'CutiveMono_400Regular' }}
             bottomDivider
             onPress={() => setMaterial(item)}
           />

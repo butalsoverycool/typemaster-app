@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
-import { Modal, Section, Input, Btn } from '../Elements';
+import { Alert, StyleSheet } from 'react-native';
+import { Section, Text, Btn } from '../Elements';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
 import { propsChanged, randOfArr } from '../../constants/helperFuncs';

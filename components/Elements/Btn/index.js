@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, TouchableHighlight, View, Text } from 'react-native';
+import { StyleSheet, TouchableHighlight, View } from 'react-native';
 import Section from '../Section';
+import Text from '../Text';
 
 export default ({
   w,
@@ -18,6 +19,7 @@ export default ({
   outline,
   textAlign,
   children,
+  fontFamily,
   ...props
 }) => {
   const buttonOverride = {
@@ -47,6 +49,7 @@ export default ({
     color: outline ? bg || '#444' : color || styles.text.color,
     fontSize: fontSize || styles.text.fontSize,
     textAlign: textAlign || styles.text.textAlign,
+    fontFamily: fontFamily || 'CutiveMono_400Regular',
   };
 
   const child = children ? (

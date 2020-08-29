@@ -15,7 +15,11 @@ import {
   reward,
   bannedKeys,
 } from '../../constants/preset';
-import { randOfArr, propsChanged } from '../../constants/helperFuncs';
+import {
+  randOfArr,
+  mathRandInc,
+  propsChanged,
+} from '../../constants/helperFuncs';
 import Input from '../Elements/Input';
 
 const { gameOverText } = dynamicMsg;
@@ -38,6 +42,7 @@ class UserInput extends Component {
 
     this.onInput = this.onInput.bind(this);
     this.onBlur = this.onBlur.bind(this);
+    this.clickSound = this.clickSound.bind(this);
   }
 
   shouldComponentUpdate = np =>
@@ -48,7 +53,17 @@ class UserInput extends Component {
       'material',
       'typed',
       'level',
+      'muted',
     ]);
+
+  clickSound() {
+    const {
+      sounds: { type: typeSounds },
+    } = this.props.gameState;
+    const { playSound } = this.props.gameSetters;
+
+    playSound({ name: 'type', index: mathRandInc(0, typeSounds.length - 1) });
+  }
 
   onInput = e => {
     const {
@@ -58,6 +73,7 @@ class UserInput extends Component {
       material,
       typed,
       level,
+      muted,
     } = this.props.gameState;
 
     const {
@@ -85,6 +101,12 @@ class UserInput extends Component {
 
     // update typed and points based on isTypo
     const isTypo = char !== material.text[typed.index];
+
+    if (!isTypo) {
+      if (!muted) {
+        this.clickSound();
+      }
+    }
 
     // game over
     if (isTypo && level >= 3) {

@@ -1,12 +1,11 @@
 import React, { Component, memo } from 'react';
-import { Text } from 'react-native';
 import { withState } from '../GameState';
 import { ButtonGroup } from 'react-native-elements';
 import * as OPTIONS from '../../constants/options';
 import styles from './styles';
 import theme, { buttonGroupStyle } from '../../constants/theme';
 import { propsChanged } from '../../constants/helperFuncs';
-import { Section } from '../Elements';
+import { Section, Text } from '../Elements';
 
 // About typemaster Stella: https://www.pond5.com/stock-footage/item/75268195-miss-stella-pajunas-worlds-fast-typist-types-ibm-electric-ty
 class Level extends Component {

@@ -89,6 +89,9 @@ const initialState = {
   form: null,
 
   nav: null,
+
+  muted: false,
+  sounds: null,
 };
 
 class GameState extends Component {
@@ -130,6 +133,8 @@ class GameState extends Component {
     this.onTyperChange = this.onTyperChange.bind(this);
     this.handleAuthDiffs = this.handleAuthDiffs.bind(this);
 
+    this.playSound = this.playSound.bind(this);
+
     this.setters = {
       setGameState: this.setGameState,
 
@@ -153,6 +158,8 @@ class GameState extends Component {
       loadScoreBoard: this.loadScoreBoard,
 
       switchUser: this.switchUser,
+
+      playSound: this.playSound,
     };
   }
 
@@ -174,7 +181,8 @@ class GameState extends Component {
       }
     ); */
 
-    /// listen
+    // sounds
+    this.setState({ sounds: this.props.sounds });
 
     // auth-changes
     this.props.firebase.onAuthUserListener(this.onSignIn, this.onSignOut);
@@ -183,7 +191,23 @@ class GameState extends Component {
     this.props.firebase.typerListener(newTyper => this.onTyperChange(newTyper));
   }
 
-  componentWillUnmount() {}
+  async playSound({ name = 'ding', index = null, cb }) {
+    if (!this.state.sounds) return console.log('Sounds not loaded yet');
+    console.log('playSound()...');
+
+    const sound = index
+      ? this.state.sounds[name][index]
+      : this.state.sounds[name];
+
+    try {
+      await sound._55.replayAsync();
+      this.tryCallback(cb);
+    } catch (err) {
+      const errMsg = `Failed to play sound ${name} (${err})`;
+      console.log(errMsg);
+      this.tryCallback(cb, { err: errMsg });
+    }
+  }
 
   onTyperChange(newTyper) {
     console.log('onTyperChange()...');
@@ -354,6 +378,7 @@ class GameState extends Component {
   }
 
   setGameState = (keyVal, cb) => {
+    console.log('setGameState()', Object.entries(keyVal));
     this.setState({ ...keyVal }, () => {
       this.tryCallback(cb);
     });
@@ -644,7 +669,7 @@ class GameState extends Component {
   }
 
   endGame({ gameFinished = false, override = {}, cb, ...props }) {
-    console.log('endGame()');
+    console.log('endGame()', gameFinished);
 
     const { gameON, gameStandby, gamePaused } = this.state;
 

@@ -1,11 +1,10 @@
 import React, { Component, memo } from 'react';
-import { StyleSheet, Text } from 'react-native';
-import { Button } from 'react-native-elements';
+import { StyleSheet } from 'react-native';
 import { withState } from '../GameState';
 import { levels } from '../../constants/options';
 import theme from '../../constants/theme';
 import { propsChanged } from '../../constants/helperFuncs';
-import { Section } from '../Elements';
+import { Section, Text, Btn } from '../Elements';
 
 const localStyles = StyleSheet.create({
   container: {
@@ -66,14 +65,11 @@ class Preview extends Component {
           </Section>
         </Section>
 
-        <Button
-          buttonStyle={{
-            marginTop: 5,
-            borderRadius: 5,
-            backgroundColor: '#444',
-          }}
-          titleStyle={{ color: 'whitesmoke' }}
-          title="change text"
+        <Btn
+          w={150}
+          h={50}
+          fontSize={20}
+          content="change text"
           onPress={setMaterial}
         />
       </Section>

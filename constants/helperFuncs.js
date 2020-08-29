@@ -1,5 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 import library from './library';
+import { Audio } from 'expo-av';
+
+const tryCallBack = (cb, args = null) => {
+  if (typeof cb === 'function') cb(args);
+};
 
 export const getTime = (time, typedString = '') => {
   const units = {
@@ -189,4 +194,73 @@ export const getRefSize = ref => {
 
 export const firstCap = word => {
   return word[0].toUpperCase() + word.substring(1);
+};
+
+export const loadSound = async ({ sound, name, ext = 'wav', cb }) => {
+  /* try {
+    const path = '../assets/audio/' + name + '.wav';
+    const file = require(path);
+    await sound.loadAsync(file);
+
+    cb({ sound, name, err: null });
+  } catch (err) {
+    cb({ err });
+  } */
+};
+
+export const loadSounds = async ({ src, cb }) => {
+  let sounds = {};
+
+  const confirm = ({ err, name, sound }) => {
+    if (err) {
+      const errMsg = `Err when loading sound ${name} (${err})`;
+      console.log(errMsg);
+      return cb({ err: errMsg });
+    }
+
+    sounds[name] = sound;
+    console.log(`Sound ${name} loaded.`);
+
+    console.log(
+      'src.len',
+      src.length,
+      'sounds.len',
+      Object.keys(sounds).length
+    );
+    if (Object.keys(sounds).length >= src.length) {
+      console.log('ALL SOUNDS LOADED');
+      cb({ sounds, err: null });
+    }
+  };
+
+  src.forEach(item => {
+    loadSound({
+      name: item.name,
+      ext: item.type,
+      sound: item.sound,
+      cb: confirm,
+    });
+  });
+};
+
+export const playSound = async (src, cb) => {
+  try {
+    await src.sound.replayAsync();
+    tryCallBack(cb);
+  } catch (err) {
+    const errMsg = 'Failed to play sound: ' + err;
+    console.log(errMsg);
+    tryCallBack(cb, { err: errMsg });
+  }
+};
+
+export const stopSound = async ({ sound, cb }) => {
+  try {
+    await sound.stopAsync()();
+    cb();
+  } catch (err) {
+    const errMsg = 'Failed to stop sound: ' + err;
+    console.log(errMsg);
+    cb({ err: errMsg });
+  }
 };
