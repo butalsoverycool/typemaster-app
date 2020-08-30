@@ -1,8 +1,9 @@
-import React, { Component, createRef } from 'react';
+import React, { memo, Component, createRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Input as RNEInput } from 'react-native-elements';
+import { withState } from '../GameState';
 
-export default class Input extends Component {
+class Input extends Component {
   constructor(props) {
     super(props);
 
@@ -39,14 +40,6 @@ export default class Input extends Component {
       ...props
     } = this.props;
 
-    const propRes = {};
-
-    Object.keys(this.props).forEach(key => {
-      if (this.props[key]) {
-        propRes[key] = this.props[key];
-      }
-    });
-
     return (
       <RNEInput
         ref={this.ref}
@@ -60,6 +53,8 @@ export default class Input extends Component {
     );
   }
 }
+
+export default memo(p => <Input {...p} />);
 
 const inputStyle = StyleSheet.create({
   container: {

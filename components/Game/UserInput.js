@@ -40,6 +40,16 @@ class UserInput extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      tickingMs: 100,
+      timer: null,
+      ticking: null,
+    };
+
+    this.tick = this.tick.bind(this);
+    this.startTimer = this.startTimer.bind(this);
+    this.stopTimer = this.stopTimer.bind(this);
+
     this.onInput = this.onInput.bind(this);
     this.onBlur = this.onBlur.bind(this);
     this.typeSound = this.typeSound.bind(this);
@@ -54,7 +64,30 @@ class UserInput extends Component {
       'typed',
       'level',
       'muted',
+      'time',
+      'latestScore',
     ]);
+
+  componentWillUnmount = () => {
+    this.stopTimer();
+    /* console.log('unmounting time');
+    clearInterval(this.state.timer); */
+  };
+
+  tick() {
+    this.props.gameSetters.addTick();
+  }
+
+  startTimer() {
+    let timer = setInterval(this.tick, this.state.tickingMs);
+    this.setState({ timer }, () => console.log('Timer started!'));
+  }
+
+  stopTimer() {
+    clearInterval(this.state.timer);
+    console.log('Timer stopped!');
+    //this.setState({ timer: null });
+  }
 
   typeSound(name) {
     const {
@@ -62,7 +95,7 @@ class UserInput extends Component {
     } = this.props.gameState;
     const { playSound } = this.props.gameSetters;
 
-    playSound({ name, index: mathRandInc(0, soundArr.length - 1) });
+    playSound(name);
   }
 
   onInput = e => {
@@ -84,7 +117,10 @@ class UserInput extends Component {
       setGameState,
     } = this.props.gameSetters;
 
-    if (gameStandby && !gameON && !gamePaused) startGame();
+    if (gameStandby && !gameON && !gamePaused) {
+      this.startTimer();
+      startGame();
+    }
 
     const char = e.nativeEvent.key;
 
@@ -144,6 +180,7 @@ class UserInput extends Component {
     const pointsToAdd = isTypo ? withdrawal : reward;
 
     // points
+    console.log('points to add:', pointsToAdd);
     inputHandler({ pointsToAdd, typedProps });
 
     // finish-line

@@ -64,6 +64,11 @@ export const timeStamp = (tag = null) => {
   return res;
 };
 
+export const pointCalc = (points, ccps) => {
+  const res = Math.round((points + ccps) * 100) / 100;
+  return res && res !== Infinity ? res : 0;
+};
+
 export const usePrev = val => {
   const ref = useRef();
   useEffect(() => {

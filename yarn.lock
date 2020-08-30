@@ -5061,6 +5061,11 @@ lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.4, lodash@^4.3.0
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
   integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
 
+log-node-version@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/log-node-version/-/log-node-version-1.0.2.tgz#7c3a1a097c9e29577bb168096be56e398e308a53"
+  integrity sha512-//8hUQ/1hDvFEpq8IMXpC7BuUojRMWAJKolN21i4m6Sv/9waLFqf9b3hPD+g0kCWQJRq+BGFmkXoDCe6Uxx6AQ==
+
 log-symbols@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/log-symbols/-/log-symbols-2.2.0.tgz#5740e1c5d6f0dfda4ad9323b5332107ef6b4c40a"

@@ -1,6 +1,6 @@
-export const withdrawal = -0.01;
+export const withdrawal = -0.05;
 
-export const reward = 0.01;
+export const reward = 0.05;
 
 export const speedStandard = [2, 4, 6, 8];
 

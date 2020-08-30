@@ -1,9 +1,11 @@
 import React from 'react';
+import { withState } from '../GameState';
 import { StyleSheet, TouchableHighlight } from 'react-native';
 import Section from './Section';
 import Text from './Text';
+import { mathRandInc } from '../../constants/helperFuncs';
 
-export default ({
+const Btn = ({
   w,
   h,
   fillW,
@@ -68,6 +70,8 @@ export default ({
     </TouchableHighlight>
   );
 };
+
+export default withState(Btn);
 
 const styles = StyleSheet.create({
   button: {

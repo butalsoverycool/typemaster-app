@@ -16,8 +16,7 @@ import { CutiveMono_400Regular } from '@expo-google-fonts/cutive-mono';
 
 import { Monofett_400Regular } from '@expo-google-fonts/monofett';
 
-const REACT_VERSION = React.version;
-console.log('react version:', REACT_VERSION);
+console.log(`(React version: ${React.version})`);
 
 export default () => {
   const [appReady, setAppReady] = useState(false);
@@ -31,11 +30,12 @@ export default () => {
     Monofett_400Regular,
   });
 
-  // all to load
+  // gather what to load
   const dependencies = [sounds, cutiveLoaded, fettLoaded];
 
   // on mount
   useEffect(() => {
+    // get sounds once
     getSounds(res => setSounds(res));
   }, []);
 

@@ -8,27 +8,18 @@ class Time extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    /* this.state = {
       tickingMs: 100,
       timer: null,
       ticking: null,
     };
 
-    this.tick = this.tick.bind(this);
+    this.tick = this.tick.bind(this); */
   }
 
-  /* shouldComponentUpdate = (np, ns) =>
-    propsChanged(this.props.gameState, np.gameState, [
-      'gameStandby',
-      'gameON,',
-      'gamePaused',
-      'time',
-      'typed',
-      'level',
-      'latestScore',
-    ]) || propsChanged(this.state, ns, ['timer', 'ticking']); */
+  shouldComponentUpdate = np => this.props.gameState.time !== np.gameState.time;
 
-  componentDidUpdate = (pp, ps) => {
+  /* componentDidUpdate = (pp, ps) => {
     const {
       gameON: prevGameON,
       gamePaused: prevGamePaused,
@@ -39,12 +30,12 @@ class Time extends Component {
 
     const { gameON, gamePaused, time, level } = this.props.gameState;
 
-    const { inputHandler } = this.props.gameSetters;
+    const { inputHandler } = this.props.gameSetters; */
 
-    // run once at game start
-    // start ticking-interval
+  // run once at game start
+  // start ticking-interval
 
-    if (!prevGameON && gameON) {
+  /* if (!prevGameON && gameON) {
       console.log('starting timer!!!!!!');
       let timer = setInterval(this.tick, tickingMs);
       this.setState({ timer });
@@ -53,40 +44,32 @@ class Time extends Component {
     // run once att game stop
     // clear ticking-interval
     else if ((prevGameON && !gameON) || (!prevGamePaused && gamePaused)) {
+      console.log('stopping timer!!!!');
       clearInterval(timer);
       this.setState({ timer: null });
-    }
+    } */
 
-    /* const withdrawal = PRESET.withdrawal[level];
+  /* const withdrawal = PRESET.withdrawal[level];
 
     // everytime time changes, update points
     if (gameON && prevTime !== time) {
       inputHandler({ pointsToAdd: withdrawal });
     } */
-  };
+  /* }; */
 
-  componentWillUnmount = () => {
+  /* componentWillUnmount = () => {
+    console.log('unmounting time');
     clearInterval(this.state.timer);
   };
 
   tick = () => {
     this.props.gameSetters.addTick();
-  };
+  }; */
 
   render() {
-    if (!this.props.gameState) return null;
-
     const { gameState } = this.props;
 
-    const {
-      time,
-      typed,
-      level,
-      gameStandby,
-      gameON,
-      gameFinished,
-      latestScore,
-    } = gameState;
+    const { time, typed, level } = gameState;
 
     const { CCPS, mStr, sStr, ds } = getTime(time, typed.output);
 
@@ -101,7 +84,7 @@ class Time extends Component {
       <StatusData
         label="Time"
         index={0}
-        data={`${mStr}:${sStr}.${ds}` || '00:00:00:00'}
+        data={`${mStr}:${sStr}.${ds}` || '00:00.0'}
         statusColor={statusColor}
       />
     );

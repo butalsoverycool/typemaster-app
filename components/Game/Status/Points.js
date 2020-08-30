@@ -1,7 +1,11 @@
 import React, { Component, memo } from 'react';
 import { withState } from '../../GameState';
 import StatusData from './StatusData';
-import { propsChanged, getTime } from '../../../constants/helperFuncs';
+import {
+  propsChanged,
+  getTime,
+  pointCalc,
+} from '../../../constants/helperFuncs';
 
 class Points extends Component {
   constructor(props) {
@@ -30,15 +34,10 @@ class Points extends Component {
         ? 'primary'
         : 'success';
 
-    const POINTS = Math.round(CCPS * points * 100) / 100;
+    const POINTS = pointCalc(points, CCPS);
 
     return (
-      <StatusData
-        label="Points"
-        index={1}
-        data={POINTS && POINTS !== Infinity ? POINTS : '0'}
-        status={status}
-      />
+      <StatusData label="Points" index={1} data={POINTS} status={status} />
     );
   }
 }

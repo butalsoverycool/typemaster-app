@@ -10,6 +10,7 @@ const files = {
     require('../assets/audio/confirm2.wav'),
     require('../assets/audio/confirm3.wav'),
     require('../assets/audio/confirm4.wav'),
+    require('../assets/audio/confirm5.wav'),
   ],
 
   type: [
@@ -35,6 +36,14 @@ const files = {
     require('../assets/audio/type20.wav'),
   ],
 
+  erase: [
+    require('../assets/audio/erase01.wav'),
+    require('../assets/audio/erase02.wav'),
+    require('../assets/audio/erase03.wav'),
+    require('../assets/audio/erase04.wav'),
+    require('../assets/audio/erase05.wav'),
+  ],
+
   gasp: [
     require('../assets/audio/gasp1.wav'),
     require('../assets/audio/gasp2.wav'),
@@ -45,6 +54,12 @@ const files = {
     require('../assets/audio/gasp7.wav'),
     require('../assets/audio/gasp8.wav'),
   ],
+
+  tension: require('../assets/audio/tension.mp3'),
+  darkMajor3: require('../assets/audio/darkMajor3.mp3'),
+  dark4: require('../assets/audio/dark4.mp3'),
+  darkAug4: require('../assets/audio/darkAug4.mp3'),
+  dark5: require('../assets/audio/dark5.mp3'),
 };
 
 export default cb => {

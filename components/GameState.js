@@ -3,12 +3,14 @@ import { AsyncStorage, Alert } from 'react-native';
 import {
   clone,
   randOfArr,
+  mathRandInc,
   timeStamp,
   timeStampToString,
   compareTwo,
   getTime,
   propsChanged,
   formatAuth,
+  pointCalc,
 } from '../constants/helperFuncs';
 import { dynamicMsg, forbiddenAuthDiffs } from '../constants/preset';
 import { withFirebase } from './Firebase';
@@ -22,7 +24,7 @@ const newGameState = (ps, override = null) => ({
   gamePaused: false,
   gameFinished: false,
 
-  time: null,
+  time: 0,
 
   points: 0,
 
@@ -59,7 +61,7 @@ const initialState = {
   gamePaused: false,
   gameFinished: false,
 
-  time: null,
+  time: 0,
 
   points: 0,
 
@@ -191,23 +193,37 @@ class GameState extends Component {
     this.props.firebase.typerListener(newTyper => this.onTyperChange(newTyper));
   }
 
-  async playSound({ name, index = null, cb }) {
-    if (!name) {
-      return console.log('no sound name provided');
+  async playSound(props, cb) {
+    /// bail if
+    // muted mode
+    if (this.state.muted) return;
+    // no sounds available
+    if (!this.state.sounds) return console.log('Sounds not loaded yet');
+
+    // pick out props
+    let name = props,
+      index = null;
+    if (typeof props === 'object') {
+      name = props.name;
+      index = props.index;
     }
 
-    if (!this.state.sounds) return console.log('Sounds not loaded yet');
-    console.log('playSound()...');
+    // bail if no sound selected
+    if (!name) return console.log('no sound name provided');
 
-    const sound = index
-      ? this.state.sounds[name][index]
-      : this.state.sounds[name];
+    let sound = this.state.sounds[name];
+
+    // located 1 level deep? pick index
+    if (Array.isArray(sound)) {
+      sound = sound[index || mathRandInc(0, sound.length - 1)];
+    }
 
     try {
       await sound.replayAsync();
+      console.log(`playSound()... (${name})`);
       this.tryCallback(cb);
     } catch (err) {
-      const errMsg = `Failed to play sound ${name} (${err})`;
+      const errMsg = `Failed to play sound (${name}): ${err}`;
       console.log(errMsg);
       this.tryCallback(cb, { err: errMsg });
     }
@@ -385,8 +401,6 @@ class GameState extends Component {
     if (typeof keyVal === 'function') {
       return this.setState(
         ps => {
-          console.log('new state', keyVal(ps));
-
           return keyVal(ps);
         },
         () => this.tryCallback(cb)
@@ -544,7 +558,7 @@ class GameState extends Component {
       level,
       time: getTime(time, output),
       score: {
-        points,
+        points: pointCalc(points, getTime(time, output).CCPS),
         timeStamp: timeStamp(),
       },
       text: title,
@@ -554,14 +568,14 @@ class GameState extends Component {
     this.setState({ latestScore }, () => {
       // new personal highscore?
       console.log('old', authTyper.highscore.points, 'new', points);
-      if (points > authTyper.highscore.points) {
-        if (!this.state.muted) this.playSound({ name: 'success' });
+      if (latestScore.score.points > authTyper.highscore.points) {
+        if (!this.state.muted) this.playSound('success');
 
         this.setState({ newHighscore: true }, () => {
           return this.saveScore(cb);
         });
       } else {
-        if (!this.state.muted) this.playSound({ name: 'fail' });
+        if (!this.state.muted) this.playSound('fail');
       }
 
       this.tryCallback(cb);
@@ -622,7 +636,18 @@ class GameState extends Component {
   };
 
   inputHandler({ pointsToAdd = 0, typedProps = {} }) {
-    let { index, input, output, remaining, ...typedRest } = typedProps;
+    const {
+      index = this.state.typed.index,
+      input,
+      output = this.state.material.text.substring(
+        0,
+        typedProps.index || this.state.typed.index
+      ),
+      remaining = this.state.material.text.substring(
+        typedProps.index || this.state.typed.index
+      ),
+      ...typedRest
+    } = typedProps;
 
     if (this.state.points + pointsToAdd < -10) {
       const res = randOfArr(dynamicMsg.gameOverText);
@@ -635,25 +660,22 @@ class GameState extends Component {
       ]);
     }
 
-    if (typedProps.index) {
-      if (!input) return console.log('Missing input to update typed-state');
-
-      output = output || this.state.material.text.substring(0, index);
-      remaining = remaining || this.state.material.text.substring(index);
-    }
-
-    const typed = typedProps.index
-      ? { ...typedRest, index, output, remaining }
-      : this.state.typed;
+    if (!input) return console.log('Missing input to update typed-state');
 
     this.setState(ps => ({
-      points: Math.round((ps.points + pointsToAdd) * 100) / 100, //Math.round((ps.points + pointsToAdd) * 100) / 100,
-      typed,
+      points: Math.round((ps.points + pointsToAdd) * 100) / 100,
+      typed: typedProps,
     }));
   }
 
-  addTick() {
-    this.setState(ps => ({ time: ps.time + 1 }));
+  addTick(cb) {
+    console.log('adding tick');
+    this.setState(
+      ps => ({ time: ps.time + 1 }),
+      () => {
+        this.tryCallback(cb);
+      }
+    );
   }
 
   setPushNav(pushNav = false) {
@@ -678,6 +700,8 @@ class GameState extends Component {
   prepareGame() {
     console.log('prepareGame()');
     if (this.state.gameON || this.state.gameStandby) return;
+
+    this.playSound('tension');
 
     this.setState(ps => ({
       ...newGameState(this.state),
@@ -709,6 +733,7 @@ class GameState extends Component {
         pushNav: gameFinished ? 'ScoreBoard' : false,
         msg: gameFinished ? 'Game finished' : 'Game ended',
         gameFinished,
+        time: ps.time && ps.time > 0 ? ps.time : 1,
         ...override,
       }),
       () => {

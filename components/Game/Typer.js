@@ -44,7 +44,7 @@ class Typer extends Component {
   render() {
     const { authUser } = this.props;
 
-    const { updateTyper } = this.props.gameSetters;
+    const { updateTyper, playSound } = this.props.gameSetters;
 
     return (
       <Section row align="flex-start">
@@ -56,12 +56,19 @@ class Typer extends Component {
             value={this.state.name}
             placeholder="unknown"
             on={{
-              onChangeText: name => this.setState({ name }),
+              onChangeText: name => {
+                playSound(
+                  name.length > this.state.name.length ? 'type' : 'erase'
+                );
+                this.setState({ name });
+              },
 
-              onBlur: () =>
+              onBlur: () => {
+                playSound('confirm');
                 updateTyper(authUser.uid, { name: this.state.name }, err => {
                   console.log(err ? err : 'Typer successfully updated!');
-                }),
+                });
+              },
             }}
             style={{ fontSize: 24 }}
           />
