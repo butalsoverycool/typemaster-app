@@ -2,8 +2,8 @@ import React from 'react';
 import * as antdIcons from '@ant-design/icons-react-native';
 import * as ICONS from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
-import Section from '../Section';
-import Text from '../Text';
+import Section from './Section';
+import Text from './Text';
 
 export default ({
   brand = 'AntDesign',

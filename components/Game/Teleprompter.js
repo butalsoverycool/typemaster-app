@@ -110,35 +110,43 @@ const AnimatedView = ({ typed, ...props }) => {
 
   return (
     <Section row fillW>
-      <Animated.View
+      {/* <Anim
         style={{
-          backgroundColor: bgAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: ['#eee', 'red'],
-          }),
           flex: 1,
           width: '100%',
         }}
+        duration={{ in: 200, out: 200 }}
+        reRunOnChange={typed.typoCount}
+        /* s 
+        anim={{
+          transform: [
+            {
+              key: 'translateX',
+              fromValue: 0,
+              toValue: 10,
+            },
+          ],
+        }}
+      > */}
+      {/* <Text style={localStyles.material}> */}
+      <Section
+        row
+        position="relative"
+        fillw
+        h={50}
+        align="flex-start"
+        style={{ overflow: 'hidden' }}
       >
-        {/* <Text style={localStyles.material}> */}
-        <Section
-          row
-          position="relative"
-          fillw
-          h={50}
-          align="flex-start"
-          style={{ overflow: 'hidden' }}
-        >
-          <TypedAnim char={typed.output[typed.output.length - 1]} />
-          <View padding={0} w={8} justify="center" style={styles.nextContainer}>
-            <Text style={styles.nextChar}>{nextChar}</Text>
-          </View>
-          <View style={{ flexWrap: 'nowrap', width: 'auto', height: 20 }}>
-            <Text style={styles.remaining}>{remaining}</Text>
-          </View>
-        </Section>
-        {/*  </Text> */}
-      </Animated.View>
+        <TypedAnim char={typed.output[typed.output.length - 1]} />
+        <View padding={0} w={8} justify="center" style={styles.nextContainer}>
+          <Text style={styles.nextChar}>{nextChar}</Text>
+        </View>
+        <View style={{ flexWrap: 'nowrap', width: 'auto', height: 20 }}>
+          <Text style={styles.remaining}>{remaining}</Text>
+        </View>
+      </Section>
+      {/*  </Text> */}
+      {/* </Anim> */}
     </Section>
   );
 };
@@ -155,7 +163,7 @@ class Teleprompter extends Component {
   render() {
     const { typed } = this.props.gameState;
 
-    return <MemoAnimated typed={typed} />;
+    return <AnimatedView typed={typed} />;
   }
 }
 

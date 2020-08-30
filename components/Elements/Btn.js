@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, TouchableHighlight, View } from 'react-native';
-import Section from '../Section';
-import Text from '../Text';
+import { StyleSheet, TouchableHighlight } from 'react-native';
+import Section from './Section';
+import Text from './Text';
 
 export default ({
   w,

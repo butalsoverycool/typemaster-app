@@ -16,7 +16,7 @@ import Level from './Level';
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
-import { View, Section, Anim } from '../Elements';
+import { View, Section, Anim, Loading } from '../Elements';
 
 import Form from '../Form';
 
@@ -64,7 +64,8 @@ class Game extends Component {
             },
           }}
         >
-          <Section justify="center" align="center">
+          {/* <Loading visible={loading} textContent="Loading typer" /> */}
+          {/* <Section justify="center" align="center">
             <Spinner
               visible={loading}
               color="#eee"
@@ -75,7 +76,7 @@ class Game extends Component {
               textContent="Checking last game..."
               cancelable={false}
             />
-          </Section>
+          </Section> */}
 
           <Anim
             enterOn={form !== null && form !== '' && !loading}

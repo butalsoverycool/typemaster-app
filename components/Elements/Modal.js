@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import Section from '../Section';
+import Section from './Section';
 
 class Modal extends Component {
   constructor(props) {

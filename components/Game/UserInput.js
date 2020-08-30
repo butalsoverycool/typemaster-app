@@ -42,7 +42,7 @@ class UserInput extends Component {
 
     this.onInput = this.onInput.bind(this);
     this.onBlur = this.onBlur.bind(this);
-    this.clickSound = this.clickSound.bind(this);
+    this.typeSound = this.typeSound.bind(this);
   }
 
   shouldComponentUpdate = np =>
@@ -56,13 +56,13 @@ class UserInput extends Component {
       'muted',
     ]);
 
-  clickSound() {
+  typeSound(name) {
     const {
-      sounds: { type: typeSounds },
+      sounds: { [name]: soundArr },
     } = this.props.gameState;
     const { playSound } = this.props.gameSetters;
 
-    playSound({ name: 'type', index: mathRandInc(0, typeSounds.length - 1) });
+    playSound({ name, index: mathRandInc(0, soundArr.length - 1) });
   }
 
   onInput = e => {
@@ -81,6 +81,7 @@ class UserInput extends Component {
       startGame,
       endGame,
       createLatestScore,
+      setGameState,
     } = this.props.gameSetters;
 
     if (gameStandby && !gameON && !gamePaused) startGame();
@@ -102,10 +103,18 @@ class UserInput extends Component {
     // update typed and points based on isTypo
     const isTypo = char !== material.text[typed.index];
 
-    if (!isTypo) {
-      if (!muted) {
-        this.clickSound();
-      }
+    if (isTypo) {
+      setGameState(
+        ps => ({
+          typed: { ...ps.typed, typoCount: ps.typed.typoCount + 1 },
+        }),
+        () => console.log('state updated to', typed.typoCount)
+      );
+    }
+
+    // sound
+    if (!muted) {
+      this.typeSound(isTypo ? 'gasp' : 'type');
     }
 
     // game over

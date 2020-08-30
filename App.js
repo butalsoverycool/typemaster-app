@@ -8,15 +8,11 @@ import getSounds from './constants/getSounds';
 import Header from './components/Header';
 import Nav from './components/Nav';
 
-import * as Font from 'expo-font';
-import { AppLoading } from 'expo';
-import { Section } from './components/Elements';
+import { View, Loading } from './components/Elements';
 
 import Firebase, { FirebaseContext } from './components/Firebase';
-import {
-  useFonts,
-  CutiveMono_400Regular,
-} from '@expo-google-fonts/cutive-mono';
+import { useFonts } from 'expo-font';
+import { CutiveMono_400Regular } from '@expo-google-fonts/cutive-mono';
 
 import { Monofett_400Regular } from '@expo-google-fonts/monofett';
 
@@ -25,6 +21,7 @@ console.log('react version:', REACT_VERSION);
 
 export default () => {
   const [appReady, setAppReady] = useState(false);
+  const [sounds, setSounds] = useState(null);
 
   let [cutiveLoaded] = useFonts({
     CutiveMono_400Regular,
@@ -33,24 +30,29 @@ export default () => {
   let [fettLoaded] = useFonts({
     Monofett_400Regular,
   });
-  const [sounds, setSounds] = useState(null);
 
-  const init = async () => {
-    getSounds(res => setSounds(res));
-  };
+  // all to load
+  const dependencies = [sounds, cutiveLoaded, fettLoaded];
 
+  // on mount
   useEffect(() => {
-    init();
+    getSounds(res => setSounds(res));
   }, []);
 
+  // on load
   useEffect(() => {
-    if (cutiveLoaded && sounds) {
+    // check if all loaded
+    if (!dependencies.some(dep => !dep)) {
       setAppReady(true);
     }
-  }, [cutiveLoaded, fettLoaded, sounds]);
+  }, dependencies);
 
   if (!appReady) {
-    return <AppLoading />;
+    return (
+      <View>
+        <Loading textContent="Initializing game" />
+      </View>
+    );
   }
 
   return (

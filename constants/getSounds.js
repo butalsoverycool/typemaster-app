@@ -5,44 +5,81 @@ const files = {
   fail: require('../assets/audio/fail.mp3'),
   success: require('../assets/audio/success.mp3'),
 
-  confirm1: require('../assets/audio/confirm1.wav'),
-  confirm2: require('../assets/audio/confirm2.wav'),
-  confirm3: require('../assets/audio/confirm3.wav'),
-  confirm4: require('../assets/audio/confirm4.wav'),
+  confirm: [
+    require('../assets/audio/confirm1.wav'),
+    require('../assets/audio/confirm2.wav'),
+    require('../assets/audio/confirm3.wav'),
+    require('../assets/audio/confirm4.wav'),
+  ],
 
-  type1: require('../assets/audio/type1.wav'),
-  type2: require('../assets/audio/type2.wav'),
-  type3: require('../assets/audio/type3.wav'),
-  type4: require('../assets/audio/type4.wav'),
-  type5: require('../assets/audio/type5.wav'),
-  type6: require('../assets/audio/type6.wav'),
-  type7: require('../assets/audio/type7.wav'),
-  type8: require('../assets/audio/type8.wav'),
-  type9: require('../assets/audio/type9.wav'),
-  type10: require('../assets/audio/type10.wav'),
-  type11: require('../assets/audio/type11.wav'),
-  type12: require('../assets/audio/type12.wav'),
-  type13: require('../assets/audio/type13.wav'),
-  type14: require('../assets/audio/type14.wav'),
-  type15: require('../assets/audio/type15.wav'),
-  type16: require('../assets/audio/type16.wav'),
-  type17: require('../assets/audio/type17.wav'),
-  type18: require('../assets/audio/type18.wav'),
-  type19: require('../assets/audio/type19.wav'),
-  type20: require('../assets/audio/type20.wav'),
+  type: [
+    require('../assets/audio/type1.wav'),
+    require('../assets/audio/type2.wav'),
+    require('../assets/audio/type3.wav'),
+    require('../assets/audio/type4.wav'),
+    require('../assets/audio/type5.wav'),
+    require('../assets/audio/type6.wav'),
+    require('../assets/audio/type7.wav'),
+    require('../assets/audio/type8.wav'),
+    require('../assets/audio/type9.wav'),
+    require('../assets/audio/type10.wav'),
+    require('../assets/audio/type11.wav'),
+    require('../assets/audio/type12.wav'),
+    require('../assets/audio/type13.wav'),
+    require('../assets/audio/type14.wav'),
+    require('../assets/audio/type15.wav'),
+    require('../assets/audio/type16.wav'),
+    require('../assets/audio/type17.wav'),
+    require('../assets/audio/type18.wav'),
+    require('../assets/audio/type19.wav'),
+    require('../assets/audio/type20.wav'),
+  ],
+
+  gasp: [
+    require('../assets/audio/gasp1.wav'),
+    require('../assets/audio/gasp2.wav'),
+    require('../assets/audio/gasp3.wav'),
+    require('../assets/audio/gasp4.wav'),
+    require('../assets/audio/gasp5.wav'),
+    require('../assets/audio/gasp6.wav'),
+    require('../assets/audio/gasp7.wav'),
+    require('../assets/audio/gasp8.wav'),
+  ],
 };
 
 export default cb => {
   const sounds = {};
   //const names = Object.keys(files);
 
-  const load = async name => {
+  const load = async (file, cb) => {
     const sound = new Audio.Sound();
-    await sound.loadAsync(files[name]);
-    sounds[name] = sound;
+    await sound.loadAsync(file);
+    cb(sound);
   };
 
-  Object.keys(files).forEach(name => load(name));
+  const loadOrLoop = (src, name, cb) => {
+    if (Array.isArray(src[name])) {
+      const subSounds = [];
+
+      src[name].forEach((item, nth) => {
+        load(item, sound => {
+          subSounds.push(sound);
+        });
+      });
+
+      cb(subSounds);
+    } else {
+      load(src[name], sound => {
+        cb(sound);
+      });
+    }
+  };
+
+  Object.keys(files).forEach(name => {
+    loadOrLoop(files, name, sound => {
+      sounds[name] = sound;
+    });
+  });
 
   return cb(sounds);
 };

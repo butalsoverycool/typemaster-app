@@ -191,7 +191,11 @@ class GameState extends Component {
     this.props.firebase.typerListener(newTyper => this.onTyperChange(newTyper));
   }
 
-  async playSound({ name = 'ding', index = null, cb }) {
+  async playSound({ name, index = null, cb }) {
+    if (!name) {
+      return console.log('no sound name provided');
+    }
+
     if (!this.state.sounds) return console.log('Sounds not loaded yet');
     console.log('playSound()...');
 
@@ -200,7 +204,7 @@ class GameState extends Component {
       : this.state.sounds[name];
 
     try {
-      await sound._55.replayAsync();
+      await sound.replayAsync();
       this.tryCallback(cb);
     } catch (err) {
       const errMsg = `Failed to play sound ${name} (${err})`;
@@ -378,6 +382,17 @@ class GameState extends Component {
   }
 
   setGameState = (keyVal, cb) => {
+    if (typeof keyVal === 'function') {
+      return this.setState(
+        ps => {
+          console.log('new state', keyVal(ps));
+
+          return keyVal(ps);
+        },
+        () => this.tryCallback(cb)
+      );
+    }
+
     console.log('setGameState()', Object.entries(keyVal));
     this.setState({ ...keyVal }, () => {
       this.tryCallback(cb);
@@ -540,9 +555,13 @@ class GameState extends Component {
       // new personal highscore?
       console.log('old', authTyper.highscore.points, 'new', points);
       if (points > authTyper.highscore.points) {
+        if (!this.state.muted) this.playSound({ name: 'success' });
+
         this.setState({ newHighscore: true }, () => {
           return this.saveScore(cb);
         });
+      } else {
+        if (!this.state.muted) this.playSound({ name: 'fail' });
       }
 
       this.tryCallback(cb);
@@ -643,9 +662,17 @@ class GameState extends Component {
 
   resetGame({ override = null, cb }) {
     console.log('resetGame()');
-    this.setState({ ...clone(initialState), ...override }, () => {
-      this.tryCallback(cb);
-    });
+    this.setState(
+      ps => ({
+        ...clone(initialState),
+        muted: ps.muted,
+        sounds: ps.sounds,
+        ...override,
+      }),
+      () => {
+        this.tryCallback(cb);
+      }
+    );
   }
 
   prepareGame() {

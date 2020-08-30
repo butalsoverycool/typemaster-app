@@ -7,5 +7,17 @@ import Btn from './Btn';
 import Icon from './Icon';
 import ScrollView from './ScrollView';
 import Anim from './Anim';
+import Loading from './Loading';
 
-export { Input, Modal, Section, Text, View, Btn, Icon, ScrollView, Anim };
+export {
+  Input,
+  Modal,
+  Section,
+  Text,
+  View,
+  Btn,
+  Icon,
+  ScrollView,
+  Anim,
+  Loading,
+};

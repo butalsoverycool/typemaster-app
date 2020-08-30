@@ -1,13 +1,12 @@
 import React, { Component, memo } from 'react';
 import { Animated, Easing } from 'react-native';
-import { propsChanged } from '../../../constants/helperFuncs';
 
 class Anim extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      styleProps: null,
+      styleProps: {},
       animArr: [],
       easing: null,
       prevChildren: null,
@@ -24,7 +23,7 @@ class Anim extends Component {
   // lifecycle? let's live here!
   componentDidUpdate(pp) {
     if (pp.enterOn !== true && this.props.enterOn === true) {
-      console.log('anim entering...');
+      // console.log('anim entering...');
       return this.animate();
     } else if (pp.exitOn !== true && this.props.exitOn === true) {
       // console.log('anim exiting...');
@@ -75,6 +74,7 @@ class Anim extends Component {
   }
 
   handleProps(prop, forwards) {
+    if (!prop) return null;
     return typeof prop === 'string' ? prop : forwards ? prop.in : prop.out;
   }
 
@@ -146,8 +146,6 @@ class Anim extends Component {
     this.setState({ styleProps, animArr }, () => {
       Animated.parallel(this.state.animArr).start(() => {
         this.setState({ hasEntered: forwards ? true : false }, () => {
-          // if(forwards) console.log('anim Enter done!')
-
           if (typeof this.props.cb === 'function') cb();
         });
       });
