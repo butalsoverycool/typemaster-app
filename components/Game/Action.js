@@ -27,7 +27,7 @@ class Action extends Component {
       <Section row justify="center" align="center">
         {!gameStandby && !gamePaused /*  || gameON */ && (
           <Btn
-            content={gameFinished ? 'Play again' : !gameON ? 'Play' : 'Stop'}
+            content={gameFinished ? 'Again' : !gameON ? 'Play' : 'Stop'}
             type="outline"
             w="80%"
             h={100}

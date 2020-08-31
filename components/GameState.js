@@ -211,6 +211,8 @@ class GameState extends Component {
     // bail if no sound selected
     if (!name) return console.log('no sound name provided');
 
+    console.log(`playSound()... (${name})`);
+
     let sound = this.state.sounds[name];
 
     // located 1 level deep? pick index
@@ -218,10 +220,38 @@ class GameState extends Component {
       sound = sound[index || mathRandInc(0, sound.length - 1)];
     }
 
+    // on playback status change
+    const onStatusChange = status => {
+      if (!status.isLoaded) {
+        // not loaded
+        if (status.error) {
+          console.log(
+            `Encountered a fatal error during playback: ${status.error}`
+          );
+        }
+      } else {
+        // loaded
+        if (status.isPlaying) {
+          // is playing
+        } else {
+          // stopped/paused
+        }
+
+        if (status.isBuffering) {
+          // Update your UI for the buffering state
+        }
+
+        if (status.didJustFinish && !status.isLooping) {
+          // on finish
+          this.tryCallback(cb);
+        }
+      }
+    };
+
+    sound.setOnPlaybackStatusUpdate(onStatusChange);
+
     try {
       await sound.replayAsync();
-      console.log(`playSound()... (${name})`);
-      this.tryCallback(cb);
     } catch (err) {
       const errMsg = `Failed to play sound (${name}): ${err}`;
       console.log(errMsg);

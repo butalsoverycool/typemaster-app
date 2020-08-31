@@ -10,9 +10,22 @@ class TabBar extends Component {
     super(props);
   }
 
+  componentDidMount() {
+    const {
+      state: { routes, index },
+      gameState: { nav },
+      gameSetters: { setGameState },
+    } = this.props;
+
+    // set starting route name
+    if (routes[index].name === 'Game') {
+      setGameState({ nav: routes[index].name });
+    }
+  }
+
   shouldComponentUpdate = np =>
     propsChanged(this.props, np, ['state', 'descriptors', 'navigation']) ||
-    this.props.gameState.pushNav !== np.gameState.pushNav;
+    propsChanged(this.props.gameState, np.gameState, ['pushNav', 'nav']);
 
   componentDidUpdate(pp) {
     const {
@@ -34,7 +47,6 @@ class TabBar extends Component {
     if (prevPushNav !== pushNav) {
       if (pushNav && typeof pushNav === 'string') {
         navigation.navigate(pushNav);
-        setGameState({ nav: pushNav });
 
         setPushNav(false);
       }
@@ -46,7 +58,13 @@ class TabBar extends Component {
   }
 
   render() {
-    const { state, descriptors, navigation, ...props } = this.props;
+    const {
+      state,
+      descriptors,
+      navigation,
+      gameSetters: { playSound },
+      ...props
+    } = this.props;
 
     return (
       <View
@@ -77,6 +95,10 @@ class TabBar extends Component {
 
             if (!isFocused && !event.defaultPrevented) {
               navigation.navigate(route.name);
+
+              const soundName =
+                index === 0 ? 'darkMajor3' : index === 1 ? 'dark4' : 'dark5';
+              playSound(soundName, () => console.log('played dark'));
             }
           };
 

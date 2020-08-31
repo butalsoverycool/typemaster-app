@@ -16,7 +16,10 @@ const styles = StyleSheet.create({
 const Nav = ({ authUser, ...props }) => {
   return (
     <View style={styles.container}>
-      <Tab.Navigator tabBar={props => <TabBar {...props} />}>
+      <Tab.Navigator
+        initialRouteName="Game"
+        tabBar={props => <TabBar {...props} />}
+      >
         <Tab.Screen name="Game" component={Game} />
         {authUser && <Tab.Screen name="ScoreBoard" component={ScoreBoard} />}
         <Tab.Screen name="About" component={About} />

@@ -18,3 +18,7 @@ web-build/
 # secrets
 env.js
 
+# audio
+assets/audio/*
+!assets/.txt
+
