@@ -10,7 +10,9 @@
 
 #
 
-###### A simple typing-game built with React Native.
+###### A simple typing-game built with React Native (expo).
+
+###### Users and scoreboard fight to death in a Firbase-cage.
 
 ###### Some standard RN-libraries are used.
 
@@ -18,9 +20,16 @@
 
 #
 
+## NOTES
+
+- Currently gitignoring audio-files. Hackers may silence the getSounds()-flow in the meantime.
+
+#
+
+#
+
 ## TODO
 
-- Setup middleware API for firebase db-requests (to replace ignored env.js)
-- Fix bugs
-- Official scoreboard
-- Layout
+- Setup middleware for db-requests
+- Fix just enough bugs to make the game enjoyable
+- Deploy
