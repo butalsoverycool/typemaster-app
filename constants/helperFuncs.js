@@ -248,7 +248,7 @@ export const loadSounds = async ({ src, cb }) => {
   });
 };
 
-export const playSound = async (src, cb) => {
+/* export const playSound = async (src, cb) => {
   try {
     await src.sound.replayAsync();
     tryCallBack(cb);
@@ -268,4 +268,86 @@ export const stopSound = async ({ sound, cb }) => {
     console.log(errMsg);
     cb({ err: errMsg });
   }
+}; */
+
+export const tryCallback = (cb, args = null) => {
+  if (typeof cb === 'function') cb(args);
+};
+
+export const replay = async (sound, cb) => {
+  try {
+    await sound.replayAsync();
+  } catch (err) {
+    const errMsg = `Failed to play sound (${name}): ${err}`;
+    console.log(errMsg);
+    tryCallBack(cb, { err: errMsg });
+  }
+};
+
+export const playSound = async (props, cb) => {
+  /// bail if
+  // muted mode
+  if (props.muted) return;
+
+  // if sound provided, just play
+  if (props.sound) {
+    return replay(props.sound, props.cb);
+  }
+
+  // no sounds available
+  if (!props.sounds) return console.log('Sounds not loaded yet');
+
+  // pick out props
+  let name = props,
+    index = null;
+  if (typeof props === 'object') {
+    name = props.name;
+    index = props.index;
+  }
+
+  // bail if no sound selected
+  if (!name) return console.log('no sound name provided');
+
+  console.log(`playSound()... (${name})`);
+
+  let sound = props.sounds[name];
+
+  // located 1 level deep? pick index
+  if (Array.isArray(sound)) {
+    sound = sound[index || mathRandInc(0, sound.length - 1)];
+  }
+
+  // on playback status change
+  const onStatusChange = status => {
+    if (!status.isLoaded) {
+      // not loaded
+      if (status.error) {
+        console.log(
+          `Encountered a fatal error during playback: ${status.error}`
+        );
+      }
+    } else {
+      // loaded
+      if (status.isPlaying) {
+        // is playing
+      } else {
+        // stopped/paused
+      }
+
+      if (status.isBuffering) {
+        // Update your UI for the buffering state
+      }
+
+      if (status.didJustFinish && !status.isLooping) {
+        // on finish
+        tryCallback(cb);
+      }
+    }
+  };
+
+  /* if (typeof sound.setOnPlaybackStatusUpdate === 'function') {
+    sound.setOnPlaybackStatusUpdate(onStatusChange);
+  } */
+
+  replay(sound, cb);
 };

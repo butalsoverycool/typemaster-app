@@ -62,29 +62,29 @@ const files = {
   dark5: require('../assets/audio/dark5.mp3'),
 };
 
+export const loadSound = async (file, cb) => {
+  const sound = new Audio.Sound();
+  await sound.loadAsync(file);
+  cb(sound);
+};
+
 export default cb => {
   const sounds = {};
   //const names = Object.keys(files);
-
-  const load = async (file, cb) => {
-    const sound = new Audio.Sound();
-    await sound.loadAsync(file);
-    cb(sound);
-  };
 
   const loadOrLoop = (src, name, cb) => {
     if (Array.isArray(src[name])) {
       const subSounds = [];
 
       src[name].forEach((item, nth) => {
-        load(item, sound => {
+        loadSound(item, sound => {
           subSounds.push(sound);
         });
       });
 
       cb(subSounds);
     } else {
-      load(src[name], sound => {
+      loadSound(src[name], sound => {
         cb(sound);
       });
     }

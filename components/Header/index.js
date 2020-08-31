@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Image } from 'react-native';
 import { Section, Text } from '../Elements';
 import Audio from './Audio';
+const logo = require('../../assets/logo_txt.png');
 
 const styles = StyleSheet.create({
   container: {
@@ -16,6 +17,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'CutiveMono_400Regular',
   },
+  logo: {
+    width: 150,
+    height: 50,
+  },
 });
 
 export default props => {
@@ -26,8 +31,8 @@ export default props => {
         <Section w={60}>
           <Text></Text>
         </Section>
-        <Section flex={1}>
-          <Text style={styles.title}>Type Master</Text>
+        <Section flex={1} fillH padding={10} align="center" justify="center">
+          <Image style={styles.logo} source={logo} />
         </Section>
 
         <Section w={60}>

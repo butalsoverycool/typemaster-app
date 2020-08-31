@@ -20,6 +20,16 @@ class Anim extends Component {
     this.exit = this.exit.bind(this);
   }
 
+  componentDidMount() {
+    if (this.props.autoStart) {
+      const delay = this.props.delay || 0;
+
+      setTimeout(() => {
+        return this.animate();
+      }, delay);
+    }
+  }
+
   // lifecycle? let's live here!
   componentDidUpdate(pp) {
     if (pp.enterOn !== true && this.props.enterOn === true) {
@@ -50,7 +60,7 @@ class Anim extends Component {
             this.animate({
               cb: () => {
                 // console.log('anim ReRun done!');
-                this.tryCallback(cb);
+                this.tryCallback(this.props.rerunCallback);
               },
             });
           });
@@ -66,7 +76,7 @@ class Anim extends Component {
         cb: () => {
           this.setState({ prevChildren: null }, () => {
             // console.log('anim Exit done!');
-            this.tryCallback(cb);
+            this.tryCallback(this.props.exitCallback);
           });
         },
       });
@@ -84,7 +94,7 @@ class Anim extends Component {
       anim = this.props.anim,
       duration = this.props.duration,
       easing = this.props.easing,
-      cb = this.props.cb || null,
+      cb = this.props.enterCallback,
     } = conf;
 
     //const { anim, duration, easing } = this.props;
@@ -106,6 +116,8 @@ class Anim extends Component {
 
     const addToStyleProps = (key, ref) => {
       styleProps[key] = ref;
+
+      this.setState({ styleProps });
     };
 
     Object.entries(anim).forEach(([key, val]) => {
@@ -146,13 +158,14 @@ class Anim extends Component {
     this.setState({ styleProps, animArr }, () => {
       Animated.parallel(this.state.animArr).start(() => {
         this.setState({ hasEntered: forwards ? true : false }, () => {
-          if (typeof this.props.cb === 'function') cb();
+          if (typeof cb === 'function') cb();
         });
       });
     });
   }
 
   render() {
+    console.log('anim render', this.state.styleProps);
     return (
       <Animated.View
         style={[
