@@ -20,5 +20,5 @@ env.js
 
 # audio
 assets/audio/*
-!assets/*.txt
+!assets/audio.txt
 
