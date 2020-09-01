@@ -2,7 +2,7 @@ import React, { Component, memo } from 'react';
 import { withState } from '../GameState';
 import styles from './styles';
 import theme from '../../constants/theme';
-import { propsChanged } from '../../constants/helperFuncs';
+import { propsChanged, playSound } from '../../constants/helperFuncs';
 import { IconPreset } from '../../constants/preset';
 
 import { Section, Icon } from '../Elements';
@@ -52,6 +52,9 @@ class CancelGame extends Component {
   handleStop() {
     const { gameState, gameSetters } = this.props;
     const { typed } = gameState;
+
+    gameSetters.playSound('pop');
+
     const finished = typed.output && typed.output !== '';
 
     gameSetters.endGame({ gameFinished: finished });

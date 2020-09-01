@@ -11,6 +11,7 @@ import {
   propsChanged,
   formatAuth,
   pointCalc,
+  playSound,
 } from '../constants/helperFuncs';
 import { dynamicMsg, forbiddenAuthDiffs } from '../constants/preset';
 import { withFirebase } from './Firebase';
@@ -194,7 +195,14 @@ class GameState extends Component {
   }
 
   async playSound(props, cb) {
-    /// bail if
+    name = typeof props === 'string' ? props : props.name;
+    playSound(
+      { ...props, name, muted: this.state.muted, sounds: this.state.sounds },
+      cb
+    );
+  }
+
+  /* /// bail if
     // muted mode
     if (this.state.muted) return;
     // no sounds available
@@ -256,8 +264,8 @@ class GameState extends Component {
       const errMsg = `Failed to play sound (${name}): ${err}`;
       console.log(errMsg);
       this.tryCallback(cb, { err: errMsg });
-    }
-  }
+    } 
+  }*/
 
   onTyperChange(newTyper) {
     console.log('onTyperChange()...');
@@ -605,7 +613,7 @@ class GameState extends Component {
           return this.saveScore(cb);
         });
       } else {
-        if (!this.state.muted) this.playSound('fail');
+        if (!this.state.muted) this.playSound('pop');
       }
 
       this.tryCallback(cb);
@@ -779,6 +787,8 @@ class GameState extends Component {
     const msg = this.state.gamePaused
       ? 'To continue, just start typing...'
       : 'Game paused';
+
+    this.playSound(this.state.gamePaused ? 'tension' : 'pop');
 
     this.setState(ps => ({
       msg,

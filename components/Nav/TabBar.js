@@ -96,9 +96,7 @@ class TabBar extends Component {
             if (!isFocused && !event.defaultPrevented) {
               navigation.navigate(route.name);
 
-              const soundName =
-                index === 0 ? 'darkMajor3' : index === 1 ? 'dark4' : 'dark5';
-              playSound(soundName, () => console.log('played dark'));
+              playSound({ name: `tab${index + 1}` });
             }
           };
 

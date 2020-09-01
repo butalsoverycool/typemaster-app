@@ -1,9 +1,11 @@
 import { Audio } from 'expo-av';
 
 const files = {
+  main: require('../assets/audio/main.mp3'),
   ding: require('../assets/audio/ding.wav'),
   fail: require('../assets/audio/fail.mp3'),
   success: require('../assets/audio/success.mp3'),
+  back: require('../assets/audio/success.mp3'),
 
   confirm: [
     require('../assets/audio/confirm1.wav'),
@@ -56,15 +58,40 @@ const files = {
   ],
 
   tension: require('../assets/audio/tension.mp3'),
-  darkMajor3: require('../assets/audio/darkMajor3.mp3'),
-  dark4: require('../assets/audio/dark4.mp3'),
-  darkAug4: require('../assets/audio/darkAug4.mp3'),
-  dark5: require('../assets/audio/dark5.mp3'),
+
+  tab1: require('../assets/audio/tab1.mp3'),
+  tab2: require('../assets/audio/tab2.mp3'),
+  tab3: require('../assets/audio/tab3.mp3'),
+
+  pop: [
+    require('../assets/audio/pop01.wav'),
+    require('../assets/audio/pop02.wav'),
+
+    require('../assets/audio/pop03.wav'),
+
+    require('../assets/audio/pop04.wav'),
+  ],
 };
 
-export const loadSound = async (file, cb) => {
+export const loadSound = async ({ file, name }, cb) => {
   const sound = new Audio.Sound();
   await sound.loadAsync(file);
+  if (name === 'confirm') {
+    await sound.setVolumeAsync(0.2);
+  }
+
+  if (name === 'main') {
+    await sound.setVolumeAsync(0.2);
+  }
+  if (
+    name === 'erase' ||
+    name === 'type' ||
+    name === 'success' ||
+    name === 'gasp'
+  ) {
+    await sound.setVolumeAsync(0.3);
+  }
+
   cb(sound);
 };
 
@@ -76,15 +103,15 @@ export default cb => {
     if (Array.isArray(src[name])) {
       const subSounds = [];
 
-      src[name].forEach((item, nth) => {
-        loadSound(item, sound => {
+      src[name].forEach((file, nth) => {
+        loadSound({ file, name }, sound => {
           subSounds.push(sound);
         });
       });
 
       cb(subSounds);
     } else {
-      loadSound(src[name], sound => {
+      loadSound({ file: src[name], name }, sound => {
         cb(sound);
       });
     }

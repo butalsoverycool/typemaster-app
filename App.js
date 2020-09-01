@@ -1,8 +1,8 @@
-import { Image, Text, Dimensions, Animated } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View } from 'react-native';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
-import React, { useState, useEffect } from 'react';
 
 import GameState from './components/GameState';
 import getSounds, { loadSound } from './constants/getSounds';
@@ -11,91 +11,87 @@ import Nav from './components/Nav';
 
 import { playSound } from './constants/helperFuncs';
 
-import { View, Loading, Section, Anim } from './components/Elements';
-
-import { Asset } from 'expo-asset';
-
 import Firebase, { FirebaseContext } from './components/Firebase';
 import { useFonts } from 'expo-font';
 import { CutiveMono_400Regular } from '@expo-google-fonts/cutive-mono';
 
 import { Monofett_400Regular } from '@expo-google-fonts/monofett';
 
-import * as SplashScreen from 'expo-splash-screen';
-
 import Splash from './components/Splash';
 
-const tensionFile = require('./assets/audio/tension.mp3');
-
-//const splash = require('./assets/imgs/typemaster_splash.png');
+const introSoundFile = require('./assets/audio/main.mp3');
 
 console.log(`(React version: ${React.version})`);
 
 export default () => {
   const [appReady, setAppReady] = useState(false);
+  const [splashRunning, setSplashRunning] = useState(false);
   const [splashDone, setSplashDone] = useState(false);
-  const [tension, setTension] = useState(null);
+  const [introSound, setIntroSound] = useState(null);
   const [sounds, setSounds] = useState(null);
-  const [splashVisible, setSplashVisible] = useState(false);
 
-  const [splash, setSplash] = useState(null);
-  const [splashReady, setSplashReady] = useState(false);
+  const [startTimeout, setStartTimeout] = useState(null);
 
-  let [cutiveLoaded] = useFonts({
+  let [cutiveMono] = useFonts({
     CutiveMono_400Regular,
   });
 
-  let [fettLoaded] = useFonts({
+  let [monoFett] = useFonts({
     Monofett_400Regular,
   });
 
-  // gather what to load
+  // appReady-dependencies
   const dependencies = [
-    tension,
+    introSound,
     sounds,
-    cutiveLoaded,
-    fettLoaded,
-    splashVisible,
+    cutiveMono,
+    monoFett,
+    splashRunning,
   ];
 
   // on mount
   useEffect(() => {
-    loadSound(tensionFile, tension => setTension(tension));
-    // get sounds once
-    getSounds(res => setSounds(res));
+    // get intro-sound
+    loadSound({ file: introSoundFile, name: 'main' }, sound => {
+      setIntroSound(sound);
+
+      // then game sounds
+      getSounds(res => setSounds(res));
+    });
+
+    // cleanup worker
+    return () => {
+      clearTimeout(startTimeout);
+    };
   }, []);
 
+  // play intro-sound when available
   useEffect(() => {
-    if (tension) {
-      playSound({ sound: tension });
+    if (introSound) {
+      playSound({ sound: introSound });
     }
-  }, [tension]);
+  }, [introSound]);
 
-  // on load
+  // on dependencies-update
   useEffect(() => {
-    // check if all loaded
+    // all loaded = app ready
     if (!dependencies.some(dep => !dep)) {
-      setTimeout(() => {
-        setAppReady(true);
-      }, 1200);
+      // buy splash some time
+      setStartTimeout(
+        setTimeout(() => {
+          setAppReady(true);
+        }, 1200)
+      );
     }
   }, dependencies);
 
-  useEffect(() => {
-    if (appReady) {
-      //SplashScreen.hideAsync();
-    }
-  }, [appReady]);
-
-  //if (!splash) return null;
-
-  if (!tension) return null;
+  if (!introSound) return null;
 
   if (!splashDone || !appReady) {
     return (
       <View>
         <Splash
-          enterCallback={() => setSplashVisible(true)}
+          enterCallback={() => setSplashRunning(true)}
           exitOn={appReady}
           exitCallback={() => setSplashDone(true)}
         />

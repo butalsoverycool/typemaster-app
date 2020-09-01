@@ -139,6 +139,10 @@ class UserInput extends Component {
     // update typed and points based on isTypo
     const isTypo = char !== material.text[typed.index];
 
+    const remaining = isTypo
+      ? material.text.substring(typed.index)
+      : material.text.substring(typed.index + 1);
+
     if (isTypo) {
       setGameState(
         ps => ({
@@ -149,7 +153,7 @@ class UserInput extends Component {
     }
 
     // sound
-    if (!muted) {
+    if (!muted && remaining.length > 0) {
       this.typeSound(isTypo ? 'gasp' : 'type');
     }
 
@@ -171,9 +175,7 @@ class UserInput extends Component {
       index: isTypo ? typed.index : typed.index + 1,
       input: typed.input + char,
       output: isTypo ? typed.output : typed.output + char,
-      remaining: isTypo
-        ? material.text.substring(typed.index)
-        : material.text.substring(typed.index + 1),
+      remaining,
       typoCount: isTypo ? typed.typoCount + 1 : typed.typoCount,
     };
 

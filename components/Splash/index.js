@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Image, Text, Dimensions, Animated, Easing } from 'react-native';
+import { Dimensions, Animated, Easing } from 'react-native';
 import { Asset } from 'expo-asset';
 
 export default props => {
@@ -29,25 +29,20 @@ export default props => {
   };
 
   const exit = cb => {
-    console.log('exiting....');
     Animated.timing(opacity, {
       toValue: 0,
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
-      console.log('anim done, cb...');
       if (typeof cb === 'function') cb();
     });
   };
 
   const onLoad = () => {
-    console.log('splash loaded, starting anim');
     enter();
   };
 
   const loadSplash = () => {
-    console.log('loading splash');
-    //await Asset.loadAsync([require('./assets/imgs/typemaster_splash.png')]);
     const img = Asset.fromModule(
       require('../../assets/imgs/typemaster_splash.png')
     ).uri;
@@ -76,12 +71,6 @@ export default props => {
         style={{
           opacity,
           transform: [
-            /* {
-              scale: opacity.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0.85, 1],
-              }),
-            }, */
             {
               translateX: x,
             },
