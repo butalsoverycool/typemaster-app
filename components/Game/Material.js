@@ -35,7 +35,7 @@ class Material extends Component {
     const { endGame } = gameSetters;
 
     return (
-      <Section flex={1}>
+      <Section flex={1} spaceTop={10}>
         {gamePaused ? null : gameStandby || gameON ? (
           <Teleprompter />
         ) : title && text ? (

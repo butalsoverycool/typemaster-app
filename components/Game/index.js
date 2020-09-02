@@ -105,7 +105,7 @@ class Game extends Component {
           </Anim>
 
           {authUser && (
-            <Section padding={0} flex={1}>
+            <Section padding={0} flex={1} fullH justify="space-between">
               <Msg />
 
               {(gameStandby || gameON || gamePaused) && <Status />}

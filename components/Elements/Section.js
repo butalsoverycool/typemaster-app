@@ -20,6 +20,7 @@ const VIEW = ({
   position,
   padding,
   margin,
+  logStyle,
   ...props
 }) => {
   const flexOverride = {
@@ -29,8 +30,12 @@ const VIEW = ({
     minWidth: fillW ? '100%' : null,
     minHeight: fillH ? '100%' : null,
     backgroundColor: bg ? bg : styles.section.backgroundColor,
-    marginTop: spaceTop ? spaceTop || 20 : 0,
-    marginBottom: spaceBottom ? spaceBottom || 20 : 0,
+    marginTop: !spaceTop ? 0 : typeof spaceTop === 'number' ? spaceTop : 20,
+    marginBottom: !spaceBottom
+      ? 0
+      : typeof spaceBottom === 'number'
+      ? spaceBottom
+      : 20,
     width: w ? w : '100%',
     height: h ? h : 'auto',
     flex,
@@ -39,6 +44,14 @@ const VIEW = ({
     padding: padding || styles.section.padding,
     margin: margin || styles.section.margin,
   };
+
+  if (logStyle) {
+    console.log(`${logStyle} style:`, {
+      ...styles.section,
+      ...flexOverride,
+      ...customStyle,
+    });
+  }
 
   return (
     <View style={[styles.section, flexOverride, customStyle]} {...props}>

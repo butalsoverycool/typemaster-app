@@ -15,6 +15,8 @@ const Btn = ({
   fontSize,
   buttonStyle,
   textStyle,
+  margin,
+  padding,
   spaceTop,
   spaceBottom,
   content,
@@ -22,6 +24,7 @@ const Btn = ({
   textAlign,
   children,
   fontFamily,
+  logStyle,
   ...props
 }) => {
   const buttonOverride = {
@@ -37,6 +40,9 @@ const Btn = ({
     backgroundColor: outline
       ? color || '#eee'
       : bg || styles.button.backgroundColor,
+
+    padding: padding != null ? padding : styles.button.padding,
+    margin: margin != null ? margin : styles.button.margin,
     marginTop: spaceTop
       ? typeof spaceTop === 'number'
         ? spaceTop
@@ -62,9 +68,16 @@ const Btn = ({
     content
   );
 
+  if (logStyle) {
+    console.log(`${logStyle} style:`, {
+      btn: { ...buttonOverride, ...buttonStyle },
+      conentContainer: styles.contentContainer,
+    });
+  }
+
   return (
     <TouchableHighlight style={[buttonOverride, buttonStyle]} {...props}>
-      <Section padding={0} style={styles.contentContainer}>
+      <Section padding={0} margin={0} bg="pink" style={styles.contentContainer}>
         {child}
       </Section>
     </TouchableHighlight>

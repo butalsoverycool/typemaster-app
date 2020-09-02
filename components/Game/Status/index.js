@@ -9,7 +9,7 @@ import Speed from './Speed';
 
 const Status = ({ gameState: { gameFinished } }) => {
   return (
-    <Section row wrap="wrap">
+    <Section row wrap="wrap" spaceTop={10}>
       <Time />
 
       <Points />

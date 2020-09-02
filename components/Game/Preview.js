@@ -49,11 +49,13 @@ class Preview extends Component {
     const { setMaterial } = this.props.gameSetters;
 
     return (
-      <Section spaceTop={0}>
-        <Text style={theme.subtitle}>Text to type</Text>
+      <Section justify="flex-start" align="flex-start" fillW padding={30}>
+        <Text style={[theme.subtitle, { textAlign: 'left' }]}>
+          Text to type
+        </Text>
 
-        <Section row>
-          <Section align="space-around" flex={1}>
+        <Section row spaceBottom={10} justify="flex-start">
+          <Section align="flex-start" w={60} style={{ marginRight: 10 }}>
             <Text style={theme.label}>Title</Text>
             <Text style={theme.label}>Length</Text>
             <Text style={theme.label}>Level</Text>
@@ -66,11 +68,15 @@ class Preview extends Component {
         </Section>
 
         <Btn
+          margin={0}
+          padding={0}
           w={150}
           h={50}
+          outline
           fontSize={20}
-          content="change text"
+          content="pick text"
           onPress={setMaterial}
+          logStyle="Pick text"
         />
       </Section>
     );

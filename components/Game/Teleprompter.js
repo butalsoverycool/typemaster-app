@@ -109,26 +109,7 @@ const AnimatedView = ({ typed, ...props }) => {
   const remaining = typed.remaining.substring(1);
 
   return (
-    <Section row fillW>
-      {/* <Anim
-        style={{
-          flex: 1,
-          width: '100%',
-        }}
-        duration={{ in: 200, out: 200 }}
-        reRunOnChange={typed.typoCount}
-        /* s 
-        anim={{
-          transform: [
-            {
-              key: 'translateX',
-              fromValue: 0,
-              toValue: 10,
-            },
-          ],
-        }}
-      > */}
-      {/* <Text style={localStyles.material}> */}
+    <Section row fillW spaceTop>
       <Section
         row
         position="relative"
@@ -145,8 +126,6 @@ const AnimatedView = ({ typed, ...props }) => {
           <Text style={styles.remaining}>{remaining}</Text>
         </View>
       </Section>
-      {/*  </Text> */}
-      {/* </Anim> */}
     </Section>
   );
 };

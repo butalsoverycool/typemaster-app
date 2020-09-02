@@ -24,7 +24,7 @@ class Action extends Component {
     const { prepareGame, endGame } = gameSetters;
 
     return (
-      <Section row justify="center" align="center">
+      <Section row align="center" padding={0}>
         {!gameStandby && !gamePaused /*  || gameON */ && (
           <Btn
             content={gameFinished ? 'Again' : !gameON ? 'Play' : 'Stop'}
