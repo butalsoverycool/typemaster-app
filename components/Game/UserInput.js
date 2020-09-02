@@ -214,7 +214,7 @@ class UserInput extends Component {
   };
 
   render() {
-    console.log('Rendering <UserInput />');
+    // console.log('Rendering <UserInput />');
     const { gameState } = this.props;
 
     if (!gameState) return null;

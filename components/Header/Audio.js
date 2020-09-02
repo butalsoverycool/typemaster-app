@@ -10,10 +10,9 @@ const Audio = ({
 }) => {
   return (
     <Icon
-      brand={muted ? IconPreset.mute.brand : IconPreset.sound.brand}
-      name={muted ? IconPreset.mute.name : IconPreset.sound.name}
+      brand="custom"
+      name={muted ? 'muted' : 'sound'}
       label="Sound"
-      color={muted ? 'red' : '#444'}
       size={40}
       onPress={() => setGameState({ muted: !muted })}
     />

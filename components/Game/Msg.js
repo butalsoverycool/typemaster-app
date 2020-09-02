@@ -30,13 +30,7 @@ class Msg extends Component {
 
     const list = msgArr.map((msg, nth) => ({
       msg,
-      icon: (
-        <Icon
-          brand={IconPreset.info.brand}
-          name={IconPreset.info.name}
-          size={20}
-        />
-      ),
+      icon: <Icon brand="custom" name="info" size={20} />,
     }));
 
     return (

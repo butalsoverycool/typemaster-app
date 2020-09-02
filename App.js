@@ -10,6 +10,7 @@ import Header from './components/Header';
 import Nav from './components/Nav';
 
 import { playSound } from './constants/helperFuncs';
+import getImgs from './constants/imgs';
 
 import Firebase, { FirebaseContext } from './components/Firebase';
 import { useFonts } from 'expo-font';
@@ -29,6 +30,7 @@ export default () => {
   const [splashDone, setSplashDone] = useState(false);
   const [introSound, setIntroSound] = useState(null);
   const [sounds, setSounds] = useState(null);
+  const [imgs, setImgs] = useState(null);
 
   const [startTimeout, setStartTimeout] = useState(null);
 
@@ -47,6 +49,7 @@ export default () => {
     cutiveMono,
     monoFett,
     splashRunning,
+    imgs,
   ];
 
   // on mount
@@ -56,7 +59,10 @@ export default () => {
       setIntroSound(sound);
 
       // then game sounds
-      getSounds(res => setSounds(res));
+      getSounds(sounds => setSounds(sounds));
+
+      // load/cache imgs
+      getImgs({ cb: imgs => setImgs(imgs) });
     });
 
     // cleanup worker
@@ -103,7 +109,7 @@ export default () => {
   return (
     <NavigationContainer>
       <FirebaseContext.Provider value={new Firebase()}>
-        <GameState sounds={sounds}>
+        <GameState sounds={sounds} imgs={imgs}>
           <PaperProvider>
             <Header />
 

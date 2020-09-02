@@ -74,9 +74,8 @@ class Preview extends Component {
           h={50}
           outline
           fontSize={20}
-          content="pick text"
+          content="Pick text"
           onPress={setMaterial}
-          logStyle="Pick text"
         />
       </Section>
     );

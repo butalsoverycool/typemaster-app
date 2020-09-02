@@ -66,27 +66,20 @@ class CancelGame extends Component {
     const { togglePauseGame, endGame } = gameSetters;
 
     return (
-      <Section
-        row
-        justify="space-around"
-        fillW
-        spaceTop={10}
-        bg="orange"
-        logStyle="CancelGame Section"
-      >
+      <Section row justify="space-around" fillW spaceTop={10}>
         {(gameON || gamePaused) && (
           <Icon
-            brand={gamePaused ? IconPreset.play.brand : IconPreset.pause.brand}
-            name={gamePaused ? IconPreset.play.name : IconPreset.pause.name}
+            brand="custom"
+            name={gamePaused ? 'play' : 'pause'}
             onPress={togglePauseGame}
             label={gamePaused ? 'continue' : 'pause'}
           />
         )}
 
         <Icon
-          brand={gameON ? IconPreset.stop.brand : IconPreset.back.brand}
-          name={gameON ? IconPreset.stop.name : IconPreset.back.name}
-          onPress={this.handleStop}
+          brand="custom"
+          name={gameON ? 'stop' : 'back'}
+          on={{ onPress: this.handleStop }}
           label={gameON ? 'stop' : 'back'}
         />
       </Section>

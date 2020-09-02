@@ -39,7 +39,7 @@ class Anim extends Component {
       // console.log('anim exiting...');
       return this.exit(pp);
     } else if (
-      pp.reRunOnChange !== this.props.reRunOnChange &&
+      pp.rerunOnChange !== this.props.rerunOnChange &&
       this.props.exitOn !== true
     ) {
       // console.log('anim reRunning...');
@@ -52,7 +52,7 @@ class Anim extends Component {
   }
 
   reRun(prevProps, cb) {
-    this.setState({ prevChildren: prevProps.children }, () => {
+    this.setState({ prevChildren: null /*  prevProps.children */ }, () => {
       this.animate({
         forwards: false,
         cb: () => {
@@ -94,7 +94,7 @@ class Anim extends Component {
       anim = this.props.anim,
       duration = this.props.duration,
       easing = this.props.easing,
-      cb = this.props.enterCallback,
+      cb = conf.cb || this.props.enterCallback,
     } = conf;
 
     //const { anim, duration, easing } = this.props;
@@ -109,6 +109,7 @@ class Anim extends Component {
           toValue: forwards ? obj.toValue : obj.fromValue,
           duration: this.handleProps(duration, forwards),
           easing: Easing[this.handleProps(easing, forwards)],
+          delay: this.props.delay || 0,
           useNativeDriver: true,
         })
       );
@@ -165,7 +166,7 @@ class Anim extends Component {
   }
 
   render() {
-    console.log('anim render', this.state.styleProps);
+    //console.log('anim render', this.state.styleProps);
     return (
       <Animated.View
         style={[

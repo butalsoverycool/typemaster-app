@@ -1,21 +1,83 @@
-import React from 'react';
-import * as antdIcons from '@ant-design/icons-react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Image, TouchableHighlight } from 'react-native';
 import * as ICONS from '@expo/vector-icons';
-import { StyleSheet, View } from 'react-native';
+import { withState } from '../GameState';
 import Section from './Section';
 import Text from './Text';
+import Anim from './Anim';
+
+const customImgs = {
+  back: require('../../assets/imgs/btns/back.png'),
+};
+
+const Conventional = ({ brand, name, size, color, ...props }) => {
+  const Component = ICONS[brand];
+
+  if (!Component) return null;
+
+  return <Component name={name} size={size} color={color} {...props} />;
+};
+
+const custom = ({ name, size, gameState: { imgs }, ...props }) => {
+  const [fadeIn, setFadeIn] = useState(false);
+
+  if (!imgs) return null;
+
+  console.log('naaame', name);
+  return (
+    <Anim
+      enterOn={fadeIn}
+      duration={{ in: 300, out: 300 }}
+      easing={{ in: 'ease-out', out: 'ease' }}
+      anim={{
+        opacity: {
+          fromValue: 0,
+          toValue: 1,
+        },
+      }}
+      style={{ opacity: 0 }}
+    >
+      <Image
+        onLoad={() => setFadeIn(true)}
+        source={imgs[name]}
+        style={{ width: size, height: size }}
+        resizeMode="contain"
+        {...props}
+      />
+    </Anim>
+  );
+};
+
+const Custom = withState(custom);
 
 export default ({
   brand = 'AntDesign',
+  name,
   size = 50,
   color = '#444',
   label,
   labelPos = 'bottom',
   bg,
   on,
+  onPress,
   ...props
 }) => {
-  const Component = ICONS[brand];
+  const Icon = () =>
+    brand !== 'custom' ? (
+      <Conventional
+        brand={brand}
+        name={name}
+        size={size}
+        color={color}
+        {...props}
+      />
+    ) : (
+      <Custom name={name} size={size} {...props} />
+    );
+
+  if (props.logOn) {
+    console.log(props.logOn, 'ON props', on);
+  }
 
   return (
     <Section
@@ -24,13 +86,18 @@ export default ({
       h={size + (label ? 15 : 0)}
       flex={1}
       bg={bg || null}
-      {...on}
     >
-      {label && labelPos === 'top' && <Text style={styles.label}>{label}</Text>}
-      <Component size={size} color={color} {...props} />
-      {label && labelPos === 'bottom' && (
-        <Text style={styles.label}>{label}</Text>
-      )}
+      <TouchableHighlight {...on} onPress={onPress} activeOpacity={1}>
+        <Section>
+          {label && labelPos === 'top' && (
+            <Text style={styles.label}>{label}</Text>
+          )}
+          <Icon />
+          {label && labelPos === 'bottom' && (
+            <Text style={styles.label}>{label}</Text>
+          )}
+        </Section>
+      </TouchableHighlight>
     </Section>
   );
 };

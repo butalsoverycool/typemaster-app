@@ -95,6 +95,7 @@ const initialState = {
 
   muted: false,
   sounds: null,
+  imgs: null,
 };
 
 class GameState extends Component {
@@ -185,7 +186,7 @@ class GameState extends Component {
     ); */
 
     // sounds
-    this.setState({ sounds: this.props.sounds });
+    this.setState({ sounds: this.props.sounds, imgs: this.props.imgs });
 
     // auth-changes
     this.props.firebase.onAuthUserListener(this.onSignIn, this.onSignOut);
@@ -707,7 +708,6 @@ class GameState extends Component {
   }
 
   addTick(cb) {
-    console.log('adding tick');
     this.setState(
       ps => ({ time: ps.time + 1 }),
       () => {

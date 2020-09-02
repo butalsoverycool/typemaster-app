@@ -81,7 +81,7 @@ class Game extends Component {
           <Anim
             enterOn={form !== null && form !== '' && !loading}
             exitOn={form === null || form === '' || loading}
-            reRunOnChange={form}
+            rerunOnChange={form}
             hideOnExit={true}
             duration={{ in: 700, out: 200 }}
             easing={{ in: 'bounce', out: 'ease' }}

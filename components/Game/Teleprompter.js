@@ -18,31 +18,51 @@ const getScale = () => {
   return res;
 };
 
-const TypedAnim = ({ char, ...props }) => {
+const TypedCorrect = ({ char, gameON, ...props }) => {
+  const [firstRender, setFirstRender] = useState(true);
   const [start, setStart] = useState(false);
+  const [rerunSwitch, setRerunSwitch] = useState(false);
   const [xMove, setXMove] = useState(getXMove());
   const [scale, setScale] = useState(getScale());
 
+  // const xMove = useRef(new Animated.Value(0))
+  // const scale = useRef(new Animated.Value(1))
+
+  // const animate = () => {
+
+  //     Animated.timing(xMove, {
+
+  //     })
+  // }
+
   useEffect(() => {
-    if (char && char !== '' && !start) {
+    /* if (char && char !== '' && !start) {
       setStart(true);
     }
+    setFirstRender(false); */
   }, []);
 
   useEffect(() => {
-    if (!start) {
+    if (!gameON) return;
+
+    // running
+    if (char && char !== ' ' && start) {
+      setRerunSwitch(!rerunSwitch);
+    } else if (char !== ' ' && !start) {
       setStart(true);
     }
+    // animate();
     setXMove(getXMove());
     setScale(getScale());
   }, [char]);
 
   return (
-    <View style={styles.typedContainer}>
+    <Section fillH style={[styles.typedContainer, { zIndex: 2 }]}>
       <Anim
         enterOn={start}
-        duration={{ in: 150, out: 0 }}
-        easing={{ in: 'ease-out', out: 'ease' }}
+        rerunOnChange={rerunSwitch}
+        duration={{ in: 600, out: 0 }}
+        easing={{ in: 'ease-out', out: 'linear' }}
         anim={{
           opacity: {
             fromValue: 1,
@@ -66,16 +86,72 @@ const TypedAnim = ({ char, ...props }) => {
             },
           ],
         }}
-        style={{ position: 'absolute', top: 0, right: 0 }}
-        cb={() => setStart(false)}
+        style={{
+          position: 'absolute',
+          zIndex: 2,
+          top: 0,
+          right: 0,
+          display: !gameON ? 'none' : 'block',
+        }}
+        enterCallback={() => setStart(false)}
       >
-        <Text style={styles.typed}>{char}</Text>
+        <Text style={styles.typedCorrect}>{char}</Text>
       </Anim>
-    </View>
+    </Section>
   );
 };
 
-const AnimatedView = ({ typed, ...props }) => {
+const TypedTypo = ({ char, gameON, ...props }) => {
+  const [trigger, setTrigger] = useState(false);
+
+  useEffect(() => {
+    if (char && char !== '') {
+      setTrigger(!trigger);
+    }
+  }, [char]);
+
+  return (
+    <Section fillH style={styles.typedContainer}>
+      <Anim
+        rerunOnChange={trigger}
+        /* hideOnExit={true} */
+        duration={{ in: 1000, out: 0 }}
+        easing={{ in: 'ease-out', out: 'linear' }}
+        anim={{
+          opacity: {
+            fromValue: 1,
+            toValue: 0,
+          },
+          /* transform: [
+            {
+              key: 'translateX',
+              fromValue: 0,
+              toValue: xMove,
+            },
+            {
+              key: 'translateY',
+              fromValue: 0,
+              toValue: 30,
+            },
+            {
+              key: 'scale',
+              fromValue: 1,
+              toValue: scale,
+            },
+          ], */
+        }}
+        style={{
+          display: !gameON ? 'none' : 'block',
+        }}
+        enterCallback={() => setStart(false)}
+      >
+        <Text style={styles.typedTypo}>{char}</Text>
+      </Anim>
+    </Section>
+  );
+};
+
+const AnimatedView = ({ gameState: { typed, material, gameON }, ...props }) => {
   let bgAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
   let firstRender = useRef(true); // Initial value for opacity: 0
 
@@ -108,17 +184,29 @@ const AnimatedView = ({ typed, ...props }) => {
 
   const remaining = typed.remaining.substring(1);
 
+  const wasTypo =
+    typed.input[typed.input.length - 1] !== material.text[typed.index - 1];
+
   return (
-    <Section row fillW spaceTop>
+    <Section row fillW fillH spaceTop align="flex-start">
       <Section
         row
         position="relative"
         fillw
         h={50}
         align="flex-start"
-        style={{ overflow: 'hidden' }}
+        style={{ overflowX: 'hidden', overflowY: 'visible' }}
       >
-        <TypedAnim char={typed.output[typed.output.length - 1]} />
+        <TypedTypo
+          char={wasTypo ? typed.input[typed.input.length - 1] : ''}
+          gameON={gameON}
+        />
+
+        <TypedCorrect
+          char={typed.output[typed.output.length - 1]}
+          gameON={gameON}
+        />
+
         <View padding={0} w={8} justify="center" style={styles.nextContainer}>
           <Text style={styles.nextChar}>{nextChar}</Text>
         </View>
@@ -140,9 +228,7 @@ class Teleprompter extends Component {
     propsChanged(this.props.gameState, np.gameState, ['typed']);
 
   render() {
-    const { typed } = this.props.gameState;
-
-    return <AnimatedView typed={typed} />;
+    return <AnimatedView gameState={this.props.gameState} />;
   }
 }
 
@@ -154,12 +240,18 @@ const styles = StyleSheet.create({
   material: { fontSize: 20, flexShrink: 1 },
   typedContainer: {
     width: 60,
+    height: '100%',
+    overflow: 'visible',
     position: 'relative',
   },
-  typed: {
-    position: 'relative',
-    top: 0,
-    right: 10,
+  typedCorrect: {
+    position: 'absolute',
+    zIndex: 99,
+  },
+  typedTypo: {
+    fontSize: 30,
+    color: 'red',
+    textDecorationLine: 'line-through',
   },
   nextContainer: {
     borderRadius: 2,

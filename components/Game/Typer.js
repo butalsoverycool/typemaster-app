@@ -75,8 +75,8 @@ class Typer extends Component {
         </Section>
         <Section flex={1}>
           <Icon
-            brand={IconPreset.userSwitch.brand}
-            name={IconPreset.userSwitch.name}
+            brand="custom"
+            name="users"
             label="switch user"
             onPress={this.switchUser}
           />
