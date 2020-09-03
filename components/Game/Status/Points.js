@@ -25,19 +25,14 @@ class Points extends Component {
 
     const { CCPS } = getTime(time, typed.output);
 
-    const status =
-      points < 0
-        ? 'error'
-        : points < 5
-        ? 'warning'
-        : points < 10
-        ? 'primary'
-        : 'success';
+    const status = points < 0 ? 'red' : '#444';
 
-    const POINTS = pointCalc(points, CCPS);
+    let POINTS = pointCalc(points, CCPS);
+
+    POINTS = POINTS === Infinity || POINTS === 0 || !POINTS ? '0' : POINTS;
 
     return (
-      <StatusData label="Points" index={1} data={POINTS} status={status} />
+      <StatusData label="Points" index={1} data={POINTS} statusColor={status} />
     );
   }
 }

@@ -70,7 +70,6 @@ class Typer extends Component {
                 });
               },
             }}
-            style={{ fontSize: 24 }}
           />
         </Section>
         <Section flex={1}>

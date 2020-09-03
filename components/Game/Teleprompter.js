@@ -143,7 +143,7 @@ const TypedTypo = ({ char, gameON, ...props }) => {
         style={{
           display: !gameON ? 'none' : 'block',
         }}
-        enterCallback={() => setStart(false)}
+        /* enterCallback={() => setStart(false)} */
       >
         <Text style={styles.typedTypo}>{char}</Text>
       </Anim>

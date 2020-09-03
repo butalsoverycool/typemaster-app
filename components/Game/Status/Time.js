@@ -69,23 +69,16 @@ class Time extends Component {
   render() {
     const { gameState } = this.props;
 
-    const { time, typed, level } = gameState;
+    const { time, typed } = gameState;
 
-    const { CCPS, mStr, sStr, ds } = getTime(time, typed.output);
-
-    const statusColor =
-      CCPS <= PRESET.speedStandard[level] / 2
-        ? 'red'
-        : CCPS < PRESET.speedStandard[level]
-        ? 'gold'
-        : '#444';
+    const { mStr, sStr, ds } = getTime(time, typed.output);
 
     return (
       <StatusData
         label="Time"
         index={0}
         data={`${mStr}:${sStr}.${ds}` || '00:00.0'}
-        statusColor={statusColor}
+        statusColor="#444"
       />
     );
   }

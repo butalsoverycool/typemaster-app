@@ -68,6 +68,6 @@ const inputStyle = StyleSheet.create({
     borderBottomWidth: 0,
     color: '#444',
     fontFamily: 'Monofett_400Regular',
-    fontSize: 14,
+    fontSize: 34,
   },
 });

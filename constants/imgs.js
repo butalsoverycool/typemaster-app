@@ -10,6 +10,7 @@ const imgs = {
   stop: require('../assets/imgs/btns/stop.png'),
   pause: require('../assets/imgs/btns/pause.png'),
   play: require('../assets/imgs/btns/play.png'),
+  again: require('../assets/imgs/btns/again.png'),
 
   Game: require('../assets/imgs/btns/Game.png'),
   ScoreBoard: require('../assets/imgs/btns/ScoreBoard.png'),

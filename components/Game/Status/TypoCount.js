@@ -19,20 +19,13 @@ class TypoCount extends Component {
     console.log('Rendering <TypoCount />');
 
     const {
-      typed: { typoCount },
+      typed: { typoCount, input },
       gameStandby,
       gameON,
       latestScore,
     } = this.props.gameState;
 
-    const status =
-      typoCount <= 0
-        ? 'success'
-        : typoCount <= 1
-        ? 'primary'
-        : typoCount <= 5
-        ? 'warning'
-        : 'error';
+    const status = typoCount < 5 ? '#444' : typoCount < 10 ? 'orange' : 'red';
 
     return (
       <StatusData
@@ -45,7 +38,7 @@ class TypoCount extends Component {
             ? String(latestScore.typos)
             : '0'
         }
-        status={status}
+        statusColor={status}
       />
     );
   }

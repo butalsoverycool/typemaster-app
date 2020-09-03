@@ -106,7 +106,7 @@ class Game extends Component {
 
           {authUser && (
             <Section padding={0} flex={1} fullH justify="space-between">
-              <Msg />
+              {/* <Msg /> */}
 
               {(gameStandby || gameON || gamePaused) && <Status />}
 
@@ -116,7 +116,7 @@ class Game extends Component {
 
               {/* {!gameStandby && !gameON && <Level />} */}
 
-              <Material />
+              {!gamePaused && <Material />}
 
               {material.title && (
                 <Section flex={1} justify="center">

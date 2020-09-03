@@ -2,7 +2,10 @@ export const withdrawal = -0.05;
 
 export const reward = 0.05;
 
-export const speedStandard = [2, 4, 6, 8];
+export const speedStandard = {
+  warning: 4,
+  bad: 2,
+};
 
 export const bannedKeys = ['Backspace', 'Enter'];
 

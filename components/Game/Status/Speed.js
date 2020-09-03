@@ -14,15 +14,17 @@ class Speed extends Component {
 
     const { gameState } = this.props;
 
-    const { time, typed, level } = gameState;
+    const { time, typed, level, gameON, gameP } = gameState;
 
     const { CCPS } = getTime(time, typed.output);
 
     const statusColor =
-      CCPS <= PRESET.speedStandard[level] / 2
+      typed.input.length < 1
+        ? '#444'
+        : CCPS <= PRESET.speedStandard.bad
         ? 'red'
-        : CCPS < PRESET.speedStandard[level]
-        ? 'gold'
+        : CCPS < PRESET.speedStandard.warning
+        ? 'orange'
         : '#444';
 
     const speed = Math.round(CCPS * 100) / 100;
@@ -31,7 +33,7 @@ class Speed extends Component {
       <StatusData
         label="Speed"
         index={3}
-        data={speed && speed !== Infinity ? speed : '00:00:00:00'}
+        data={speed && speed !== Infinity ? speed : '0'}
         statusColor={statusColor}
       />
     );

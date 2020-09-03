@@ -21,13 +21,15 @@ class Anim extends Component {
   }
 
   componentDidMount() {
-    if (this.props.autoStart) {
+    /* if (this.props.autoStart) {
       const delay = this.props.delay || 0;
 
       setTimeout(() => {
         return this.animate();
       }, delay);
-    }
+    } */
+
+    this.animate();
   }
 
   // lifecycle? let's live here!

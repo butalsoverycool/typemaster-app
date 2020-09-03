@@ -11,11 +11,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
+    fontSize: 10,
     width: 50,
-    marginLeft: 5,
-    marginRight: 5,
+    marginLeft: 0,
+    marginRight: 0,
+    color: '#444',
   },
-  badge: { height: 30, width: 90, marginLeft: 5, marginRight: 5 },
+  badge: {
+    height: 30,
+    width: 100,
+    marginLeft: 0,
+    marginRight: 0,
+    backgroundColor: '#eee',
+  },
 });
 
 class StatusData extends Component {
@@ -47,15 +55,21 @@ class StatusData extends Component {
       badgeProps = {},
     } = this.props;
 
-    const width = '50%';
+    const width = '42%';
     const pos = index % 2 === 0 ? 'left' : 'right';
-    const marginTop = index > 1 ? 10 : 0;
+    const marginTop = index > 1 ? 15 : 0;
 
     return (
       <View
         style={[
           styles.container,
-          { width, textAlign: pos, marginTop, ...containerProps.style },
+          {
+            width,
+            textAlign: pos,
+            marginTop,
+
+            ...containerProps.style,
+          },
         ]}
       >
         {pos === 'left' && (
@@ -69,13 +83,25 @@ class StatusData extends Component {
           badgeStyle={[
             styles.badge,
             badgeProps.badgeStyle,
-            { backgroundColor: statusColor },
+            { borderColor: '#444', borderWidth: 1 },
           ]}
-          textStyle={{ fontSize: 20, ...badgeProps.textStyle }}
+          textStyle={{
+            fontSize: 14,
+            fontFamily: 'CutiveMono_400Regular',
+            margin: 0,
+            color: statusColor,
+            ...badgeProps.textStyle,
+          }}
         />
 
         {pos === 'right' && (
-          <Text style={[styles.label, { textAlign: pos }, labelStyle]}>
+          <Text
+            style={[
+              styles.label,
+              { textAlign: pos, color: '#444' },
+              labelStyle,
+            ]}
+          >
             {label}
           </Text>
         )}

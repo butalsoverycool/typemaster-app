@@ -143,7 +143,13 @@ class TabBar extends Component {
                   paddingTop: 10,
                 }}
               >
-                <Icon brand="custom" name={IconPreset[route.name].name} />
+                <Icon
+                  brand="custom"
+                  name={route.name}
+                  size={40}
+                  onPress={onPress}
+                  bg={isFocused ? '#eee' : '#f7f7f7'}
+                />
               </View>
             </TouchableOpacity>
           );

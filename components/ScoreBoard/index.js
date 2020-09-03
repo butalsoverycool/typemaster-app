@@ -9,7 +9,7 @@ import Status from '../Game/Status';
 
 const localStyles = StyleSheet.create({
   title: { justifyContent: 'flex-start' },
-  cell: { justifyContent: 'flex-start' },
+  cell: { justifyContent: 'flex-start', color: '#444' },
 });
 
 class ScoreBoard extends Component {
@@ -43,7 +43,7 @@ class ScoreBoard extends Component {
       nav,
     } = gameState;
 
-    const { clearScore, prepareGame, createLatestScore } = gameSetters;
+    const { clearScore, prepareGame, setGameState } = gameSetters;
 
     // ugly safety-net cuz firebase is fucking up scoreboard when saving
     let scoreboardInvalid = false;
@@ -96,7 +96,7 @@ class ScoreBoard extends Component {
               ],
             }}
           >
-            <Section flex={1} justify="center">
+            <Section flex={1} fullH justify="flex-start">
               <Form type="ScorePreview" />
             </Section>
           </Anim>
@@ -114,35 +114,43 @@ class ScoreBoard extends Component {
               },
             }}
           >
-            <ScrollView>
+            <ScrollView
+              style={{
+                flex: 1,
+                justifyContent: 'space-between',
+                paddingTop: 20,
+                paddingBottom: 20,
+                backgroundColor: '#eee',
+              }}
+            >
               <View style={theme.section}>
                 <Text style={theme.title}>LOCAL SCOREBOARD</Text>
               </View>
 
-              <View style={theme.section}>
+              <Section style={theme.section}>
                 <DataTable>
                   <DataTable.Header>
                     <DataTable.Title numeric style={localStyles.title}>
-                      Points
+                      <Text>Points</Text>
                     </DataTable.Title>
 
                     <DataTable.Title style={localStyles.title}>
-                      Typer
+                      <Text>Typer</Text>
                     </DataTable.Title>
 
                     <DataTable.Title style={localStyles.title}>
-                      When
+                      <Text>When</Text>
                     </DataTable.Title>
                   </DataTable.Header>
 
                   {scoreboard.map(({ name, highscore }, nth) => (
                     <DataTable.Row key={nth}>
                       <DataTable.Cell numeric static style={localStyles.cell}>
-                        {highscore.points}
+                        <Text>{highscore.points}</Text>
                       </DataTable.Cell>
 
                       <DataTable.Cell style={localStyles.cell}>
-                        {name}
+                        <Text>{name}</Text>
                       </DataTable.Cell>
 
                       <DataTable.Cell style={localStyles.cell}>
@@ -161,7 +169,7 @@ class ScoreBoard extends Component {
             label=""
           /> */}
                 </DataTable>
-              </View>
+              </Section>
 
               {latestScore && !qualified && (
                 <Section>
@@ -176,16 +184,22 @@ class ScoreBoard extends Component {
               {/* <View style={theme.section}>
         <Button title="save something" onPress={saveScore} />
       </View> */}
-              {material.title && (
-                <Section>
-                  <Btn
-                    content={latestScore ? 'Play again' : 'Play'}
-                    onPress={prepareGame}
-                  />
-                </Section>
-              )}
+              <Section flex={1} justifyContent="flex-end">
+                <Btn
+                  h={50}
+                  outline
+                  content="Pick text"
+                  fontSize={20}
+                  onPress={() => setGameState({ pushNav: 'Game' })}
+                />
+                <Btn
+                  outline
+                  content={latestScore ? 'Play again' : 'Play'}
+                  onPress={prepareGame}
+                />
+              </Section>
 
-              <Section>
+              {/* <Section>
                 <Btn
                   w={200}
                   h={50}
@@ -193,7 +207,7 @@ class ScoreBoard extends Component {
                   content="clear scores"
                   onPress={clearScore}
                 />
-              </Section>
+              </Section> */}
             </ScrollView>
           </Anim>
         )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { StyleSheet, View, Image, TouchableHighlight } from 'react-native';
 import * as ICONS from '@expo/vector-icons';
 import { withState } from '../GameState';
@@ -18,37 +18,83 @@ const Conventional = ({ brand, name, size, color, ...props }) => {
   return <Component name={name} size={size} color={color} {...props} />;
 };
 
-const custom = ({ name, size, gameState: { imgs }, ...props }) => {
-  const [fadeIn, setFadeIn] = useState(false);
+class custom extends React.Component {
+  constructor(props) {
+    super(props);
 
-  if (!imgs) return null;
+    this.state = {
+      fadeIn: false,
+      once: true,
+    };
+  }
 
-  console.log('naaame', name);
-  return (
-    <Anim
-      enterOn={fadeIn}
-      duration={{ in: 300, out: 300 }}
-      easing={{ in: 'ease-out', out: 'ease' }}
-      anim={{
-        opacity: {
-          fromValue: 0,
-          toValue: 1,
-        },
-      }}
-      style={{ opacity: 0 }}
-    >
-      <Image
-        onLoad={() => setFadeIn(true)}
-        source={imgs[name]}
-        style={{ width: size, height: size }}
-        resizeMode="contain"
-        {...props}
-      />
-    </Anim>
-  );
-};
+  /* componentDidMount() {
+    this.setState({ fadeIn: true });
+  } */
 
-const Custom = withState(custom);
+  shouldComponentUpdate(np, ns) {
+    return (
+      this.props.gameState.imgs !==
+      np.gameState.imgs /* ||
+      this.state.fadeIn !== ns.fadeIn */
+    );
+  }
+
+  render() {
+    const {
+      name,
+      size,
+      gameState: { imgs },
+      anim,
+      ...props
+    } = this.props;
+
+    const { fadeIn, once } = this.state;
+
+    if (!imgs) return null;
+
+    if (!props.anim) {
+      return (
+        <Image
+          onLoad={() => this.setState({ fadeIn: true })}
+          source={imgs[name]}
+          style={{ width: size, height: size }}
+          resizeMode="contain"
+          {...props}
+        />
+      );
+    }
+
+    return (
+      <Anim
+        /* autoStart */
+        enterOn={fadeIn}
+        duration={{ in: 300, out: 300 }}
+        easing={{ in: 'ease-out', out: 'ease' }}
+        anim={{
+          opacity: {
+            fromValue: 0,
+            toValue: 1,
+          },
+        }}
+        style={{ opacity: 0 }}
+        enterCallback={() => this.setState({ fadeIn: false })}
+      >
+        <Image
+          onLoad={() => this.setState({ fadeIn: true })}
+          source={imgs[name]}
+          style={{ width: size, height: size }}
+          resizeMode="contain"
+          {...props}
+        />
+      </Anim>
+    );
+  }
+}
+
+const Cust = withState(custom);
+
+const Custom = memo(p => <Cust {...p} />);
 
 export default ({
   brand = 'AntDesign',
@@ -60,6 +106,7 @@ export default ({
   bg,
   on,
   onPress,
+  anim,
   ...props
 }) => {
   const Icon = () =>
@@ -72,7 +119,7 @@ export default ({
         {...props}
       />
     ) : (
-      <Custom name={name} size={size} {...props} />
+      <Custom name={name} size={size} anim={anim} {...props} />
     );
 
   if (props.logOn) {
@@ -88,7 +135,7 @@ export default ({
       bg={bg || null}
     >
       <TouchableHighlight {...on} onPress={onPress} activeOpacity={1}>
-        <Section>
+        <Section bg={bg || null}>
           {label && labelPos === 'top' && (
             <Text style={styles.label}>{label}</Text>
           )}

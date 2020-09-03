@@ -46,7 +46,7 @@ class NameInput extends Component {
       : randOfArr(dynamicMsg.noHighscore) + ' ' + randOfArr(sadFace);
 
     return (
-      <Section>
+      <Section justify="space-between" flex={1}>
         <Section>
           <Text style={theme.title}>YOUR SCORE</Text>
 
@@ -55,9 +55,12 @@ class NameInput extends Component {
           </Section>
         </Section>
 
-        <Section spaceTop>
+        <Section spaceTop fullW>
           <Text
-            style={[theme.subtitle, { color: newHighscore ? 'green' : '#444' }]}
+            style={[
+              theme.subtitle,
+              { color: newHighscore ? 'green' : '#444', fontSize: 14 },
+            ]}
           >
             {highscoreMsg}
           </Text>
@@ -65,8 +68,33 @@ class NameInput extends Component {
 
         <Section justify="center">
           <Btn
+            h={50}
             w="80%"
-            bg="orange"
+            outline
+            onPress={
+              () =>
+                setGameState({
+                  pushNav: 'Game',
+                  gameFinished: false,
+                  material: {},
+                })
+              /* setGameState(
+                {
+                  typer: '',
+                },
+                () => {
+                  createLatestScore(saveScore);
+                }
+              ) */
+            }
+          >
+            <Text style={styles.textStyle}>Pick text</Text>
+          </Btn>
+
+          <Btn
+            h={50}
+            w="80%"
+            outline
             onPress={
               () => setGameState({ pushNav: 'ScoreBoard', gameFinished: false })
               /* setGameState(
@@ -79,10 +107,11 @@ class NameInput extends Component {
               ) */
             }
           >
-            <Text style={styles.textStyle}>View scoreboard</Text>
+            <Text style={styles.textStyle}>Scoreboard</Text>
           </Btn>
 
           <Btn
+            outline
             w="80%"
             onPress={() => {
               prepareGame();
@@ -102,7 +131,7 @@ class NameInput extends Component {
               } */
             }}
           >
-            <Text style={[styles.textStyle, { fontSize: 30 }]}>Play again</Text>
+            <Text style={[styles.textStyle, { fontSize: 30 }]}>Again</Text>
           </Btn>
         </Section>
       </Section>
@@ -120,9 +149,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   textStyle: {
-    color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 20,
   },
   modalText: {
     marginBottom: 15,

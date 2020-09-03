@@ -737,7 +737,7 @@ class GameState extends Component {
 
   prepareGame() {
     console.log('prepareGame()');
-    if (this.state.gameON || this.state.gameStandby) return;
+    if (/* this.state.gameON ||*/ this.state.gameStandby) return;
 
     this.playSound('tension');
 

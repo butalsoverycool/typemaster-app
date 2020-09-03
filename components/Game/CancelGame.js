@@ -40,6 +40,7 @@ class CancelGame extends Component {
     super(props);
 
     this.handleStop = this.handleStop.bind(this);
+    this.handleAgain = this.handleAgain.bind(this);
   }
 
   shouldComponentUpdate = np =>
@@ -60,26 +61,46 @@ class CancelGame extends Component {
     gameSetters.endGame({ gameFinished: finished });
   }
 
+  handleAgain() {
+    this.props.gameSetters.endGame({
+      cb: () => {
+        this.props.gameSetters.prepareGame();
+      },
+    });
+  }
+
   render() {
     const { gameState, gameSetters } = this.props;
     const { gameStandby, gameON, gamePaused } = gameState;
-    const { togglePauseGame, endGame } = gameSetters;
+    const { togglePauseGame, prepareGame } = gameSetters;
 
     return (
-      <Section row justify="space-around" fillW spaceTop={10}>
+      <Section row justify="space-around" fillW spaceTop={10} flex={1}>
         {(gameON || gamePaused) && (
-          <Icon
-            brand="custom"
-            name={gamePaused ? 'play' : 'pause'}
-            onPress={togglePauseGame}
-            label={gamePaused ? 'continue' : 'pause'}
-          />
+          <>
+            <Icon
+              anim
+              brand="custom"
+              name={gamePaused ? 'play' : 'pause'}
+              onPress={togglePauseGame}
+              label={gamePaused ? 'continue' : 'pause'}
+            />
+
+            <Icon
+              anim
+              brand="custom"
+              name="again"
+              onPress={this.handleAgain}
+              label="again"
+            />
+          </>
         )}
 
         <Icon
+          anim
           brand="custom"
           name={gameON ? 'stop' : 'back'}
-          on={{ onPress: this.handleStop }}
+          onPress={this.handleStop}
           label={gameON ? 'stop' : 'back'}
         />
       </Section>
