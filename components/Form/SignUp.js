@@ -37,7 +37,6 @@ class SignUpFormBase extends Component {
     event.preventDefault();
 
     const { email, pwd1, isAdmin } = this.state;
-    const { setTyper } = this.props.gameSetters;
 
     const roles = ['typer'];
     if (isAdmin) roles.push('admin');
@@ -49,16 +48,22 @@ class SignUpFormBase extends Component {
         const tempName = email.substring(0, email.indexOf('@'));
 
         // Create a user in your Firebase realtime database
-        this.props.firebase.typer(authUser.user.uid).set({
-          email,
-          highscore: {
-            points: 0,
-            timeStamp: timeStamp(),
+        this.props.firebase.setTyper(
+          authUser.user.uid,
+          {
+            email,
+            highscore: {
+              points: 0,
+              timeStamp: timeStamp(),
+            },
+            lastLogin: timeStamp(),
+            name: tempName,
+            uid: authUser.uid,
           },
-          lastLogin: timeStamp(),
-          name: tempName,
-          uid: authUser.uid,
-        });
+          err => {
+            if (err) console.log('Err when setting typer', err);
+          }
+        );
 
         return this.setState(ps => ({ ...INITIAL_STATE }));
       })

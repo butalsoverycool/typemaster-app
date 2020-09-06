@@ -336,21 +336,12 @@ class GameState extends Component {
     }
 
     if (!typer) {
-      return this.props.firebase
-        .typer(this.state.authUser.uid)
-        .once('value')
-        .then(snap => {
-          this.updateTyper(this.state.authUser.uid, {
-            ...snap.val(),
-            lastLogin: this.state.authUser.lastLogin,
-          });
+      return this.props.firebase.getTyper(this.state.authUser.uid, typer => {
+        this.updateTyper(this.state.authUser.uid, {
+          ...typer,
+          lastLogin: this.state.authUser.lastLogin,
         });
-      /*  return this.props.firebase
-        .typer(this.state.authUser.uid)
-        .once('value')
-        .then(snap => {
-          this.setState({ authTyper: snap.val() }, () => this.tryCallback(cb));
-        }); */
+      });
     }
 
     this.setState({ authTyper: typer }, () => this.tryCallback(cb));
@@ -372,18 +363,6 @@ class GameState extends Component {
             this.setState({ loading: false });
           });
         });
-        /* //this.setAuthTyper()
-        // update lastLogin
-        if (!this.state.authTyper) {
-          this.setAuthTyper(() => {
-            this.updateTyper(authUser.uid, { lastLogin: clone(authUser.lastLogin) }, () => {
-              this.tryCallback(cb);
-            });
-          });
-          return;
-        }
-
-        this.tryCallback(cb); */
       }
     );
   }
@@ -530,7 +509,7 @@ class GameState extends Component {
   updateTyper(uid, payload, cb) {
     console.log(`updateTyper()...(${Object.keys(payload)})`);
 
-    this.props.firebase.update('typers', uid, payload, err => {
+    this.props.firebase.updateTyper(uid, payload, err => {
       if (err) console.log('Err when updating typer:', err);
 
       this.setState(ps => ({ authTyper: { ...ps.authTyper, ...payload } }), cb);
@@ -627,14 +606,13 @@ class GameState extends Component {
     if (!latestScore) return this.createLatestScore(this.saveScore);
 
     // save new highscore!
-    this.props.firebase.update(
-      'typers',
+    this.props.firebase.updateTyper(
       this.state.authUser.uid,
       {
         highscore: latestScore.score,
       },
-      () => {
-        console.log('highscore saved to db!');
+      err => {
+        if (err) console.log('Err when updating typer (saveScore)', err);
 
         this.loadScoreBoard();
 
@@ -668,7 +646,7 @@ class GameState extends Component {
   }
 
   setMaterial = (material = {}) => {
-    material = this.setState({
+    this.setState({
       material,
       typed: { ...clone(initialState.typed), remaining: material.text },
     });

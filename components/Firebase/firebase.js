@@ -44,9 +44,27 @@ class Firebase {
     this.loadAsync = this.loadAsync.bind(this);
     this.saveAsync = this.saveAsync.bind(this);
 
+    this.setTyper = this.setTyper.bind(this);
+    this.updateTyper = this.updateTyper.bind(this);
+
     this.pushUserToStorage = this.pushUserToStorage.bind(this);
     this.tryCallback = this.tryCallback.bind(this);
     this.createNewTyper = this.createNewTyper.bind(this);
+
+    this.getText = this.getText.bind(this);
+    this.getTexts = this.getTexts.bind(this);
+
+    this.getTexts(texts => {
+      texts.forEach(txt => {
+        console.log('title', txt.title);
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    // clear listeners
+    this.db.ref('typers').off();
+    this.auth.off();
   }
 
   typerListener(cb) {
@@ -100,15 +118,6 @@ class Firebase {
 
   signOut = cb => {
     this.auth.signOut().then(cb);
-
-    /* .then(() => {
-      this.tryCallback(cb);
-
-      //console.log(window.location, window.location.href, window.location.hostname);
-      // window.location.href = window.location.origin;
-
-      //props.history.push(ROUTES.LANDING);
-    }); */
   };
 
   restPwd = email => this.auth.sendPasswordResetEmail(email);
@@ -120,18 +129,6 @@ class Firebase {
       url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT,
     });
 
-  //WRITE DATA
-  write(collection, uid, data) {
-    this.db.ref(collection + '/' + uid).set(data);
-  }
-
-  // UPDATE
-  update(collection, uid, data, cb) {
-    this.db.ref(collection + '/' + uid).update(data, err => {
-      cb(err);
-    });
-  }
-
   createNewTyper = authUser => ({
     uid: authUser.uid,
     name: authUser.providerData[0].displayName,
@@ -141,58 +138,52 @@ class Firebase {
   });
 
   getAuthUser(authUser, cb) {
-    this.typer(authUser.uid)
-      .once('value')
-      .then(snapshot => {
-        // define typer as new or existing
-        const typer = snapshot.val() || this.createNewTyper(this.authUser);
+    this.getTyper(authUser.uid, typer => {
+      // define typer as new or existing
+      typer = typer || this.createNewTyper(this.authUser);
 
-        const typerExists = typer.lastLogin ? true : false;
+      const typerExists = typer.lastLogin ? true : false;
 
-        // update/set last login
-        typer.lastLogin = timeStamp();
+      // update/set last login
+      typer.lastLogin = timeStamp();
 
-        // if no typer in db, create new
-        if (!typerExists) {
-          this.write('typers', authUser.uid, typer, () => {
-            console.log('Saved new typer to db');
-          });
-        }
-        // else update existing typer with lastLogin-prop
-        else {
-          this.update(
-            'typers',
-            authUser.uid,
-            { lastLogin: typer.lastLogin },
-            () => {
-              console.log('Updated lastLogin in db.');
-            }
-          );
-        }
-
-        // other user data
-        const {
-          phoneNumber: phone,
-          photoURL: photo,
-          providerId: authMethod,
-        } = authUser.providerData[0];
-
-        // merge auth and db user
-        const formattedAuth = {
-          ...typer,
-          data: {
-            photo,
-            phone,
-            authMethod,
-            emailVerified: authUser.emailVerified,
-            roles: authUser.roles,
-          },
-        };
-
-        this.pushUserToStorage(formattedAuth, () => {
-          cb(formattedAuth);
+      // if no typer in db, create new
+      if (!typerExists) {
+        this.setTyper(authUser.uid, typer, err => {
+          if (err) console.log('Err when saving new typer to db', err);
         });
+      }
+      // else update existing typer with lastLogin-prop
+      else {
+        this.updateTyper(authUser.uid, { lastLogin: typer.lastLogin }, err => {
+          if (err)
+            console.log('Err when updating typer (firebase getAuth)', err);
+        });
+      }
+
+      // other user data
+      const {
+        phoneNumber: phone,
+        photoURL: photo,
+        providerId: authMethod,
+      } = authUser.providerData[0];
+
+      // merge auth and db user
+      const formattedAuth = {
+        ...typer,
+        data: {
+          photo,
+          phone,
+          authMethod,
+          emailVerified: authUser.emailVerified,
+          roles: authUser.roles,
+        },
+      };
+
+      this.pushUserToStorage(formattedAuth, () => {
+        cb(formattedAuth);
       });
+    });
   }
 
   // *** Merge Auth and DB User API *** //
@@ -251,12 +242,50 @@ class Firebase {
   }
 
   // *** User API ***
+  getTyper = (uid, cb) =>
+    this.db
+      .ref(`typers/${uid}`)
+      .once('value')
+      .then(snap => cb(snap.val()));
 
-  typer = uid => this.db.ref(`typers/${uid}`);
+  //WRITE DATA
+  setTyper(uid, data, cb) {
+    this.db.ref(`typers/${uid}`).set(data, err => cb(err));
+  }
+
+  // UPDATE
+  updateTyper(uid, data, cb) {
+    this.db.ref(`typers/${uid}`).update(data, err => {
+      cb(err);
+    });
+  }
 
   typers = () => this.db.ref('typers');
 
   typerDoc = uid => this.db.collection('typers').doc(uid);
+
+  getText = (title, cb) => {
+    this.db
+      .ref('texts')
+      .orderByChild('title')
+      .equalTo(title)
+      .once('value', snap => {
+        const res = Object.values(snap.val()).map(text => text);
+
+        cb(res[0]);
+      });
+  };
+
+  getTexts = cb => {
+    this.db
+      .ref('texts')
+      .orderByChild('title')
+      .once('value', snap => {
+        const res = Object.values(snap.val()).map(text => text);
+
+        cb(res);
+      });
+  };
 }
 
 export default Firebase;
