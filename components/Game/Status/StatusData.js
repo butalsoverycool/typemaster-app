@@ -1,6 +1,6 @@
 import React, { Component, memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text } from '../../Elements';
+import { Text, Section } from '../../Elements';
 import { Badge } from 'react-native-elements';
 import { propsChanged } from '../../../constants/helperFuncs';
 
@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
+    textAlign: 'center',
     fontSize: 10,
     width: 50,
     marginLeft: 0,
@@ -49,34 +50,29 @@ class StatusData extends Component {
       data,
       label,
       labelStyle,
-      status,
       statusColor = '#444',
       containerProps = {},
       badgeProps = {},
     } = this.props;
 
-    const width = '42%';
-    const pos = index % 2 === 0 ? 'left' : 'right';
-    const marginTop = index > 1 ? 15 : 0;
+    const width = '30%';
+
+    // const marginTop = index > 1 ? 15 : 0;
 
     return (
-      <View
+      <Section
+        justify="center"
+        align="center"
         style={[
-          styles.container,
           {
             width,
-            textAlign: pos,
-            marginTop,
+            /* marginTop, */
 
             ...containerProps.style,
           },
         ]}
       >
-        {pos === 'left' && (
-          <Text style={[styles.label, { textAlign: pos }, labelStyle]}>
-            {label}
-          </Text>
-        )}
+        <Text style={[styles.label, labelStyle]}>{label}</Text>
 
         <Badge
           value={data || ''}
@@ -93,19 +89,7 @@ class StatusData extends Component {
             ...badgeProps.textStyle,
           }}
         />
-
-        {pos === 'right' && (
-          <Text
-            style={[
-              styles.label,
-              { textAlign: pos, color: '#444' },
-              labelStyle,
-            ]}
-          >
-            {label}
-          </Text>
-        )}
-      </View>
+      </Section>
     );
   }
 }

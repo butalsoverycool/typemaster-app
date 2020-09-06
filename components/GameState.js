@@ -29,6 +29,8 @@ const newGameState = (ps, override = null) => ({
 
   points: 0,
 
+  scoreStatus: [],
+
   msg: [],
 
   typed: {
@@ -81,6 +83,8 @@ const initialState = {
   },
 
   level: 0,
+
+  scoreStatus: [],
 
   latestScore: null,
   latestQualified: false,
@@ -138,6 +142,8 @@ class GameState extends Component {
     this.handleAuthDiffs = this.handleAuthDiffs.bind(this);
 
     this.playSound = this.playSound.bind(this);
+
+    this.addScoreStatus = this.addScoreStatus.bind(this);
 
     this.setters = {
       setGameState: this.setGameState,
@@ -601,7 +607,7 @@ class GameState extends Component {
   }
 
   saveScore(cb) {
-    const { latestScore, authUser } = this.state;
+    const { latestScore, scoreStatus, authUser } = this.state;
 
     if (!latestScore) return this.createLatestScore(this.saveScore);
 
@@ -609,7 +615,7 @@ class GameState extends Component {
     this.props.firebase.updateTyper(
       this.state.authUser.uid,
       {
-        highscore: latestScore.score,
+        highscore: { ...latestScore.score, speed: scoreStatus },
       },
       err => {
         if (err) console.log('Err when updating typer (saveScore)', err);
@@ -686,12 +692,33 @@ class GameState extends Component {
   }
 
   addTick(cb) {
+    if (this.state.time >= 10 && this.state.time % 2 === 0) {
+      this.addScoreStatus();
+    }
+
     this.setState(
       ps => ({ time: ps.time + 1 }),
       () => {
         this.tryCallback(cb);
       }
     );
+  }
+
+  addScoreStatus() {
+    const {
+      scoreStatus,
+      time,
+      typed: { output },
+    } = this.state;
+
+    const { CCPS } = getTime(time, output);
+
+    const newStatus = {
+      time: time / 10,
+      speed: Math.round(CCPS * 100) / 100,
+    };
+
+    this.setState(ps => ({ scoreStatus: [...ps.scoreStatus, newStatus] }));
   }
 
   setPushNav(pushNav = false) {

@@ -44,7 +44,14 @@ class CancelGame extends Component {
     const { togglePauseGame, prepareGame } = gameSetters;
 
     return (
-      <Section row justify="space-around" fillW spaceTop={10} flex={1}>
+      <Section
+        row
+        justify="space-around"
+        fillW
+        spaceTop={20}
+        flex={1}
+        style={{ maxHeight: 100 }}
+      >
         {(gameON || gamePaused) && (
           <>
             <Icon

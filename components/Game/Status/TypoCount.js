@@ -30,7 +30,6 @@ class TypoCount extends Component {
     return (
       <StatusData
         label="Errors"
-        index={2}
         data={
           gameStandby || gameON
             ? typoCount || '0'

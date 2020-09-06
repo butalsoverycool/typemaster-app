@@ -31,9 +31,7 @@ class Points extends Component {
 
     POINTS = POINTS === Infinity || POINTS === 0 || !POINTS ? '0' : POINTS;
 
-    return (
-      <StatusData label="Points" index={1} data={POINTS} statusColor={status} />
-    );
+    return <StatusData label="Points" data={POINTS} statusColor={status} />;
   }
 }
 

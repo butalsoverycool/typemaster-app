@@ -76,7 +76,6 @@ class Time extends Component {
     return (
       <StatusData
         label="Time"
-        index={0}
         data={`${mStr}:${sStr}.${ds}` || '00:00.0'}
         statusColor="#444"
       />

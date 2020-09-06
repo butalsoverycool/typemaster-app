@@ -133,7 +133,10 @@ class Firebase {
     uid: authUser.uid,
     name: authUser.providerData[0].displayName,
     email: authUser.email,
-    highscore: 0,
+    highscore: {
+      points: 0,
+      timeStamp: timeStamp(),
+    },
     lastLogin: timeStamp(),
   });
 
