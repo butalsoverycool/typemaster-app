@@ -18,49 +18,55 @@ const getScale = () => {
   return res;
 };
 
-const TypedCorrect = ({ char, gameON, ...props }) => {
-  const [firstRender, setFirstRender] = useState(true);
+const TypedCorrect = ({
+  char,
+  gameON,
+  autoStart = false,
+  onExit,
+  remaining,
+  ...props
+}) => {
+  //if (!gameON || remaining.length <= 1) return null;
+
   const [start, setStart] = useState(false);
   const [rerunSwitch, setRerunSwitch] = useState(false);
   const [xMove, setXMove] = useState(getXMove());
   const [scale, setScale] = useState(getScale());
 
-  // const xMove = useRef(new Animated.Value(0))
-  // const scale = useRef(new Animated.Value(1))
-
-  // const animate = () => {
-
-  //     Animated.timing(xMove, {
-
-  //     })
-  // }
-
   useEffect(() => {
-    /* if (char && char !== '' && !start) {
-      setStart(true);
-    }
-    setFirstRender(false); */
-  }, []);
-
-  useEffect(() => {
-    if (!gameON) return;
+    let bail = false;
 
     // running
-    if (char && char !== ' ' && start) {
+    if (char && char !== ' ' && start && !bail) {
       setRerunSwitch(!rerunSwitch);
-    } else if (char !== ' ' && !start) {
+    } else if (char !== ' ' && !start && !bail) {
+      console.log('remaining', remaining.length);
       setStart(true);
     }
+
     // animate();
     setXMove(getXMove());
     setScale(getScale());
+
+    return () => {
+      if (!gameON || remaining.length <= 2)
+        console.log('Cleaning up TypedCorrect');
+
+      return !gameON || remaining.length <= 1 ? (bail = true) : null;
+    };
   }, [char]);
 
   return (
-    <Section fillH style={[styles.typedContainer, { zIndex: 2 }]}>
+    <Section
+      fillH
+      style={[styles.typedContainer, { zIndex: 2, position: 'absolute' }]}
+      bg="yellow"
+    >
       <Anim
         enterOn={start}
         rerunOnChange={rerunSwitch}
+        hideOnExit={true}
+        bailOn={!gameON || remaining.length <= 2}
         duration={{ in: 600, out: 0 }}
         easing={{ in: 'ease-out', out: 'linear' }}
         anim={{
@@ -93,7 +99,11 @@ const TypedCorrect = ({ char, gameON, ...props }) => {
           right: 0,
           display: !gameON ? 'none' : 'block',
         }}
-        enterCallback={() => setStart(false)}
+        enterCallback={() => {
+          setStart(false);
+          if (typeof onExit === 'function') onExit();
+        }}
+        enterCallbackDelay={1000}
       >
         <Text style={styles.typedCorrect}>{char}</Text>
       </Anim>
@@ -111,10 +121,9 @@ const TypedTypo = ({ char, gameON, ...props }) => {
   }, [char]);
 
   return (
-    <Section fillH style={styles.typedContainer}>
+    <Section h={30} fillW justify="center" align="center">
       <Anim
         rerunOnChange={trigger}
-        /* hideOnExit={true} */
         duration={{ in: 1000, out: 0 }}
         easing={{ in: 'ease-out', out: 'linear' }}
         anim={{
@@ -122,28 +131,10 @@ const TypedTypo = ({ char, gameON, ...props }) => {
             fromValue: 1,
             toValue: 0,
           },
-          /* transform: [
-            {
-              key: 'translateX',
-              fromValue: 0,
-              toValue: xMove,
-            },
-            {
-              key: 'translateY',
-              fromValue: 0,
-              toValue: 30,
-            },
-            {
-              key: 'scale',
-              fromValue: 1,
-              toValue: scale,
-            },
-          ], */
         }}
         style={{
           display: !gameON ? 'none' : 'block',
         }}
-        /* enterCallback={() => setStart(false)} */
       >
         <Text style={styles.typedTypo}>{char}</Text>
       </Anim>
@@ -156,6 +147,9 @@ const AnimatedView = ({ gameState: { typed, material, gameON }, ...props }) => {
   let firstRender = useRef(true); // Initial value for opacity: 0
 
   const prevTypoCount = usePrev(typed.typoCount);
+
+  const [correctArr, setCorrectArr] = useState([]);
+  const [charArr, setCharArr] = useState([]);
 
   const animSeq = Animated.sequence([
     Animated.timing(bgAnim, {
@@ -171,6 +165,14 @@ const AnimatedView = ({ gameState: { typed, material, gameON }, ...props }) => {
   ]);
 
   useEffect(() => {
+    setCharArr(
+      material.text.split('').map(char => ({ char, enter: false, exit: false }))
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!gameON) return;
+
     if (firstRender.current) {
       firstRender.current = false;
     } else {
@@ -180,6 +182,21 @@ const AnimatedView = ({ gameState: { typed, material, gameON }, ...props }) => {
     }
   }, [typed.typoCount]);
 
+  useEffect(() => {
+    if (!gameON) return;
+
+    if (firstRender.current) {
+      firstRender.current = false;
+    } else {
+      if (charArr.length > 0 && typed.index > 0) {
+        let newArr = charArr;
+        newArr[typed.index].enter = true;
+
+        setCharArr(newArr);
+      }
+    }
+  }, [typed.output]);
+
   const nextChar = typed.remaining[0];
 
   const remaining = typed.remaining.substring(1);
@@ -187,8 +204,14 @@ const AnimatedView = ({ gameState: { typed, material, gameON }, ...props }) => {
   const wasTypo =
     typed.input[typed.input.length - 1] !== material.text[typed.index - 1];
 
+  console.log('correct length', correctArr.length);
+
   return (
-    <Section row fillW fillH spaceTop align="flex-start">
+    <Section fillW fillH align="flex-start">
+      <TypedTypo
+        char={wasTypo ? typed.input[typed.input.length - 1] : ''}
+        gameON={gameON}
+      />
       <Section
         row
         position="relative"
@@ -197,15 +220,28 @@ const AnimatedView = ({ gameState: { typed, material, gameON }, ...props }) => {
         align="flex-start"
         style={{ overflowX: 'hidden', overflowY: 'visible' }}
       >
-        <TypedTypo
-          char={wasTypo ? typed.input[typed.input.length - 1] : ''}
-          gameON={gameON}
-        />
+        <Section style={styles.typedContainer}>
+          {charArr.map((item, nth) => {
+            if (item.enter !== true) return null;
 
-        <TypedCorrect
-          char={typed.output[typed.output.length - 1]}
-          gameON={gameON}
-        />
+            return (
+              <TypedCorrect
+                key={nth}
+                /* ref={item.ref} */
+                autoStart
+                char={item.char}
+                gameON={gameON}
+                remaining={typed.remaining}
+                onExit={() => {
+                  const newArr = charArr;
+                  charArr[nth].enter = false;
+
+                  setCharArr(newArr);
+                }}
+              />
+            );
+          })}
+        </Section>
 
         <View padding={0} w={8} justify="center" style={styles.nextContainer}>
           <Text style={styles.nextChar}>{nextChar}</Text>
@@ -217,8 +253,6 @@ const AnimatedView = ({ gameState: { typed, material, gameON }, ...props }) => {
     </Section>
   );
 };
-
-const MemoAnimated = memo(p => <AnimatedView {...p} />);
 
 class Teleprompter extends Component {
   constructor(props) {
@@ -240,9 +274,9 @@ const styles = StyleSheet.create({
   material: { fontSize: 20, flexShrink: 1 },
   typedContainer: {
     width: 60,
-    height: '100%',
     overflow: 'visible',
     position: 'relative',
+    backgroundColor: 'rgba(0,0,0,0)',
   },
   typedCorrect: {
     position: 'absolute',

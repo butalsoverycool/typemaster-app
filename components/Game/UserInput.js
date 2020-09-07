@@ -105,6 +105,7 @@ class UserInput extends Component {
       gamePaused,
       material,
       typed,
+      achievements,
       level,
       muted,
     } = this.props.gameState;
@@ -143,21 +144,25 @@ class UserInput extends Component {
       ? material.text.substring(typed.index)
       : material.text.substring(typed.index + 1);
 
-    if (isTypo) {
+    /* if (isTypo) {
       setGameState(
         ps => ({
-          typed: { ...ps.typed, typoCount: ps.typed.typoCount + 1 },
+          typed: {
+            ...ps.typed,
+            typoCount: ps.typed.typoCount + 1,
+            achievements: false,
+          },
         }),
         () => console.log('state updated to', typed.typoCount)
       );
-    }
+    } */
 
     // sound
     if (!muted && remaining.length > 0) {
       this.typeSound(isTypo ? 'gasp' : 'type');
     }
 
-    // game over
+    /* // game over
     if (isTypo && level >= 3) {
       const res = randOfArr(gameOverText);
 
@@ -169,7 +174,7 @@ class UserInput extends Component {
       ]);
 
       return endGame();
-    }
+    } */
 
     const typedProps = {
       index: isTypo ? typed.index : typed.index + 1,
@@ -183,7 +188,7 @@ class UserInput extends Component {
 
     // points
     console.log('points to add:', pointsToAdd);
-    inputHandler({ pointsToAdd, typedProps });
+    inputHandler({ pointsToAdd, typedProps, isTypo, char });
 
     // finish-line
     if (typedProps.remaining.length <= 0) {

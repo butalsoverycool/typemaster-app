@@ -1009,6 +1009,11 @@
   resolved "https://registry.yarnpkg.com/@expo-google-fonts/cutive-mono/-/cutive-mono-0.1.0.tgz#e31aa4383237e2b754d105dc45d0eaeb01c5e413"
   integrity sha512-NaSb/j7oh+JcjvN6ZsV/Mv56iPpamJ8z4qkT6zFz7++E3DpZFJSWgmiOnsnSjEnVwhT15MqeuNWH0+6ALJNq4g==
 
+"@expo-google-fonts/inter@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@expo-google-fonts/inter/-/inter-0.1.0.tgz#399f068437824fcbf6aa3da5fcf490dba2af85a3"
+  integrity sha512-Y6GCqsUX6JwexQ2wmBkMiJBY6M2GpNQRTczzIGbBGhXWQxqGmP5awRcf0ZJV+OlLeJcKAzas/TW45ZLdpG3yzA==
+
 "@expo-google-fonts/monofett@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@expo-google-fonts/monofett/-/monofett-0.1.0.tgz#96d9a74f23e92364219e40b67466a779b472d6c4"
@@ -3518,7 +3523,7 @@ expo-file-system@~9.0.1:
   dependencies:
     uuid "^3.4.0"
 
-expo-font@~8.2.1:
+expo-font@^8.2.2, expo-font@~8.2.1:
   version "8.2.2"
   resolved "https://registry.yarnpkg.com/expo-font/-/expo-font-8.2.2.tgz#c67ee8d3841921a907464d67e8098baeed92bacf"
   integrity sha512-p/a7Ve+3LiR9ofn77U0UuuE6ZQiLVu3M1btiKUDe5efAp48D9GG41AevKQ7YnkfxTDdGJa0ACAtJAVsAD30jGA==

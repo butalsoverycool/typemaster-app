@@ -71,6 +71,10 @@ const files = {
 
     require('../assets/audio/pop04.wav'),
   ],
+
+  nice: require('../assets/audio/nice.mp3'),
+  pianoRoll: require('../assets/audio/pianoRoll.mp3'),
+  waitForIt: require('../assets/audio/waitForIt.mp3'),
 };
 
 export const loadSound = async ({ file, name }, cb) => {
@@ -89,7 +93,7 @@ export const loadSound = async ({ file, name }, cb) => {
     name === 'success' ||
     name === 'gasp'
   ) {
-    await sound.setVolumeAsync(0.3);
+    await sound.setVolumeAsync(0.2);
   }
 
   cb(sound);

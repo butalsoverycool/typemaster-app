@@ -2,6 +2,7 @@ import React, { Component, memo } from 'react';
 import { withState } from '../../GameState';
 import { Dimensions } from 'react-native';
 import { propsChanged } from '../../../constants/helperFuncs';
+import Constants from 'expo-constants';
 
 import {
   LineChart,
@@ -38,21 +39,21 @@ class Chart extends Component {
       labels = newLabels;
       dataset = newData;
 
-      if (labels.length > 50) {
+      /* if (labels.length > 50) {
         labels = labels.slice(-50);
         dataset = dataset.slice(-50);
-      }
+      } */
     }
 
     return (
-      <Section>
+      <Section style={{ fontFamily: 'CutiveMono_400Regular' }}>
         <Text
           style={{
             position: 'relative',
             top: 3,
           }}
         >
-          Correct input / sec
+          Correct input speed
         </Text>
         <LineChart
           data={{
@@ -60,26 +61,42 @@ class Chart extends Component {
             datasets: [
               {
                 data: dataset,
+                strokeWidth: 1,
               },
             ],
           }}
+          withDots={false}
+          withInnerLines={true}
+          withOuterLines={false}
+          withVerticalLines={false}
+          withHorizontalLines={false}
+          withHorizontalLabels={true}
+          withVerticalLabels={true}
+          fromZero={true}
           width={dimensions.width} // from react-native
           height={150}
           chartConfig={{
             backgroundColor: '#eee',
             backgroundGradientFrom: '#eee',
             backgroundGradientTo: '#eee',
-            decimalPlaces: 2, // optional, defaults to 2dp
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            decimalPlaces: 0, // optional, defaults to 2dp
+            color: (opacity = 1) => `#444`,
             style: {
               borderRadius: 0,
             },
+            propsForLabels: {
+              fontStyle: 'italic',
+              //fontFamily: 'Inter_900Black',
+              fontWeight: '100',
+              color: '#444',
+              fontSize: 10,
+            },
           }}
-          bezier={false}
+          bezier={true}
           style={{
             marginVertical: 8,
-            borderRadius: 16,
           }}
+          yAxisInterval="2"
         />
       </Section>
     );

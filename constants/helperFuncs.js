@@ -349,5 +349,9 @@ export const playSound = async (props, cb) => {
     sound.setOnPlaybackStatusUpdate(onStatusChange);
   } */
 
+  if (props.vol && typeof props.vol === 'number') {
+    await sound.setVolumeAsync(props.vol);
+  }
+
   replay(sound, cb);
 };

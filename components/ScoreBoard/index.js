@@ -124,7 +124,7 @@ class ScoreBoard extends Component {
               }}
             >
               <View style={theme.section}>
-                <Text style={theme.title}>LOCAL SCOREBOARD</Text>
+                <Text style={theme.title}>OFFICIAL SCOREBOARD</Text>
               </View>
 
               <Section style={theme.section}>

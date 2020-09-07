@@ -41,6 +41,14 @@ const newGameState = (ps, override = null) => ({
     typoCount: 0,
   },
 
+  achievements: {
+    chars: 0,
+    charsInaRow: 0,
+    countingWords: true,
+    words: 0,
+    wordsInaRow: 0,
+  },
+
   newHighscore: false,
   ...override,
 });
@@ -80,6 +88,14 @@ const initialState = {
     output: '',
     remaining: '',
     typoCount: 0,
+  },
+
+  achievements: {
+    chars: 0,
+    charsInaRow: 0,
+    countingWords: true,
+    words: 0,
+    wordsInaRow: 0,
   },
 
   level: 0,
@@ -575,6 +591,7 @@ class GameState extends Component {
       typed: { typoCount, output },
       authUser,
       authTyper,
+      achievements,
     } = this.state;
 
     const latestScore = {
@@ -587,6 +604,12 @@ class GameState extends Component {
       },
       text: title,
       typos: typoCount,
+      achievements: {
+        chars: achievements.chars,
+        words: achievements.words,
+        charsInaRow: achievements.charsInaRow,
+        wordsInaRow: achievements.wordsInaRow,
+      },
     };
 
     this.setState({ latestScore }, () => {
@@ -658,7 +681,7 @@ class GameState extends Component {
     });
   };
 
-  inputHandler({ pointsToAdd = 0, typedProps = {} }) {
+  inputHandler({ pointsToAdd = 0, typedProps = {}, isTypo, char }) {
     const {
       index = this.state.typed.index,
       input,
@@ -685,14 +708,64 @@ class GameState extends Component {
 
     if (!input) return console.log('Missing input to update typed-state');
 
-    this.setState(ps => ({
-      points: Math.round((ps.points + pointsToAdd) * 100) / 100,
-      typed: typedProps,
-    }));
+    this.setState(
+      ps => ({
+        points: Math.round((ps.points + pointsToAdd) * 100) / 100,
+        typed: typedProps,
+        achievements: {
+          ...ps.achievements,
+          chars: !isTypo ? ps.achievements.chars + 1 : 0,
+          countingWords:
+            (!isTypo && ps.achievements.countingWords) || char === ' '
+              ? true
+              : false,
+          words:
+            isTypo || !ps.achievements.countingWords
+              ? 0
+              : char !== ' ' &&
+                (typedProps.remaining[0] === ' ' ||
+                  typedProps.remaining.length < 1)
+              ? ps.achievements.words + 1
+              : ps.achievements.words,
+        },
+      }),
+      () => {
+        if (
+          this.state.typed.output[this.state.typed.output.length - 1] === '.'
+        ) {
+          this.playSound({ name: 'ding', vol: 0.1 });
+        }
+        // update words in a row
+        this.setState(ps => {
+          const charsBest = ps.achievements.chars > ps.achievements.charsInaRow;
+          const wordsBest = ps.achievements.words > ps.achievements.wordsInaRow;
+
+          if (
+            wordsBest &&
+            ps.achievements.words >= 10 &&
+            ps.achievements.words % 10 === 0
+          ) {
+            this.playSound('nice');
+          }
+
+          return {
+            achievements: {
+              ...ps.achievements,
+              charsInaRow: charsBest
+                ? ps.achievements.chars
+                : ps.achievements.charsInaRow,
+              wordsInaRow: wordsBest
+                ? ps.achievements.words
+                : ps.achievements.wordsInaRow,
+            },
+          };
+        });
+      }
+    );
   }
 
   addTick(cb) {
-    if (this.state.time >= 10 && this.state.time % 2 === 0) {
+    if (this.state.time >= 10 && this.state.time % 5 === 0) {
       this.addScoreStatus();
     }
 

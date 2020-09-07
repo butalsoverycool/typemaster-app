@@ -3,6 +3,7 @@ import { withState } from '../GameState';
 import { propsChanged } from '../../constants/helperFuncs';
 
 import { Section, Icon } from '../Elements';
+import { EntypoTriangleUp } from 'react-entypo-icons';
 
 class CancelGame extends Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class CancelGame extends Component {
 
     const finished = typed.output && typed.output !== '';
 
-    gameSetters.endGame({ gameFinished: finished });
+    gameSetters.endGame({ gameFinished: true });
   }
 
   handleAgain() {
@@ -48,9 +49,9 @@ class CancelGame extends Component {
         row
         justify="space-around"
         fillW
-        spaceTop={20}
+        spaceTop={30}
         flex={1}
-        style={{ maxHeight: 100 }}
+        style={{ maxHeight: 50 }}
       >
         {(gameON || gamePaused) && (
           <>
