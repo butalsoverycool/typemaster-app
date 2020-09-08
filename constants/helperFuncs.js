@@ -2,10 +2,6 @@ import React, { useRef, useEffect } from 'react';
 import library from './library';
 import { Audio } from 'expo-av';
 
-const tryCallBack = (cb, args = null) => {
-  if (typeof cb === 'function') cb(args);
-};
-
 export const getTime = (time, typedString = '') => {
   const units = {
     m: Math.floor(((time / 10) % 3600) / 60),
@@ -251,11 +247,11 @@ export const loadSounds = async ({ src, cb }) => {
 /* export const playSound = async (src, cb) => {
   try {
     await src.sound.replayAsync();
-    tryCallBack(cb);
+    tryCallback(cb);
   } catch (err) {
     const errMsg = 'Failed to play sound: ' + err;
     console.log(errMsg);
-    tryCallBack(cb, { err: errMsg });
+    tryCallback(cb, { err: errMsg });
   }
 };
 
@@ -274,13 +270,13 @@ export const tryCallback = (cb, args = null) => {
   if (typeof cb === 'function') cb(args);
 };
 
-export const replay = async (sound, cb) => {
+export const replay = async ({ sound, props, cb }) => {
   try {
     await sound.replayAsync();
+    tryCallback(cb, { sound });
   } catch (err) {
-    const errMsg = `Failed to play sound (${name}): ${err}`;
+    const errMsg = `Sound fail (${props.name}): ${err}`;
     console.log(errMsg);
-    tryCallBack(cb, { err: errMsg });
   }
 };
 
@@ -291,7 +287,13 @@ export const playSound = async (props, cb) => {
 
   // if sound provided, just play
   if (props.sound) {
-    return replay(props.sound, props.cb);
+    if (props.vol) {
+      props.sound.setVolumeAsync(props.vol);
+    }
+
+    replay({ sound: props.sound, props, cb: props.cb });
+
+    return tryCallback(cb, { sound });
   }
 
   // no sounds available
@@ -327,6 +329,7 @@ export const playSound = async (props, cb) => {
       if (status.isPlaying) {
         // is playing
       } else {
+        tryCallback(props.onStop, { sound });
         // stopped/paused
       }
 
@@ -336,18 +339,22 @@ export const playSound = async (props, cb) => {
 
       if (status.didJustFinish && !status.isLooping) {
         // on finish
-        tryCallback(cb);
+        tryCallback(props.onFinish, { sound });
       }
     }
   };
 
-  /* if (typeof sound.setOnPlaybackStatusUpdate === 'function') {
-    sound.setOnPlaybackStatusUpdate(onStatusChange);
-  } */
+  if (typeof sound.setOnPlaybackStatusUpdate === 'function') {
+    try {
+      sound.setOnPlaybackStatusUpdate(onStatusChange);
+    } catch (err) {
+      console.log('Sound status change cb-error:', err);
+    }
+  }
 
   if (props.vol && typeof props.vol === 'number') {
     await sound.setVolumeAsync(props.vol);
   }
 
-  replay(sound, cb);
+  replay({ sound, props, cb });
 };

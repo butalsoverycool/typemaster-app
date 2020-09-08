@@ -91,12 +91,9 @@ class UserInput extends Component {
   }
 
   typeSound(name) {
-    const {
-      sounds: { [name]: soundArr },
-    } = this.props.gameState;
-    const { playSound } = this.props.gameSetters;
+    /* const { playSound } = this.props.gameSetters;
 
-    playSound(name);
+    playSound(name); */
   }
 
   onInput = e => {
@@ -159,9 +156,12 @@ class UserInput extends Component {
       );
     } */
 
-    // sound
-    if (!muted && remaining.length > 0) {
-      this.typeSound(isTypo ? 'gasp' : 'type');
+    // type/typo-sound
+    if (remaining.length > 0) {
+      // dont play if 3+ words in a row (pianoRoll)
+      if ((isTypo && achievements.words < 3) || !isTypo) {
+        playSound({ name: isTypo ? 'gasp' : 'type' });
+      }
     }
 
     /* // game over

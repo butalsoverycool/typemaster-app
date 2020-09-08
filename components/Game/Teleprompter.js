@@ -1,4 +1,5 @@
 import React, { Component, useRef, useEffect, useState, memo } from 'react';
+import { Image } from 'react-native';
 import { StyleSheet, Animated, View } from 'react-native';
 import { usePrev, propsChanged } from '../../constants/helperFuncs';
 import { withState } from '../GameState';
@@ -142,7 +143,10 @@ const TypedTypo = ({ char, gameON, ...props }) => {
   );
 };
 
-const AnimatedView = ({ gameState: { typed, material, gameON }, ...props }) => {
+const AnimatedView = ({
+  gameState: { achievements, typed, material, gameON },
+  ...props
+}) => {
   let bgAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
   let firstRender = useRef(true); // Initial value for opacity: 0
 
@@ -206,8 +210,23 @@ const AnimatedView = ({ gameState: { typed, material, gameON }, ...props }) => {
 
   console.log('correct length', correctArr.length);
 
+  const success =
+    !wasTypo && achievements.words >= 10 && achievements.words % 10 === 0
+      ? true
+      : false;
+
   return (
     <Section fillW fillH align="flex-start">
+      {success && (
+        <Section position="absolute" style={{ zIndex: 2, top: 50, right: 0 }}>
+          <Image
+            style={{ width: 150, height: 150 }}
+            source={{
+              uri: 'https://media.giphy.com/media/l0IykrPZzHBtiGQy4/giphy.gif',
+            }}
+          />
+        </Section>
+      )}
       <TypedTypo
         char={wasTypo ? typed.input[typed.input.length - 1] : ''}
         gameON={gameON}

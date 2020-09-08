@@ -20,6 +20,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 const Ctx = createContext();
 
 const newGameState = (ps, override = null) => ({
+  ...ps,
   gameStandby: false,
   gameON: false,
   gamePaused: false,
@@ -115,6 +116,8 @@ const initialState = {
 
   muted: false,
   sounds: null,
+  sounding: [],
+  soloist: false,
   imgs: null,
 };
 
@@ -158,6 +161,7 @@ class GameState extends Component {
     this.handleAuthDiffs = this.handleAuthDiffs.bind(this);
 
     this.playSound = this.playSound.bind(this);
+    this.soloSound = this.soloSound.bind(this);
 
     this.addScoreStatus = this.addScoreStatus.bind(this);
 
@@ -217,11 +221,71 @@ class GameState extends Component {
     this.props.firebase.typerListener(newTyper => this.onTyperChange(newTyper));
   }
 
+  async soloSound() {
+    const setSoloist = () =>
+      new Promise(res => this.setState({ soloist: true }, res));
+
+    await setSoloist();
+
+    const playing = [...this.state.sounding];
+    for (let nth = 0; nth < playing.length; nth++) {
+      try {
+        await playing[nth].sound.stopAsync();
+        console.log('STOPPED SOUND', playing[nth].name);
+      } catch (err) {
+        console.log('soloSound err:', err);
+      }
+    }
+  }
+
   async playSound(props, cb) {
-    name = typeof props === 'string' ? props : props.name;
+    const onStop = ({ sound, name, props }) => {
+      //console.log('Sound', name, 'STOPPED');
+    };
+
+    const onFinish = ({ sound, name, props }) => {
+      //console.log('Sound', name, 'FINISHED');
+
+      if (props.solo) {
+        this.setState({ soloist: false });
+      }
+
+      let removeNth = null;
+      this.state.sounding.find((item, nth) => {
+        if (item.name === name) removeNth = nth;
+      });
+
+      if (typeof removeNth === 'number' && removeNth > -1) {
+        this.setState(ps => {
+          let newSounding = [...ps.sounding];
+          newSounding.splice(removeNth, 1);
+
+          return { sounding: newSounding };
+        });
+      }
+    };
+
+    const name = typeof props === 'string' ? props : props.name;
+
+    if (props.solo) {
+      this.soloSound();
+    }
+
     playSound(
-      { ...props, name, muted: this.state.muted, sounds: this.state.sounds },
-      cb
+      {
+        ...props,
+        name,
+        muted: this.state.muted,
+        sounds: this.state.sounds,
+        onStop: ({ sound }) => onStop({ sound, name, props }),
+        onFinish: ({ sound }) => onFinish({ sound, name, props }),
+      },
+      ({ sound, err }) => {
+        if (err) console.log('sound err:', err);
+
+        this.setState(ps => ({ sounding: [...ps.sounding, { name, sound }] }));
+        this.tryCallback(cb);
+      }
     );
   }
 
@@ -709,9 +773,9 @@ class GameState extends Component {
     if (!input) return console.log('Missing input to update typed-state');
 
     if (isTypo) {
-      // if words was high, play pianoRoll -fail -sound
-      if (this.state.achievements.words >= 2) {
-        this.playSound('pianoRoll');
+      // if typo when 3+ words in a row, play pianoRoll -fail -sound
+      if (this.state.achievements.words + 1 >= 3) {
+        this.playSound({ name: 'pianoRoll', vol: 0.3 });
       }
     }
 
@@ -747,9 +811,21 @@ class GameState extends Component {
 
         if (!isTypo) {
           // (is actually on 3 and 6 words in a row)
-          if (achievements.words === 3 && typed.remaining[0] === ' ') {
+          if (
+            achievements.words >= 10 &&
+            achievements.words % 10 === 0 &&
+            typed.remaining[0] === ' '
+          ) {
+            this.playSound({ name: 'nice', vol: 0.1, solo: true });
+          } else if (
+            (achievements.words / 10 + 0.7) % 1 === 0 &&
+            typed.remaining[0] === ' '
+          ) {
             this.playSound({ name: 'blipBlop1', vol: 0.3 });
-          } else if (achievements.words === 6 && typed.remaining[0] === ' ') {
+          } else if (
+            (achievements.words / 10 + 0.4) % 1 === 0 &&
+            typed.remaining[0] === ' '
+          ) {
             this.playSound({ name: 'blipBlop2', vol: 0.3 });
           }
         }
@@ -831,7 +907,7 @@ class GameState extends Component {
     this.playSound('tension');
 
     this.setState(ps => ({
-      ...newGameState(this.state),
+      ...newGameState(ps),
       msg: ['When you are ready, just start typing...'],
       pushNav: 'Game',
       gamePaused: false,
