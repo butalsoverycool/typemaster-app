@@ -298,12 +298,8 @@ export const playSound = async (props, cb) => {
   if (!props.sounds) return console.log('Sounds not loaded yet');
 
   // pick out props
-  let name = props,
-    index = null;
-  if (typeof props === 'object') {
-    name = props.name;
-    index = props.index;
-  }
+  let name = typeof props === 'object' ? props.name : props;
+  let index = typeof props === 'object' ? props.index : null;
 
   // bail if no sound selected
   if (!name) return console.log('no sound name provided');

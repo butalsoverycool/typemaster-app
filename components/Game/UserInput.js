@@ -19,6 +19,7 @@ import {
   randOfArr,
   mathRandInc,
   propsChanged,
+  playSound,
 } from '../../constants/helperFuncs';
 import Input from '../Elements/Input';
 
@@ -116,6 +117,7 @@ class UserInput extends Component {
       endGame,
       createLatestScore,
       setGameState,
+      playSound,
     } = this.props.gameSetters;
 
     if (gameStandby && !gameON && !gamePaused) {

@@ -708,6 +708,13 @@ class GameState extends Component {
 
     if (!input) return console.log('Missing input to update typed-state');
 
+    if (isTypo) {
+      // if words was high, play pianoRoll -fail -sound
+      if (this.state.achievements.words >= 2) {
+        this.playSound('pianoRoll');
+      }
+    }
+
     this.setState(
       ps => ({
         points: Math.round((ps.points + pointsToAdd) * 100) / 100,
@@ -730,23 +737,27 @@ class GameState extends Component {
         },
       }),
       () => {
+        const { achievements, typed } = this.state;
+
         if (
           this.state.typed.output[this.state.typed.output.length - 1] === '.'
         ) {
-          this.playSound({ name: 'ding', vol: 0.1 });
+          this.playSound({ name: 'ding', vol: 0.3 });
         }
+
+        if (!isTypo) {
+          // (is actually on 3 and 6 words in a row)
+          if (achievements.words === 3 && typed.remaining[0] === ' ') {
+            this.playSound({ name: 'blipBlop1', vol: 0.3 });
+          } else if (achievements.words === 6 && typed.remaining[0] === ' ') {
+            this.playSound({ name: 'blipBlop2', vol: 0.3 });
+          }
+        }
+
         // update words in a row
         this.setState(ps => {
           const charsBest = ps.achievements.chars > ps.achievements.charsInaRow;
           const wordsBest = ps.achievements.words > ps.achievements.wordsInaRow;
-
-          if (
-            wordsBest &&
-            ps.achievements.words >= 10 &&
-            ps.achievements.words % 10 === 0
-          ) {
-            this.playSound('nice');
-          }
 
           return {
             achievements: {

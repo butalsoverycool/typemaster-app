@@ -75,6 +75,9 @@ const files = {
   nice: require('../assets/audio/nice.mp3'),
   pianoRoll: require('../assets/audio/pianoRoll.mp3'),
   waitForIt: require('../assets/audio/waitForIt.mp3'),
+
+  blipBlop1: require('../assets/audio/blipBlop1.mp3'),
+  blipBlop2: require('../assets/audio/blipBlop2.mp3'),
 };
 
 export const loadSound = async ({ file, name }, cb) => {
