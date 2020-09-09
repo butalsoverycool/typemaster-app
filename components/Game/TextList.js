@@ -31,7 +31,7 @@ const TextList = ({ gameSetters: { setMaterial, playSound }, firebase }) => {
             <ListItem
               key={nth}
               title={item.title}
-              subtitle={String(item.text.length)}
+              subtitle={item.artist + ' - ' + String(item.text.length)}
               titleStyle={{ fontFamily: 'CutiveMono_400Regular' }}
               subtitleStyle={{ fontFamily: 'CutiveMono_400Regular' }}
               bottomDivider

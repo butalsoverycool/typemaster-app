@@ -45,6 +45,7 @@ class UserInput extends Component {
       tickingMs: 100,
       timer: null,
       ticking: null,
+      quote: false,
     };
 
     this.tick = this.tick.bind(this);
@@ -122,7 +123,29 @@ class UserInput extends Component {
       startGame();
     }
 
+    if (this.state.quote) return this.setState({ quote: false });
+
     const char = e.nativeEvent.key;
+
+    // temp workaround for quote-character registering event twice :'(
+    if (
+      char === "'" ||
+      char === '´' ||
+      char === '`' ||
+      char === '’' ||
+      char === '‘' ||
+      char === '"' ||
+      char === '“' ||
+      char === '”'
+      /* &&
+      (typed.output[typed.output.length - 1] === "'" ||
+        typed.output[typed.output.length - 1] === '´' ||
+        typed.output[typed.output.length - 1] === '`' ||
+        typed.output[typed.output.length - 1] === '’' ||
+        typed.output[typed.output.length - 1] === '‘') */
+    ) {
+      this.setState({ quote: true });
+    }
 
     console.log('char', char);
 
@@ -137,7 +160,22 @@ class UserInput extends Component {
     }
 
     // update typed and points based on isTypo
-    const isTypo = char !== material.text[typed.index];
+    let isTypo = char !== material.text[typed.index];
+
+    if (
+      (char === "'" ||
+        char === '´' ||
+        char === '`' ||
+        char === '’' ||
+        char === '‘') &&
+      (material.text[typed.index] === "'" ||
+        material.text[typed.index] === '´' ||
+        material.text[typed.index] === '`' ||
+        material.text[typed.index] === '’' ||
+        material.text[typed.index] === '‘')
+    ) {
+      isTypo = false;
+    }
 
     const remaining = isTypo
       ? material.text.substring(typed.index)

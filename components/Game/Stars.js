@@ -167,15 +167,20 @@ const Stars = ({
       }
 
       if (success) setSuccess(false);
-    } else if ((achievements.words / 10 + 0.8) % 1 === 0) {
+      return;
+    }
+
+    if (typed.remaining[0] !== ' ') return;
+
+    if ((achievements.words / 20 + 0.8) % 1 === 0) {
       handleStars([0]);
-    } else if ((achievements.words / 10 + 0.6) % 1 === 0) {
+    } else if ((achievements.words / 20 + 0.6) % 1 === 0) {
       handleStars([0, 1]);
-    } else if ((achievements.words / 10 + 0.4) % 1 === 0) {
+    } else if ((achievements.words / 20 + 0.4) % 1 === 0) {
       handleStars([0, 1, 2]);
-    } else if ((achievements.words / 10 + 0.2) % 1 === 0) {
+    } else if ((achievements.words / 20 + 0.2) % 1 === 0) {
       handleStars([0, 1, 2, 3]);
-    } else if (achievements.words >= 10 && achievements.words % 10 === 0) {
+    } else if (achievements.words >= 20 && achievements.words % 20 === 0) {
       handleStars();
       if (!success) {
         setSuccess(true);

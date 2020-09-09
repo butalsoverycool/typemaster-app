@@ -793,30 +793,34 @@ class GameState extends Component {
         const { achievements, typed } = this.state;
 
         if (
-          this.state.typed.output[this.state.typed.output.length - 1] === '.'
+          (this.state.typed.output[this.state.typed.output.length - 1] ===
+            '.' ||
+            this.state.typed.output[this.state.typed.output.length - 1] ===
+              '!' ||
+            this.state.typed.output[this.state.typed.output.length - 1] ===
+              '?') &&
+          this.state.typed.remaining[0] !== '.' &&
+          this.state.typed.remaining[0] !== '!' &&
+          this.state.typed.remaining[0] !== '?'
         ) {
           this.playSound({ name: 'ding', vol: 0.3 });
         }
 
-        if (!wasTypo) {
+        if (!wasTypo && typed.remaining[0] === ' ') {
           // (is actually on 3 and 6 words in a row)
-          if (
-            achievements.words >= 10 &&
-            achievements.words % 10 === 0 &&
-            typed.remaining[0] === ' '
-          ) {
+          if (achievements.words >= 20 && achievements.words % 20 === 0) {
             this.playSound({ name: 'nice', vol: 0.1 }, ({ sound }) => {});
             this.setState(ps => ({ points: ps.points + bonus }));
           } else if (
-            ((achievements.words / 10 + 0.8) % 1 === 0 ||
-              (achievements.words / 10 + 0.4) % 1 === 0) &&
-            typed.remaining[0] === ' '
+            // on 4 & 12, on 24 & 32, on 44 & 52 etc...
+            (achievements.words / 20 + 0.8) % 1 === 0 ||
+            (achievements.words / 20 + 0.4) % 1 === 0
           ) {
+            // on 8 & 16, on 28 & 36, on 48 & 56 etc...
             this.playSound({ name: 'blipBlop1', vol: 0.3 });
           } else if (
-            ((achievements.words / 10 + 0.6) % 1 === 0 ||
-              (achievements.words / 10 + 0.2) % 1 === 0) &&
-            typed.remaining[0] === ' '
+            (achievements.words / 20 + 0.6) % 1 === 0 ||
+            (achievements.words / 20 + 0.2) % 1 === 0
           ) {
             this.playSound({ name: 'blipBlop2', vol: 0.3 });
           }
