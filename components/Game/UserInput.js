@@ -159,9 +159,7 @@ class UserInput extends Component {
     // type/typo-sound
     if (remaining.length > 0) {
       // dont play if 3+ words in a row (pianoRoll)
-      if ((isTypo && achievements.words < 3) || !isTypo) {
-        playSound({ name: isTypo ? 'gasp' : 'type' });
-      }
+      playSound({ name: isTypo ? 'gasp' : 'type' });
     }
 
     /* // game over
@@ -184,13 +182,14 @@ class UserInput extends Component {
       output: isTypo ? typed.output : typed.output + char,
       remaining,
       typoCount: isTypo ? typed.typoCount + 1 : typed.typoCount,
+      wasTypo: isTypo,
     };
 
     const pointsToAdd = isTypo ? withdrawal : reward;
 
     // points
     console.log('points to add:', pointsToAdd);
-    inputHandler({ pointsToAdd, typedProps, isTypo, char });
+    inputHandler({ pointsToAdd, typedProps, char });
 
     // finish-line
     if (typedProps.remaining.length <= 0) {

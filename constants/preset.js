@@ -2,6 +2,8 @@ export const withdrawal = -0.05;
 
 export const reward = 0.05;
 
+export const bonus = 0.5;
+
 export const speedStandard = {
   warning: 4,
   bad: 2,

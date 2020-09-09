@@ -13,7 +13,7 @@ import {
   pointCalc,
   playSound,
 } from '../constants/helperFuncs';
-import { dynamicMsg, forbiddenAuthDiffs } from '../constants/preset';
+import { dynamicMsg, forbiddenAuthDiffs, bonus } from '../constants/preset';
 import { withFirebase } from './Firebase';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
@@ -199,18 +199,6 @@ class GameState extends Component {
     // orientation
     this.lockOrientation('portrait');
 
-    /* /// enter loading state
-    this.setState(
-      {
-        loading: true,
-      },
-      () => {
-        this.init(() => {
-          this.setState({ loading: false });
-        });
-      }
-    ); */
-
     // sounds
     this.setState({ sounds: this.props.sounds, imgs: this.props.imgs });
 
@@ -284,7 +272,7 @@ class GameState extends Component {
         if (err) console.log('sound err:', err);
 
         this.setState(ps => ({ sounding: [...ps.sounding, { name, sound }] }));
-        this.tryCallback(cb);
+        this.tryCallback(cb, { sound });
       }
     );
   }
@@ -431,6 +419,16 @@ class GameState extends Component {
     }
 
     this.setState({ authTyper: typer }, () => this.tryCallback(cb));
+  }
+
+  updateTyper(uid, payload, cb) {
+    console.log(`updateTyper()...(${Object.keys(payload)})`);
+
+    this.props.firebase.updateTyper(uid, payload, err => {
+      if (err) console.log('Err when updating typer:', err);
+
+      this.setState(ps => ({ authTyper: { ...ps.authTyper, ...payload } }), cb);
+    });
   }
 
   onSignIn(auth, cb) {
@@ -592,16 +590,6 @@ class GameState extends Component {
       });
   }
 
-  updateTyper(uid, payload, cb) {
-    console.log(`updateTyper()...(${Object.keys(payload)})`);
-
-    this.props.firebase.updateTyper(uid, payload, err => {
-      if (err) console.log('Err when updating typer:', err);
-
-      this.setState(ps => ({ authTyper: { ...ps.authTyper, ...payload } }), cb);
-    });
-  }
-
   async loadAsyncStorage({ key, cb, onSuccess, onFail }) {
     try {
       const value = JSON.parse(await AsyncStorage.getItem('typemaster_' + key));
@@ -745,7 +733,7 @@ class GameState extends Component {
     });
   };
 
-  inputHandler({ pointsToAdd = 0, typedProps = {}, isTypo, char }) {
+  inputHandler({ pointsToAdd = 0, typedProps = {}, char }) {
     const {
       index = this.state.typed.index,
       input,
@@ -756,6 +744,7 @@ class GameState extends Component {
       remaining = this.state.material.text.substring(
         typedProps.index || this.state.typed.index
       ),
+      wasTypo,
       ...typedRest
     } = typedProps;
 
@@ -772,12 +761,12 @@ class GameState extends Component {
 
     if (!input) return console.log('Missing input to update typed-state');
 
-    if (isTypo) {
+    /* if (wasTypo) {
       // if typo when 3+ words in a row, play pianoRoll -fail -sound
       if (this.state.achievements.words + 1 >= 3) {
         this.playSound({ name: 'pianoRoll', vol: 0.3 });
       }
-    }
+    } */
 
     this.setState(
       ps => ({
@@ -785,13 +774,13 @@ class GameState extends Component {
         typed: typedProps,
         achievements: {
           ...ps.achievements,
-          chars: !isTypo ? ps.achievements.chars + 1 : 0,
+          chars: !wasTypo ? ps.achievements.chars + 1 : 0,
           countingWords:
-            (!isTypo && ps.achievements.countingWords) || char === ' '
+            (!wasTypo && ps.achievements.countingWords) || char === ' '
               ? true
               : false,
           words:
-            isTypo || !ps.achievements.countingWords
+            wasTypo || !ps.achievements.countingWords
               ? 0
               : char !== ' ' &&
                 (typedProps.remaining[0] === ' ' ||
@@ -809,21 +798,24 @@ class GameState extends Component {
           this.playSound({ name: 'ding', vol: 0.3 });
         }
 
-        if (!isTypo) {
+        if (!wasTypo) {
           // (is actually on 3 and 6 words in a row)
           if (
             achievements.words >= 10 &&
             achievements.words % 10 === 0 &&
             typed.remaining[0] === ' '
           ) {
-            this.playSound({ name: 'nice', vol: 0.1, solo: true });
+            this.playSound({ name: 'nice', vol: 0.1 }, ({ sound }) => {});
+            this.setState(ps => ({ points: ps.points + bonus }));
           } else if (
-            (achievements.words / 10 + 0.7) % 1 === 0 &&
+            ((achievements.words / 10 + 0.8) % 1 === 0 ||
+              (achievements.words / 10 + 0.4) % 1 === 0) &&
             typed.remaining[0] === ' '
           ) {
             this.playSound({ name: 'blipBlop1', vol: 0.3 });
           } else if (
-            (achievements.words / 10 + 0.4) % 1 === 0 &&
+            ((achievements.words / 10 + 0.6) % 1 === 0 ||
+              (achievements.words / 10 + 0.2) % 1 === 0) &&
             typed.remaining[0] === ' '
           ) {
             this.playSound({ name: 'blipBlop2', vol: 0.3 });
@@ -904,15 +896,18 @@ class GameState extends Component {
     console.log('prepareGame()');
     if (/* this.state.gameON ||*/ this.state.gameStandby) return;
 
-    this.playSound('tension');
-
-    this.setState(ps => ({
-      ...newGameState(ps),
-      msg: ['When you are ready, just start typing...'],
-      pushNav: 'Game',
-      gamePaused: false,
-      gameStandby: true,
-    }));
+    this.setState(
+      ps => ({
+        ...newGameState(ps),
+        msg: ['When you are ready, just start typing...'],
+        pushNav: 'Game',
+        gamePaused: false,
+        gameStandby: true,
+      }),
+      () => {
+        this.playSound({ name: 'tension', solo: true });
+      }
+    );
   }
 
   startGame() {

@@ -4,6 +4,7 @@ import { StyleSheet, Animated, View } from 'react-native';
 import { usePrev, propsChanged } from '../../constants/helperFuncs';
 import { withState } from '../GameState';
 import { Section, Text, Anim } from '../Elements';
+import Stars from './Stars';
 
 const getXMove = () => {
   let right = Math.random() >= 0.5;
@@ -22,6 +23,8 @@ const getScale = () => {
 const TypedCorrect = ({
   char,
   gameON,
+  gameStandby,
+  gamePaused,
   autoStart = false,
   onExit,
   remaining,
@@ -53,7 +56,9 @@ const TypedCorrect = ({
       if (!gameON || remaining.length <= 2)
         console.log('Cleaning up TypedCorrect');
 
-      return !gameON || remaining.length <= 1 ? (bail = true) : null;
+      return !gameON || gameStandby || remaining.length <= 1
+        ? (bail = true)
+        : null;
     };
   }, [char]);
 
@@ -61,7 +66,6 @@ const TypedCorrect = ({
     <Section
       fillH
       style={[styles.typedContainer, { zIndex: 2, position: 'absolute' }]}
-      bg="yellow"
     >
       <Anim
         enterOn={start}
@@ -216,17 +220,7 @@ const AnimatedView = ({
       : false;
 
   return (
-    <Section fillW fillH align="flex-start">
-      {success && (
-        <Section position="absolute" style={{ zIndex: 2, top: 50, right: 0 }}>
-          <Image
-            style={{ width: 150, height: 150 }}
-            source={{
-              uri: 'https://media.giphy.com/media/l0IykrPZzHBtiGQy4/giphy.gif',
-            }}
-          />
-        </Section>
-      )}
+    <Section fillW align="flex-start" padding={0} style={{ maxWidth: '100%' }}>
       <TypedTypo
         char={wasTypo ? typed.input[typed.input.length - 1] : ''}
         gameON={gameON}
@@ -234,10 +228,11 @@ const AnimatedView = ({
       <Section
         row
         position="relative"
-        fillw
+        fillW
         h={50}
+        justify="flex-start"
         align="flex-start"
-        style={{ overflowX: 'hidden', overflowY: 'visible' }}
+        style={{ overflowX: 'hidden', overflowY: 'visible', zIndex: 2 }}
       >
         <Section style={styles.typedContainer}>
           {charArr.map((item, nth) => {
@@ -262,13 +257,23 @@ const AnimatedView = ({
           })}
         </Section>
 
-        <View padding={0} w={8} justify="center" style={styles.nextContainer}>
-          <Text style={styles.nextChar}>{nextChar}</Text>
-        </View>
-        <View style={{ flexWrap: 'nowrap', width: 'auto', height: 20 }}>
-          <Text style={styles.remaining}>{remaining}</Text>
-        </View>
+        <Section row>
+          <View padding={0} w={8} style={styles.nextContainer}>
+            <Text style={styles.nextChar}>{nextChar}</Text>
+          </View>
+          <View
+            style={{
+              flexWrap: 'nowrap',
+              width: 'auto',
+              height: 16,
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={styles.remaining}>{remaining}</Text>
+          </View>
+        </Section>
       </Section>
+      <Stars />
     </Section>
   );
 };
@@ -295,6 +300,7 @@ const styles = StyleSheet.create({
     width: 60,
     overflow: 'visible',
     position: 'relative',
+    zIndex: 5,
     backgroundColor: 'rgba(0,0,0,0)',
   },
   typedCorrect: {
@@ -322,5 +328,6 @@ const styles = StyleSheet.create({
   remaining: {
     flex: 1,
     flexWrap: 'nowrap',
+    textAlign: 'left',
   },
 });

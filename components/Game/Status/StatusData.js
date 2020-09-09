@@ -1,4 +1,5 @@
 import React, { Component, memo } from 'react';
+import { Dimensions } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 import { Text, Section } from '../../Elements';
 import { Badge } from 'react-native-elements';
@@ -55,19 +56,15 @@ class StatusData extends Component {
       badgeProps = {},
     } = this.props;
 
-    const width = '30%';
-
     // const marginTop = index > 1 ? 15 : 0;
 
     return (
       <Section
         justify="center"
         align="center"
+        w={Dimensions.get('window').width / 3 - 10}
         style={[
           {
-            width,
-            /* marginTop, */
-
             ...containerProps.style,
           },
         ]}

@@ -20,6 +20,8 @@ class Anim extends Component {
     this.reRun = this.reRun.bind(this);
     this.exit = this.exit.bind(this);
 
+    this.shouldBail = this.shouldBail.bind(this);
+
     this.enterCallbackTimeout = null;
   }
 
@@ -37,6 +39,8 @@ class Anim extends Component {
 
   // lifecycle? let's live here!
   componentDidUpdate(pp) {
+    if (this.shouldBail('didUpdate')) return;
+
     if (
       pp.enterOn !== true &&
       this.props.enterOn === true &&
@@ -59,15 +63,19 @@ class Anim extends Component {
       // console.log('anim reRunning...');
       this.reRun(pp);
     }
-
-    if (this.props.bailOn) {
-      console.log('Bailed anim. didUpdate()');
-      return;
-    }
   }
 
   componentWillUnmount() {
     if (this.enterCallbackTimeout) clearTimeout(this.enterCallbackTimeout);
+  }
+
+  shouldBail(tag) {
+    if (this.props.bailOn) {
+      console.log(`Bailed Animation ${tag ? `(at ${tag})` : ''}`);
+      return true;
+    }
+
+    return false;
   }
 
   tryCallback(cb, args) {
@@ -75,13 +83,19 @@ class Anim extends Component {
   }
 
   reRun(prevProps, cb) {
+    if (this.shouldBail('reRun')) return;
+
     this.setState({ prevChildren: null }, () => {
       this.animate({
         forwards: false,
         cb: () => {
+          if (this.shouldBail('anim-cb1 in reRun')) return;
+
           this.setState({ prevChildren: null }, () => {
             this.animate({
               cb: () => {
+                if (this.shouldBail('anim-cb2 in reRun')) return;
+
                 this.tryCallback(this.props.rerunCallback);
               },
             });
@@ -92,12 +106,15 @@ class Anim extends Component {
   }
 
   exit(prevProps, cb) {
+    if (this.shouldBail('exit')) return;
+
     this.setState({ prevChildren: prevProps.children }, () => {
       this.animate({
         forwards: false,
         cb: () => {
+          if (this.shouldBail('setState in exit')) return;
           this.setState({ prevChildren: null }, () => {
-            // console.log('anim Exit done!');
+            if (this.shouldBail('setState-cb in exit')) return;
             this.tryCallback(this.props.exitCallback);
           });
         },
@@ -111,10 +128,7 @@ class Anim extends Component {
   }
 
   animate(conf = {}) {
-    if (this.props.bailOn) {
-      console.log('Bailed anim. animate()');
-      return;
-    }
+    if (this.shouldBail('animate()')) return;
 
     const {
       forwards = true,
@@ -185,18 +199,20 @@ class Anim extends Component {
     });
 
     this.setState({ styleProps, animArr }, () => {
+      if (this.shouldBail('pre start')) return;
+
       Animated.parallel(this.state.animArr).start(() => {
-        if (this.props.bailOn) {
-          console.log('Bailed anim. start()-callback');
-          return;
-        }
+        if (this.shouldBail('start-cb')) return;
 
         this.setState({ hasEntered: forwards ? true : false }, () => {
           if (typeof cb === 'function') {
             this.enterCallbackTimeout = setTimeout(() => {
-              cb();
               clearTimeout(this.enterCallbackTimeout);
               this.enterCallbackTimeout = null;
+
+              if (this.shouldBail('enter-cb')) return;
+
+              cb();
             }, enterCallbackDelay);
           }
         });

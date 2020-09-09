@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import { withState } from '../../GameState';
 import { Section, Text } from '../../Elements';
 import Time from './Time';
@@ -10,7 +11,7 @@ import Chart from './Chart';
 
 const Status = ({ gameState: { gameFinished, scoreStatus } }) => {
   return (
-    <Section>
+    <Section align="center" fillW>
       <Section row wrap="wrap" spaceTop={10} justify="flex-start">
         <Time />
 
