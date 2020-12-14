@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Image } from 'react-native';
 import { Section, Text } from '../Elements';
 import Audio from './Audio';
+import { font } from '../../constants/theme';
 const logo = require('../../assets/logo_txt.png');
 
 const styles = StyleSheet.create({
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     textAlign: 'center',
-    fontFamily: 'CutiveMono_400Regular',
+    fontFamily: font.regular,
   },
   logo: {
     width: 150,

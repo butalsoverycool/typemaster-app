@@ -23,7 +23,6 @@ export const getTime = (time, typedString = '') => {
 };
 
 export const compareTwo = (a, b) => {
-  //console.log('comparing', a, b);
   return a < b ? 'a' : a > b ? 'b' : 'same';
 };
 
@@ -220,14 +219,8 @@ export const loadSounds = async ({ src, cb }) => {
     }
 
     sounds[name] = sound;
-    console.log(`Sound ${name} loaded.`);
+    //console.log(`Sound ${name} loaded.`);
 
-    console.log(
-      'src.len',
-      src.length,
-      'sounds.len',
-      Object.keys(sounds).length
-    );
     if (Object.keys(sounds).length >= src.length) {
       console.log('ALL SOUNDS LOADED');
       cb({ sounds, err: null });
@@ -243,28 +236,6 @@ export const loadSounds = async ({ src, cb }) => {
     });
   });
 };
-
-/* export const playSound = async (src, cb) => {
-  try {
-    await src.sound.replayAsync();
-    tryCallback(cb);
-  } catch (err) {
-    const errMsg = 'Failed to play sound: ' + err;
-    console.log(errMsg);
-    tryCallback(cb, { err: errMsg });
-  }
-};
-
-export const stopSound = async ({ sound, cb }) => {
-  try {
-    await sound.stopAsync()();
-    cb();
-  } catch (err) {
-    const errMsg = 'Failed to stop sound: ' + err;
-    console.log(errMsg);
-    cb({ err: errMsg });
-  }
-}; */
 
 export const tryCallback = (cb, args = null) => {
   if (typeof cb === 'function') cb(args);
@@ -306,7 +277,7 @@ export const playSound = async (props, cb) => {
   // bail if no sound selected
   if (!name) return console.log('no sound name provided');
 
-  console.log(`playSound()... (${name})`);
+  //console.log(`playSound()... (${name})`);
 
   let sound = props.sounds[name];
 

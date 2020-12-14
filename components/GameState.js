@@ -17,6 +17,8 @@ import { dynamicMsg, forbiddenAuthDiffs, bonus } from '../constants/preset';
 import { withFirebase } from './Firebase';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
+import Loading from './Elements/Loading';
+
 const Ctx = createContext();
 
 const newGameState = (ps, override = null) => ({
@@ -61,7 +63,7 @@ const endGameState = {
 };
 
 const initialState = {
-  loading: false,
+  loading: true,
   authUser: null,
   authTyper: null,
 
@@ -193,14 +195,49 @@ class GameState extends Component {
     };
   }
 
+  componentDidUpdate(pp, ps) {
+    const { sounds: prevSounds, imgs: prevImgs, appReady: prevReady } = pp;
+
+    if (
+      propsChanged(pp, this.props, ['appReady']) ||
+      propsChanged(ps, this.state, ['authUser', 'authTyper'])
+    ) {
+      const { appReady, sounds, imgs } = this.props;
+
+      if (!pp.appReady && this.props.appReady) {
+        console.log('Assets loaded.');
+        this.setState({
+          appReady,
+          sounds,
+          imgs,
+        });
+      }
+
+      if (this.state.authUser) {
+        if (
+          this.props.appReady &&
+          this.state.authUser.uid &&
+          this.state.loading
+        ) {
+          console.log('Gamestate set.');
+          this.setState({ loading: false });
+        }
+      }
+    }
+  }
+
   componentDidMount() {
     /// init
 
     // orientation
     this.lockOrientation('portrait');
 
-    // sounds
-    this.setState({ sounds: this.props.sounds, imgs: this.props.imgs });
+    /* // sounds
+    this.setState({
+      sounds: this.props.sounds,
+      imgs: this.props.imgs,
+      fonts: this.props.fonts,
+    }); */
 
     // auth-changes
     this.props.firebase.onAuthUserListener(this.onSignIn, this.onSignOut);
@@ -219,7 +256,7 @@ class GameState extends Component {
     for (let nth = 0; nth < playing.length; nth++) {
       try {
         await playing[nth].sound.stopAsync();
-        console.log('STOPPED SOUND', playing[nth].name);
+        //console.log('STOPPED SOUND', playing[nth].name);
       } catch (err) {
         console.log('soloSound err:', err);
       }
@@ -352,7 +389,7 @@ class GameState extends Component {
       () =>
         this.setAuthTyper(newTyper, () =>
           this.loadScoreBoard(() => {
-            this.setState({ loading: false });
+            if (this.props.appReady) this.setState({ loading: false });
           })
         )
     );
@@ -360,7 +397,7 @@ class GameState extends Component {
 
   // handle if typer-data is changed to not match auth
   handleAuthDiffs(user, typer, keys, cb) {
-    console.log('handleAuthDiffs()...');
+    //console.log('handleAuthDiffs()...');
 
     let resetPayload = {};
     let diff = false;
@@ -427,13 +464,19 @@ class GameState extends Component {
     this.props.firebase.updateTyper(uid, payload, err => {
       if (err) console.log('Err when updating typer:', err);
 
-      this.setState(ps => ({ authTyper: { ...ps.authTyper, ...payload } }), cb);
+      this.setState(
+        ps => ({ authTyper: { ...ps.authTyper, ...payload } }),
+        () => {
+          this.loadScoreBoard();
+          this.tryCallback(cb);
+        }
+      );
     });
   }
 
   onSignIn(auth, cb) {
     const authUser = formatAuth(auth);
-    console.log(authUser.lastLogin);
+    //console.log('Auth last login:',authUser.lastLogin);
 
     this.setState(
       {
@@ -444,7 +487,7 @@ class GameState extends Component {
       () => {
         this.setAuthTyper(null, () => {
           this.loadScoreBoard(() => {
-            this.setState({ loading: false });
+            if (this.props.appReady) this.setState({ loading: false });
           });
         });
       }
@@ -509,7 +552,7 @@ class GameState extends Component {
       );
     }
 
-    console.log('setGameState()', Object.entries(keyVal));
+    //console.log('setGameState()', Object.entries(keyVal));
     this.setState({ ...keyVal }, () => {
       this.tryCallback(cb);
     });
@@ -578,12 +621,14 @@ class GameState extends Component {
           });
         }
 
+        const loading = this.props.appReady ? false : this.state.loading;
+
         // limit to top 5
         //const newBoard = sorted.length <= 5 ? sorted : sorted.slice(0, 5);
         this.setState(
           {
             scoreboard,
-            loading: false,
+            loading,
           },
           () => this.tryCallback(cb)
         );
@@ -848,8 +893,17 @@ class GameState extends Component {
   }
 
   addTick(cb) {
-    if (this.state.time >= 10 && this.state.time % 5 === 0) {
-      this.addScoreStatus();
+    if (this.state.time >= 10 && this.state.time % 10 === 0) {
+      if (this.state.scoreStatus.length < 30) {
+        this.addScoreStatus();
+      } else if (
+        this.state.scoreStatus.length < 60 &&
+        this.state.time % 60 === 0
+      ) {
+        this.addScoreStatus();
+      } else {
+        //...
+      }
     }
 
     this.setState(
@@ -963,16 +1017,19 @@ class GameState extends Component {
   }
 
   render() {
+    if (!this.props.appReady) return null;
+
     return (
       <Ctx.Provider
         value={{
           gameState: this.state,
           gameSetters: this.setters,
           authUser: this.state.authUser,
-          loading: this.state.loading,
+          loading: this.state.loading || !this.props.appReady,
         }}
       >
-        {this.props.children}
+        {/* <Loading visible={this.state.loading} textContent="Loading..." /> */}
+        {!this.state.loading && this.props.appReady && this.props.children}
       </Ctx.Provider>
     );
   }

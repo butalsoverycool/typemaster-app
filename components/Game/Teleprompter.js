@@ -44,7 +44,6 @@ const TypedCorrect = ({
     if (char && char !== ' ' && start && !bail) {
       setRerunSwitch(!rerunSwitch);
     } else if (char !== ' ' && !start && !bail) {
-      console.log('remaining', remaining.length);
       setStart(true);
     }
 
@@ -54,11 +53,9 @@ const TypedCorrect = ({
 
     return () => {
       if (!gameON || remaining.length <= 2)
-        console.log('Cleaning up TypedCorrect');
-
-      return !gameON || gameStandby || remaining.length <= 1
-        ? (bail = true)
-        : null;
+        return !gameON || gameStandby || remaining.length <= 1
+          ? (bail = true)
+          : null;
     };
   }, [char]);
 
@@ -211,8 +208,6 @@ const AnimatedView = ({
 
   const wasTypo =
     typed.input[typed.input.length - 1] !== material.text[typed.index - 1];
-
-  console.log('correct length', correctArr.length);
 
   const success =
     !wasTypo && achievements.words >= 10 && achievements.words % 10 === 0

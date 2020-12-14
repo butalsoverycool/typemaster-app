@@ -1,8 +1,9 @@
 import React from 'react';
 import { withState } from '../GameState';
-import { StyleSheet, TouchableHighlight } from 'react-native';
+import { StyleSheet, TouchableHighlight, Image } from 'react-native';
 import Section from './Section';
 import Text from './Text';
+import { font } from '../../constants/theme';
 import { mathRandInc } from '../../constants/helperFuncs';
 
 const Btn = ({
@@ -23,10 +24,14 @@ const Btn = ({
   outline,
   textAlign,
   children,
-  fontFamily,
+  fontFamily = font.regular,
   logStyle,
+  gameState: { imgs = {} },
+  bgImg = null,
   ...props
 }) => {
+  let img = !imgs || bgImg ? null : !imgs[bgImg] ? null : imgs[bgImg];
+
   const buttonOverride = {
     ...styles.button,
     width: w || styles.button.width,
@@ -37,9 +42,9 @@ const Btn = ({
     minHeight: h || styles.button.height,
     maxHeight: h || styles.button.height,
 
-    backgroundColor: outline
+    /* backgroundColor: outline
       ? color || '#eee'
-      : bg || styles.button.backgroundColor,
+      : bg || styles.button.backgroundColor, */
 
     padding: padding != null ? padding : styles.button.padding,
     margin: margin != null ? margin : styles.button.margin,
@@ -49,15 +54,15 @@ const Btn = ({
         : 20
       : styles.button.margin,
     marginBottom: spaceBottom ? spaceBottom || 20 : styles.button.margin,
-    borderColor: '#444',
-    borderWidth: outline ? 2 : 0,
+    /* borderColor: '#444',
+    borderWidth: outline ? 2 : 0, */
   };
 
   const textOverride = {
     color: outline ? bg || '#444' : color || styles.text.color,
     fontSize: fontSize || styles.text.fontSize,
     textAlign: textAlign || styles.text.textAlign,
-    fontFamily: fontFamily || 'CutiveMono_400Regular',
+    fontFamily,
   };
 
   const child = children ? (
@@ -76,8 +81,25 @@ const Btn = ({
   }
 
   return (
-    <TouchableHighlight style={[buttonOverride, buttonStyle]} {...props}>
-      <Section padding={0} margin={0} bg="pink" style={styles.contentContainer}>
+    <TouchableHighlight
+      style={[buttonOverride, buttonStyle]}
+      {...props}
+      underlayColor={null}
+    >
+      <Section style={styles.contentContainer}>
+        {/* <Section fillW fillH position="absolute" style={{ zIndex: 0 }}> */}
+        <Image
+          source={img}
+          alt="button_underlay"
+          resizeMode="contain"
+          style={{
+            position: 'absolute',
+            zIndex: 0,
+            width: '100%',
+            height: '100%',
+          }}
+        />
+        {/* </Section> */}
         {child}
       </Section>
     </TouchableHighlight>
@@ -93,8 +115,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 0,
     margin: 10,
-    overflow: 'hidden',
-    backgroundColor: '#444',
+    overflow: 'visible',
+    /* backgroundColor: '#444', */
   },
   contentContainer: {
     width: '100%',
@@ -108,6 +130,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0)',
+    overflow: 'visible',
   },
   text: {
     color: '#eee',

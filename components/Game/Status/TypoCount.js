@@ -16,7 +16,7 @@ class TypoCount extends Component {
     ]);
 
   render() {
-    console.log('Rendering <TypoCount />');
+    //console.log('Rendering <TypoCount />');
 
     const {
       typed: { typoCount, input },
@@ -38,6 +38,7 @@ class TypoCount extends Component {
             : '0'
         }
         statusColor={status}
+        bgImg="BtnUnderlay7"
       />
     );
   }

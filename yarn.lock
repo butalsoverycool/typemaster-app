@@ -1004,6 +1004,11 @@
   dependencies:
     "@types/hammerjs" "^2.0.36"
 
+"@expo-google-fonts/courier-prime@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@expo-google-fonts/courier-prime/-/courier-prime-0.1.0.tgz#547ca34988579852187e912e44494483dbea6ed9"
+  integrity sha512-UQ2JwieY+fXmCjtJ19DPTQ01fxHZXIN796uvCeMYCZqtq/rhTvgXN6Ny9TvHVqVcT9fVnrOWXO4oeooULkAPwQ==
+
 "@expo-google-fonts/cutive-mono@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@expo-google-fonts/cutive-mono/-/cutive-mono-0.1.0.tgz#e31aa4383237e2b754d105dc45d0eaeb01c5e413"
@@ -3523,7 +3528,7 @@ expo-file-system@~9.0.1:
   dependencies:
     uuid "^3.4.0"
 
-expo-font@^8.2.2, expo-font@~8.2.1:
+expo-font@~8.2.1:
   version "8.2.2"
   resolved "https://registry.yarnpkg.com/expo-font/-/expo-font-8.2.2.tgz#c67ee8d3841921a907464d67e8098baeed92bacf"
   integrity sha512-p/a7Ve+3LiR9ofn77U0UuuE6ZQiLVu3M1btiKUDe5efAp48D9GG41AevKQ7YnkfxTDdGJa0ACAtJAVsAD30jGA==

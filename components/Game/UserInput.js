@@ -72,8 +72,6 @@ class UserInput extends Component {
 
   componentWillUnmount = () => {
     this.stopTimer();
-    /* console.log('unmounting time');
-    clearInterval(this.state.timer); */
   };
 
   tick() {
@@ -147,7 +145,7 @@ class UserInput extends Component {
       this.setState({ quote: true });
     }
 
-    console.log('char', char);
+    console.log('Input char:', char);
 
     // bail if undefined input
     if (!char || char === undefined) return;
@@ -181,19 +179,6 @@ class UserInput extends Component {
       ? material.text.substring(typed.index)
       : material.text.substring(typed.index + 1);
 
-    /* if (isTypo) {
-      setGameState(
-        ps => ({
-          typed: {
-            ...ps.typed,
-            typoCount: ps.typed.typoCount + 1,
-            achievements: false,
-          },
-        }),
-        () => console.log('state updated to', typed.typoCount)
-      );
-    } */
-
     // type/typo-sound
     if (remaining.length > 0) {
       // dont play if 3+ words in a row (pianoRoll)
@@ -226,7 +211,6 @@ class UserInput extends Component {
     const pointsToAdd = isTypo ? withdrawal : reward;
 
     // points
-    console.log('points to add:', pointsToAdd);
     inputHandler({ pointsToAdd, typedProps, char });
 
     // finish-line

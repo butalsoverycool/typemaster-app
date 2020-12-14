@@ -1,8 +1,18 @@
 import { StyleSheet } from 'react-native';
+import { useFonts } from 'expo-font';
 
 export const colors = {
   light: '#eee',
   dark: '#444',
+};
+
+export const font = {
+  regular: 'CourierPrime_400Regular',
+  bold: 'CourierPrime_700Bold',
+  italic: 'CourierPrime_400Regular_Italic',
+  boldItalic: 'CourierPrime_700Bold_Italic',
+
+  secondary: 'Monofett_400Regular',
 };
 
 export default StyleSheet.create({
@@ -28,20 +38,23 @@ export default StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 10,
     width: '100%',
     minWidth: '100%',
+    fontFamily: font.bold,
   },
   subtitle: {
     textAlign: 'center',
     fontSize: 18,
     fontWeight: 'bold',
+    fontFamily: font.regular,
     marginBottom: 5,
     width: '100%',
     minWidth: '100%',
   },
   label: {
     fontWeight: 'bold',
+    fontFamily: font.regular,
   },
 });
 

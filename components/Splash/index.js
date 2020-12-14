@@ -9,7 +9,7 @@ export default props => {
   const opacity = useRef(new Animated.Value(0)).current;
 
   const enter = cb => {
-    console.log('entering....');
+    //console.log('entering splash anim....');
     Animated.parallel([
       Animated.timing(x, {
         toValue: 1,

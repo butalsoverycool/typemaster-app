@@ -3,7 +3,7 @@ import { SafeAreaView, ScrollView } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { withFirebase } from '../Firebase';
 import { withState } from '../GameState';
-import theme from '../../constants/theme';
+import theme, { font } from '../../constants/theme';
 //import library from '../../constants/library';
 import { mathRandInc } from '../../constants/helperFuncs';
 import { Section, Text } from '../Elements';
@@ -32,8 +32,8 @@ const TextList = ({ gameSetters: { setMaterial, playSound }, firebase }) => {
               key={nth}
               title={item.title}
               subtitle={item.artist + ' - ' + String(item.text.length)}
-              titleStyle={{ fontFamily: 'CutiveMono_400Regular' }}
-              subtitleStyle={{ fontFamily: 'CutiveMono_400Regular' }}
+              titleStyle={{ fontFamily: font.regular }}
+              subtitleStyle={{ fontFamily: font.regular }}
               bottomDivider
               onPress={() => {
                 playSound({ name: 'confirm' });

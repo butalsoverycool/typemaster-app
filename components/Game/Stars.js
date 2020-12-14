@@ -1,33 +1,106 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Image } from 'react-native';
 import { Section, Text, Anim } from '../Elements';
 import { withState } from '../GameState';
-import { Dimensions } from 'react-native';
+import { Animated, Dimensions } from 'react-native';
 import { usePrev } from '../../constants/helperFuncs';
 
 const starSize = Dimensions.get('window').width / 5 - 5;
 const handSize = Dimensions.get('window').width / 2;
 
-const Hand = ({ success = false, bail }) => {
-  const [start, setStart] = useState(false);
+const HandsOfGod = ({ bail, active, cb }) => {
+  const [animActive, setAnimActive] = useState(false);
+  const [animQue, setAnimQue] = useState([]);
 
-  useEffect(() => {
+  const prevActive = usePrev(active);
+
+  const reset = cb => {
     if (bail) return;
 
-    if (success) setStart(true);
-    else if (start) {
-      setStart(false);
+    setAnimActive(true);
+
+    Animated.parallel([
+      Animated.timing(_opacity, {
+        toValue: 0,
+        duration: 500,
+
+        useNativeDriver: true,
+      }),
+      Animated.timing(_Y, {
+        toValue: 200,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setAnimActive(false);
+      if (bail) return;
+      cb();
+    });
+  };
+
+  useEffect(() => {
+    if (bail) return; // console.log('bailing anim...');
+
+    if (active) {
+      if (prevActive) {
+        return setAnimQue([
+          ...animQue,
+          { name: 'reset and enter', func: () => reset(() => animate()) },
+        ]);
+      }
+
+      setAnimQue([...animQue, { name: 'enter', func: animate }]);
     }
-  }, [success]);
+
+    if (!active) {
+      setAnimQue([...animQue, { name: 'exit', func: () => animate(false) }]);
+    }
+  }, [active]);
+
+  const doNextAnim = () => {
+    if (animActive || animQue.length < 1 || bail) return;
+
+    animQue[0].func();
+    let newQue = [...animQue];
+    newQue.shift();
+    setAnimQue(newQue);
+  };
+
+  useEffect(() => {
+    doNextAnim();
+  }, [animQue, animActive]);
+
+  const _opacity = useRef(new Animated.Value(0)).current;
+  const _Y = useRef(new Animated.Value(200)).current;
+
+  const animate = (forwards = true) => {
+    if (bail) return;
+
+    setAnimActive(true);
+
+    Animated.parallel([
+      Animated.timing(_opacity, {
+        toValue: forwards ? 1 : 0,
+        duration: forwards ? 1500 : 500,
+
+        useNativeDriver: true,
+      }),
+      Animated.timing(_Y, {
+        toValue: forwards ? 0 : 200,
+        duration: forwards ? 1500 : 500,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setAnimActive(false));
+  };
 
   return (
-    <Section
-      style={{ position: 'absolute', zIndex: 3, opacity: start ? 1 : 0 }}
-    >
-      <Anim
-        enterOn={start}
-        exitOn={success !== true}
+    <Animated.View
+      /* enterOn={enter && active}
+        exitOn={exit}
         bailOn={bail}
+        enterCallback={enterCallback}
+        enterCallbackDelay={1000}
+        exitCallback={cb}
         duration={{ in: 1000, out: 300 }}
         easing={{ in: 'ease-in-out' }}
         anim={{
@@ -43,21 +116,24 @@ const Hand = ({ success = false, bail }) => {
             fromValue: 0,
             toValue: 1,
           },
-        }}
-        style={{
-          opacity: 0,
-          position: 'absolute',
-          zIndex: 3,
-          transform: [{ translateY: success ? 200 : 500 }],
-        }}
-      >
-        <Image
-          style={{ width: handSize, height: handSize }}
-          source={require('../../assets/gifs/hands.gif')}
-          resizeMode="contain"
-        />
-      </Anim>
-    </Section>
+        }} */
+      style={{
+        opacity: _opacity,
+        position: 'absolute',
+        zIndex: 3,
+        transform: [
+          { translateX: Dimensions.get('window').width / 2 - 20 },
+          { translateY: _Y },
+        ],
+      }}
+    >
+      <Image
+        style={{ width: handSize, height: handSize }}
+        source={require('../../assets/gifs/hands.gif')}
+        resizeMode="contain"
+      />
+    </Animated.View>
+    /* </Section> */
   );
 };
 
@@ -182,23 +258,12 @@ const Stars = ({
       handleStars([0, 1, 2, 3]);
     } else if (achievements.words >= 20 && achievements.words % 20 === 0) {
       handleStars();
-      if (!success) {
-        setSuccess(true);
-      }
+
+      setSuccess(true);
     }
 
     return () => (active = gameON || gamePaused || gameStandby ? true : false);
   }, [achievements.words]);
-
-  useEffect(() => {
-    /* handleStars(); */
-    /* if (!success) {
-      if (stars.length >= 5) handleStars();
-    }
-    else {
-
-    } */
-  }, [success]);
 
   useEffect(() => {
     let active = gameON || gamePaused || gameStandby ? true : false;
@@ -225,21 +290,19 @@ const Stars = ({
       position="relative"
       style={{ zIndex: 3 }}
     >
-      <Hand
-        success={success === true}
+      <HandsOfGod
+        active={success}
         bail={!gameON && !gamePaused && !gameStandby}
       />
-
-      {!success &&
-        stars.map((star, nth) => (
-          <Finger
-            key={nth}
-            success={success}
-            poff={poff}
-            poffCallback={reset}
-            bail={!gameON && !gamePaused && !gameStandby}
-          />
-        ))}
+      {stars.map((star, nth) => (
+        <Finger
+          key={nth}
+          success={success}
+          poff={poff}
+          poffCallback={reset}
+          bail={!gameON && !gamePaused && !gameStandby}
+        />
+      ))}
     </Section>
   );
 };

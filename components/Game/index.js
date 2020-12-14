@@ -1,5 +1,5 @@
 import React, { Component, memo } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Image } from 'react-native';
 import theme from '../../constants/theme';
 import { withFirebase } from '../Firebase/context';
 import { withState } from '../GameState';
@@ -16,7 +16,7 @@ import Level from './Level';
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
-import { View, Section, Anim, Loading } from '../Elements';
+import { View, Section, Anim, Loading, Text } from '../Elements';
 
 import Form from '../Form';
 
@@ -52,6 +52,10 @@ class Game extends Component {
 
     return (
       <View>
+        {/* <Image
+          source={this.props.gameState.imgs.About}
+          style={{ width: 50, height: 50 }}
+        /> */}
         <Anim
           enterOn={!loading && nav === 'Game'}
           hideOnExit={true}
@@ -64,7 +68,7 @@ class Game extends Component {
             },
           }}
         >
-          {/* <Loading visible={loading} textContent="Loading typer" /> */}
+          {/*  <Loading visible={loading === true} textContent="Loading..." /> */}
           {/* <Section justify="center" align="center">
             <Spinner
               visible={loading}

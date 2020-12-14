@@ -1,7 +1,7 @@
 import React, { Component, memo } from 'react';
 import { withState } from '../../GameState';
 import { Dimensions } from 'react-native';
-import { propsChanged } from '../../../constants/helperFuncs';
+import { font } from '../../../constants/theme';
 import Constants from 'expo-constants';
 
 import {
@@ -34,7 +34,7 @@ class Chart extends Component {
     if (scoreStatus.length > 0) {
       const newLabels = scoreStatus.map(item => '');
 
-      const newData = scoreStatus.map(item => item.speed);
+      const newData = scoreStatus.map(item => Math.round(item.speed));
 
       labels = newLabels;
       dataset = newData;
@@ -46,15 +46,8 @@ class Chart extends Component {
     }
 
     return (
-      <Section style={{ fontFamily: 'CutiveMono_400Regular' }}>
-        <Text
-          style={{
-            position: 'relative',
-            top: 3,
-          }}
-        >
-          Correct input speed
-        </Text>
+      <Section spaceTop={10} style={{ fontFamily: font.regular }}>
+        <Text>Correct character / second</Text>
         <LineChart
           data={{
             labels,
@@ -72,6 +65,7 @@ class Chart extends Component {
           withHorizontalLines={false}
           withHorizontalLabels={true}
           withVerticalLabels={true}
+          /* yAxisInterval={1} */
           fromZero={true}
           width={dimensions.width} // from react-native
           height={150}
@@ -85,9 +79,6 @@ class Chart extends Component {
               borderRadius: 0,
             },
             propsForLabels: {
-              fontStyle: 'italic',
-              //fontFamily: 'Inter_900Black',
-              fontWeight: '100',
               color: '#444',
               fontSize: 10,
             },
@@ -96,7 +87,6 @@ class Chart extends Component {
           style={{
             marginVertical: 8,
           }}
-          yAxisInterval="2"
         />
       </Section>
     );

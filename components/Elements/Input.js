@@ -1,6 +1,7 @@
 import React, { memo, Component, createRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Input as RNEInput } from 'react-native-elements';
+import { font } from '../../constants/theme';
 import { withState } from '../GameState';
 
 class Input extends Component {
@@ -67,7 +68,7 @@ const inputStyle = StyleSheet.create({
     textAlign: 'center',
     borderBottomWidth: 0,
     color: '#444',
-    fontFamily: 'Monofett_400Regular',
+    fontFamily: font.secondary,
     fontSize: 34,
   },
 });

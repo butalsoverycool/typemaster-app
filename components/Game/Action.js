@@ -28,11 +28,12 @@ class Action extends Component {
         {!gameStandby && !gamePaused /*  || gameON */ && (
           <Btn
             outline
-            content={gameFinished ? 'Again' : !gameON ? 'Play' : 'Stop'}
+            content={!gameON ? 'Play' : 'Stop'}
             type="outline"
             w="80%"
             h={100}
             onPress={!gameON ? prepareGame : endGame}
+            bgImg="BtnUnderlay1"
           />
         )}
       </Section>

@@ -43,39 +43,39 @@ class Preview extends Component {
   render() {
     const {
       level,
-      material: { title, text },
+      material: { title, artist, text },
     } = this.props.gameState;
 
     const { setMaterial } = this.props.gameSetters;
 
     return (
       <Section justify="flex-start" align="flex-start" fillW padding={30}>
-        <Text style={[theme.subtitle, { textAlign: 'left' }]}>
-          Text to type
-        </Text>
+        <Text style={[theme.subtitle, { textAlign: 'left' }]}>Picked text</Text>
 
-        <Section row spaceBottom={10} justify="flex-start">
-          <Section align="flex-start" w={60} style={{ marginRight: 10 }}>
-            <Text style={theme.label}>Title</Text>
-            <Text style={theme.label}>Length</Text>
-            <Text style={theme.label}>Level</Text>
-          </Section>
-          <Section align="flex-start" flex={1}>
+        <Section spaceBottom={10} align="flex-start">
+          <Section row justify="flex-start">
+            <Text style={[theme.label, { marginRight: 10 }]}>title</Text>
             <Text>{title}</Text>
+          </Section>
+          <Section row justify="flex-start">
+            <Text style={[theme.label, { marginRight: 10 }]}>artist</Text>
+            <Text>{artist}</Text>
+          </Section>
+          <Section row justify="flex-start">
+            <Text style={[theme.label, { marginRight: 10 }]}>length</Text>
             <Text>{text.length}</Text>
-            <Text>{levels[level]}</Text>
           </Section>
         </Section>
 
         <Btn
           margin={0}
           padding={0}
-          w={150}
           h={50}
           outline
           fontSize={20}
-          content="Pick text"
+          content="Pick another text"
           onPress={setMaterial}
+          bgImg="BtnUnderlay3"
         />
       </Section>
     );

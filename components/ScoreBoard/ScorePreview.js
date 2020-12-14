@@ -14,6 +14,7 @@ class NameInput extends Component {
 
     this.state = {
       newTyper: '',
+      msg: '',
     };
   }
 
@@ -26,9 +27,30 @@ class NameInput extends Component {
     this.props.gameState.authUser.name !== np.gameState.authUser.name ||
     this.state.newTyper !== ns.newTyper; */
 
+  componentDidUpdate(pp) {
+    // set game msg
+    console.log('preview update...');
+    if (
+      !pp.gameState.gameStandby &&
+      this.props.gameState.gameStandby &&
+      this.state.msg !== ''
+    ) {
+      this.setState({ msg: '' });
+    }
+
+    if (this.props.gameState.gameFinished && this.state.msg === '') {
+      console.log('setting msg');
+      this.setState({
+        msg: this.props.gameState.newHighscore
+          ? 'New personal record!'
+          : randOfArr(dynamicMsg.noHighscore) + ' ' + randOfArr(sadFace),
+      });
+    }
+  }
+
   render() {
     const {
-      gameState: { authUser, gameFinished, newHighscore },
+      gameState: { authUser, gameFinished, newHighscore, material },
       gameSetters: { setGameState, prepareGame },
       visible,
       typerExists,
@@ -41,28 +63,31 @@ class NameInput extends Component {
 
     const confirm = typerExists && !this.state.newTyper ? 'Yes' : 'Save';
 
-    const highscoreMsg = newHighscore
+    /* const highscoreMsg = newHighscore
       ? 'New personal record!'
-      : randOfArr(dynamicMsg.noHighscore) + ' ' + randOfArr(sadFace);
+      : randOfArr(dynamicMsg.noHighscore) + ' ' + randOfArr(sadFace); */
 
     return (
       <Section justify="space-between" flex={1}>
         <Section>
-          <Text style={theme.title}>YOUR SCORE</Text>
+          <Text style={[theme.title, { marginBottom: 0 }]}>YOUR SCORE</Text>
+          <Text style={[theme.label, { marginBottom: 10 }]}>
+            on {material.title}
+          </Text>
 
-          <Section spaceTop>
+          <Section>
             <Status />
           </Section>
         </Section>
 
-        <Section spaceTop fullW>
+        <Section fullW>
           <Text
             style={[
               theme.subtitle,
               { color: newHighscore ? 'green' : '#444', fontSize: 14 },
             ]}
           >
-            {highscoreMsg}
+            {this.state.msg}
           </Text>
         </Section>
 
@@ -71,43 +96,28 @@ class NameInput extends Component {
             h={50}
             w="80%"
             outline
-            onPress={
-              () =>
-                setGameState({
-                  pushNav: 'Game',
-                  gameFinished: false,
-                  material: {},
-                })
-              /* setGameState(
-                {
-                  typer: '',
-                },
-                () => {
-                  createLatestScore(saveScore);
-                }
-              ) */
+            onPress={() =>
+              setGameState({
+                pushNav: 'Game',
+                gameFinished: false,
+                material: {},
+              })
             }
+            bgImg="BtnUnderlay3"
           >
-            <Text style={styles.textStyle}>Pick text</Text>
+            <Text style={styles.textStyle}>Pick another text</Text>
           </Btn>
 
           <Btn
             h={50}
             w="80%"
             outline
-            onPress={
-              () => setGameState({ pushNav: 'ScoreBoard', gameFinished: false })
-              /* setGameState(
-                {
-                  typer: '',
-                },
-                () => {
-                  createLatestScore(saveScore);
-                }
-              ) */
+            onPress={() =>
+              setGameState({ pushNav: 'ScoreBoard', gameFinished: false })
             }
+            bgImg="BtnUnderlay4"
           >
-            <Text style={styles.textStyle}>Scoreboard</Text>
+            <Text style={styles.textStyle}>View scoreboard</Text>
           </Btn>
 
           <Btn
@@ -115,23 +125,10 @@ class NameInput extends Component {
             w="80%"
             onPress={() => {
               prepareGame();
-              /* if (typerExists || this.state.newTyper !== '') {
-                setGameState(
-                  {
-                    typer: this.state.newTyper || authUser.name,
-                  },
-                  () => {
-                    createLatestScore(() => {
-                      saveScore(() => {
-                        this.setState({ newTyper: '' });
-                      });
-                    });
-                  }
-                );
-              } */
             }}
+            bgImg="BtnUnderlay1"
           >
-            <Text style={[styles.textStyle, { fontSize: 30 }]}>Again</Text>
+            <Text style={[styles.textStyle, { fontSize: 30 }]}>Play</Text>
           </Btn>
         </Section>
       </Section>

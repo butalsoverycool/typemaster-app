@@ -114,16 +114,13 @@ export const dynamicMsg = {
     },
   ],
   noHighscore: [
-    "You've done better before.",
-    'Not your best so far.',
-    'You can do better.',
-    'You can do faster.',
-    'Try again.',
-    "Let's pretend this never happened.",
-    'Have you warmed up?',
     "Don't give up.",
-    'Next time youll get it.',
-    'Keep fighting',
+    'Never give up.',
+    'Never stop trying.',
+    'Try again.',
+    'This was just the warm-up.',
+    "Next time you'll get it.",
+    'Keep fighting.',
   ],
 };
 

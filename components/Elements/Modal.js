@@ -53,8 +53,6 @@ class Modal extends Component {
       updateTrigger,
     } = this.props;
 
-    console.log('Modal render. visible', visible);
-
     const bgOverride = {
       ...styles.background,
       backgroundColor: bg || styles.background.backgroundColor,
@@ -86,7 +84,7 @@ class Modal extends Component {
         visible={(visible || this.state.forceOpen) && !this.state.forceClose}
         animationType="slide"
         transparent={false}
-        onShow={() => console.log('modal showiiiing!')}
+        onShow={() => {}}
         onDismiss={() => this.setState({ forceClose: true })}
       >
         <SafeAreaView style={bgOverride}>

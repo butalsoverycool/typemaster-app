@@ -1,7 +1,13 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView } from 'react-native';
+import React, { useEffect, useCallback } from 'react';
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  ScrollView,
+  Linking,
+} from 'react-native';
 import { withState } from '../GameState';
-import { Anim, Text } from '../Elements';
+import { Anim, Text, Btn } from '../Elements';
 import theme from '../../constants/theme';
 
 const styles = StyleSheet.create({
@@ -13,6 +19,19 @@ const styles = StyleSheet.create({
 });
 
 const About = ({ gameState: { loading, nav }, ...props }) => {
+  /* const handleLinkPress = useCallback(async () => {
+    // Checking if the link is supported for links with custom URL scheme.
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+      // by some browser in the mobile
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${url}`);
+    }
+  }, [url]); */
+
   return (
     <Anim
       enterOn={!loading && nav === 'About'}
@@ -48,68 +67,59 @@ const About = ({ gameState: { loading, nav }, ...props }) => {
 
               <View style={theme.box}>
                 <Text style={[theme.subtitle, { textAlign: 'left' }]}>
-                  Some Hints
+                  How to master
                 </Text>
                 <Text>- Fast and correct typing = higher points</Text>
-                <Text>- Game is indeed caSE SENsitive</Text>
-                <Text>- All characters you see are mandatory</Text>
-                <Text>- ...including spaces(" ") and commas(",")</Text>
+                <Text>- Correct input = +0.05 points</Text>
+                <Text>- Typo/incorrect input = -0.05 points</Text>
+                <Text>- tHE game IS caSE SENsitive</Text>
+                <Text>- Type all characters you see</Text>
+                <Text>- ...including spaces (" ") and commas (",") etc...</Text>
               </View>
 
               <View style={theme.box}>
                 <Text style={[theme.subtitle, { textAlign: 'left' }]}>
-                  About points
+                  About those jumping fingers
                 </Text>
-                <Text>- 1 correct character = +1p</Text>
-                <Text>- 1 typo/incorrect character = -1p</Text>
-                <Text>- ...also, time will eat your points :)</Text>
+                <Text>- How cute?</Text>
+                <Text>- 4 correct words in a row = 1 finger</Text>
+                <Text>- 5 fingers = hand of God = 0.5 bonus points</Text>
+                <Text>
+                  - Mistakes along the way = no withdrawal, but fingers gone
+                </Text>
               </View>
 
               <View style={theme.box}>
                 <Text style={[theme.subtitle, { textAlign: 'left' }]}>
-                  Game Over =
+                  Game Over
                 </Text>
                 <Text>- Interaction outside keyboard area while playing</Text>
                 <Text>- ...or hitting "Enter"-key while playing</Text>
-                <Text>- If points drop below -10</Text>
+                <Text>- If points drop too low or time runs too long</Text>
               </View>
 
               <View style={theme.box}>
                 <Text style={[theme.subtitle, { textAlign: 'left' }]}>
-                  About Levels
+                  The creator
                 </Text>
-                <Text>- Harder level = faster point-drop over time</Text>
-                <Text>- Stella Pajunas = "Super Hard"</Text>
-              </View>
-
-              <View style={theme.box}>
-                <Text style={[theme.subtitle, { textAlign: 'left' }]}>
-                  Time punishments
+                <Text>- I'm Kim Nkoubou</Text>
+                <Text>- A musician who got into front-end dev in 2018.</Text>
+                <Text>- This is my first game</Text>
+                <Text>
+                  - The Idea for the game came when I stumpled upon the world's
+                  fastest typerwritist{' '}
+                  <Btn
+                    /* WHAAAAAAT */
+                    w={50}
+                    h={20}
+                    content={<Text>Stella Pajunas</Text>}
+                    onPress={() =>
+                      Linking.openURL(
+                        'https://www.pond5.com/stock-footage/item/75268195-miss-stella-pajunas-worlds-fast-typist-types-ibm-electric-ty'
+                      )
+                    }
+                  />
                 </Text>
-                <Text>- Easy: 0.1 p/sec</Text>
-                <Text>- Medium: 0.2 p/sec</Text>
-                <Text>- Hard: 0.4 p/sec</Text>
-                <Text>- Stella Pajunas: 0.666 p/sec</Text>
-              </View>
-
-              <View style={theme.box}>
-                <Text style={[theme.subtitle, { textAlign: 'left' }]}>
-                  Typo punishments
-                </Text>
-                <Text>- Easy: -1p</Text>
-                <Text>- Medium: -2p</Text>
-                <Text>- Hard: -4p</Text>
-                <Text>- Stella Pajunas: Game Over</Text>
-              </View>
-
-              <View style={theme.box}>
-                <Text style={[theme.subtitle, { textAlign: 'left' }]}>
-                  Speed Standard
-                </Text>
-                <Text>- Easy: 2 correct inputs/sec</Text>
-                <Text>- Medium: 4 correct inputs/sec</Text>
-                <Text>- Hard: 6 correct inputs/sec</Text>
-                <Text>- Stella Pajunas: 8 correct inputs/sec</Text>
               </View>
             </View>
           </View>

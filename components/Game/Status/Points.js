@@ -69,7 +69,12 @@ class Points extends Component {
             resizeMode="contain"
           />
         )}
-        <StatusData label="Points" data={POINTS} statusColor={status} />
+        <StatusData
+          label="Points"
+          data={POINTS}
+          statusColor={status}
+          bgImg="BtnUnderlay6"
+        />
       </Section>
     );
   }

@@ -18,10 +18,6 @@ const Status = ({ gameState: { gameFinished, scoreStatus } }) => {
         <Points />
 
         <TypoCount />
-
-        {/*  <Speed /> */}
-
-        {/*  : <Remaining /> */}
       </Section>
 
       {gameFinished && <Chart scoreStatus={scoreStatus} />}

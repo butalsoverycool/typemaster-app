@@ -80,24 +80,50 @@ const files = {
   blipBlop2: require('../assets/audio/blipBlop2.mp3'),
 };
 
+const volPreset = [
+  {
+    vol: vol.low,
+    sounds: [
+      'tab1',
+  'tab2',
+  'tab3',
+  'confirm',
+  'main',
+  'erase',
+  'type',
+  'success',
+  'gasp'
+    ],
+    
+  },
+  {
+    vo: vol.medium,
+    sounds: [],
+  },
+{
+  vol: vol.high,
+  sounds: [],
+}
+]
+
+const ajustVolume = (name, sound) => {
+  volPreset.forEach(preset => {
+    const shouldSetVol = preset.sounds.some(s => s === name);
+    if(shouldSetVol) await sound.setVolumeAsync(preset.vol)
+  })
+}
+
 export const loadSound = async ({ file, name }, cb) => {
   const sound = new Audio.Sound();
+  
   await sound.loadAsync(file);
-  if (name === 'confirm') {
-    await sound.setVolumeAsync(0.2);
+
+  const vol = {
+    low: 0.2, medium: 0.5, high: 0.8
   }
 
-  if (name === 'main') {
-    await sound.setVolumeAsync(0.2);
-  }
-  if (
-    name === 'erase' ||
-    name === 'type' ||
-    name === 'success' ||
-    name === 'gasp'
-  ) {
-    await sound.setVolumeAsync(0.2);
-  }
+  ajustVolume(name, sound)
+
 
   cb(sound);
 };

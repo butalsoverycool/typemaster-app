@@ -143,21 +143,29 @@ class ScoreBoard extends Component {
                     </DataTable.Title>
                   </DataTable.Header>
 
-                  {scoreboard.map(({ name, highscore }, nth) => (
-                    <DataTable.Row key={nth}>
-                      <DataTable.Cell numeric static style={localStyles.cell}>
-                        <Text>{highscore.points}</Text>
-                      </DataTable.Cell>
+                  {scoreboard.map(({ uid, name, highscore }, nth) => {
+                    const isAuth = uid === authUser.uid;
 
-                      <DataTable.Cell style={localStyles.cell}>
-                        <Text>{name}</Text>
-                      </DataTable.Cell>
+                    return (
+                      <DataTable.Row key={nth}>
+                        <DataTable.Cell numeric static style={localStyles.cell}>
+                          <Text color={isAuth ? 'blue' : '#444'} weight="700">
+                            {highscore.points}
+                          </Text>
+                        </DataTable.Cell>
 
-                      <DataTable.Cell style={localStyles.cell}>
-                        <Text>{highscore.timeStamp.date}</Text>
-                      </DataTable.Cell>
-                    </DataTable.Row>
-                  ))}
+                        <DataTable.Cell style={localStyles.cell}>
+                          <Text color={isAuth ? 'blue' : '#444'}>{name}</Text>
+                        </DataTable.Cell>
+
+                        <DataTable.Cell style={localStyles.cell}>
+                          <Text color={isAuth ? 'blue' : '#444'}>
+                            {highscore.timeStamp.date}
+                          </Text>
+                        </DataTable.Cell>
+                      </DataTable.Row>
+                    );
+                  })}
 
                   {/* <DataTable.Pagination
             style={{ justifyContent: 'center', flexWrap: 'nowrap', padding: 0 }}
@@ -181,22 +189,25 @@ class ScoreBoard extends Component {
                 </Section>
               )}
 
-              {/* <View style={theme.section}>
-        <Button title="save something" onPress={saveScore} />
-      </View> */}
               <Section flex={1} justifyContent="flex-end">
                 <Btn
                   h={50}
                   outline
-                  content="Pick text"
+                  content={material.title ? 'Pick another text' : 'Pick a text'}
                   fontSize={20}
-                  onPress={() => setGameState({ pushNav: 'Game' })}
+                  onPress={() =>
+                    setGameState({ pushNav: 'Game', material: {} })
+                  }
+                  bgImg="BtnUnderlay3"
                 />
-                <Btn
-                  outline
-                  content={latestScore ? 'Play again' : 'Play'}
-                  onPress={prepareGame}
-                />
+                {material.title && (
+                  <Btn
+                    outline
+                    content="Play"
+                    onPress={prepareGame}
+                    bgImg="BtnUnderlay1"
+                  />
+                )}
               </Section>
 
               {/* <Section>

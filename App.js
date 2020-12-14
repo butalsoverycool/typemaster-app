@@ -17,6 +17,12 @@ import { useFonts } from 'expo-font';
 import { CutiveMono_400Regular } from '@expo-google-fonts/cutive-mono';
 
 import { Monofett_400Regular } from '@expo-google-fonts/monofett';
+import {
+  CourierPrime_400Regular,
+  CourierPrime_400Regular_Italic,
+  CourierPrime_700Bold,
+  CourierPrime_700Bold_Italic,
+} from '@expo-google-fonts/courier-prime';
 
 import Splash from './components/Splash';
 
@@ -34,23 +40,18 @@ export default () => {
 
   const [startTimeout, setStartTimeout] = useState(null);
 
-  let [cutiveMono] = useFonts({
-    CutiveMono_400Regular,
-  });
-
-  let [monoFett] = useFonts({
+  let [fonts] = useFonts({
     Monofett_400Regular,
+    CutiveMono_400Regular,
+
+    CourierPrime_400Regular,
+    CourierPrime_400Regular_Italic,
+    CourierPrime_700Bold,
+    CourierPrime_700Bold_Italic,
   });
 
   // appReady-dependencies
-  const dependencies = [
-    introSound,
-    sounds,
-    cutiveMono,
-    monoFett,
-    splashRunning,
-    imgs,
-  ];
+  const dependencies = [introSound, sounds, fonts, splashRunning, imgs];
 
   // on mount
   useEffect(() => {
@@ -93,7 +94,7 @@ export default () => {
 
   if (!introSound) return null;
 
-  if (!splashDone || !appReady) {
+  /* if (!splashDone || !appReady) {
     return (
       <View>
         <Splash
@@ -101,22 +102,34 @@ export default () => {
           exitOn={appReady}
           exitCallback={() => setSplashDone(true)}
         />
-        {/* <Loading textContent="Initializing game" /> */}
       </View>
     );
-  }
+  } */
 
   return (
-    <NavigationContainer>
-      <FirebaseContext.Provider value={new Firebase()}>
-        <GameState sounds={sounds} imgs={imgs}>
-          <PaperProvider>
-            <Header />
+    <View style={{ flex: 1 }}>
+      {(!splashDone || !appReady) && (
+        <Splash
+          enterCallback={() => setSplashRunning(true)}
+          exitOn={appReady}
+          exitCallback={() => setSplashDone(true)}
+        />
+      )}
+      <NavigationContainer>
+        <FirebaseContext.Provider value={new Firebase()}>
+          <GameState
+            sounds={sounds}
+            imgs={imgs}
+            appReady={appReady && splashDone}
+          >
+            <PaperProvider>
+              <Header />
 
-            <Nav />
-          </PaperProvider>
-        </GameState>
-      </FirebaseContext.Provider>
-    </NavigationContainer>
+              <Nav />
+            </PaperProvider>
+          </GameState>
+        </FirebaseContext.Provider>
+      </NavigationContainer>
+    </View>
   );
 };

@@ -5,6 +5,7 @@ import { withState } from '../GameState';
 import Section from './Section';
 import Text from './Text';
 import Anim from './Anim';
+import { font } from '../../constants/theme';
 
 const customImgs = {
   back: require('../../assets/imgs/btns/back.png'),
@@ -82,7 +83,7 @@ class custom extends React.Component {
       >
         <Image
           onLoad={() => this.setState({ fadeIn: true })}
-          source={imgs[name]}
+          source={imgs}
           style={{ width: size, height: size }}
           resizeMode="contain"
           {...props}
@@ -153,5 +154,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     textAlign: 'center',
+    fontFamily: font.regular,
   },
 });

@@ -17,7 +17,6 @@ class Firebase {
     };
 
     if (!firebase.apps.length && !initialized) {
-      //console.log('firebase apps', firebase.apps);
       firebase.initializeApp(firebaseConfig);
       initialized = true;
     }
@@ -53,12 +52,6 @@ class Firebase {
 
     this.getText = this.getText.bind(this);
     this.getTexts = this.getTexts.bind(this);
-
-    this.getTexts(texts => {
-      texts.forEach(txt => {
-        console.log('title', txt.title);
-      });
-    });
   }
 
   componentWillUnmount() {
@@ -95,13 +88,7 @@ class Firebase {
 
   createUser = (email, password) => {
     try {
-      this.auth.createUserWithEmailAndPassword(email, password).then(res => {
-        /* 
-        // skipping display name in form for now
-        if (displayName) {
-          this.updateUserProfile({ displayName });
-        } */
-      });
+      this.auth.createUserWithEmailAndPassword(email, password).then(res => {});
     } catch (err) {
       console.log(err);
     }
@@ -205,7 +192,7 @@ class Firebase {
 
   async saveAsync(key, val, cb) {
     await AsyncStorage.setItem('typemaster_' + key, JSON.stringify(val));
-    console.log('Saved ', key, 'to async storage.');
+    //console.log('Saved ', key, 'to async storage.');
     this.tryCallback(cb);
   }
 

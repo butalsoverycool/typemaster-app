@@ -1,5 +1,6 @@
 import React, { Component, memo } from 'react';
 import { Animated, Easing } from 'react-native';
+import Section from './Section';
 
 class Anim extends Component {
   constructor(props) {
@@ -71,7 +72,7 @@ class Anim extends Component {
 
   shouldBail(tag) {
     if (this.props.bailOn) {
-      console.log(`Bailed Animation ${tag ? `(at ${tag})` : ''}`);
+      //console.log(`Bailed Animation ${tag ? `(at ${tag})` : ''}`);
       return true;
     }
 
@@ -135,7 +136,10 @@ class Anim extends Component {
       anim = this.props.anim,
       duration = this.props.duration,
       easing = this.props.easing,
-      cb = conf.cb || this.props.enterCallback,
+      cb = conf.cb ||
+        (conf.forwards === true
+          ? this.props.enterCallback
+          : this.props.exitCallback),
       enterCallbackDelay = this.props.enterCallbackDelay || 0,
     } = conf;
 

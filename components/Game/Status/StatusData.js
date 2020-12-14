@@ -1,32 +1,11 @@
 import React, { Component, memo } from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, Image } from 'react-native';
 import { StyleSheet, View } from 'react-native';
+import { withState } from '../../GameState';
 import { Text, Section } from '../../Elements';
 import { Badge } from 'react-native-elements';
 import { propsChanged } from '../../../constants/helperFuncs';
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  label: {
-    textAlign: 'center',
-    fontSize: 10,
-    width: 50,
-    marginLeft: 0,
-    marginRight: 0,
-    color: '#444',
-  },
-  badge: {
-    height: 30,
-    width: 100,
-    marginLeft: 0,
-    marginRight: 0,
-    backgroundColor: '#eee',
-  },
-});
+import { font } from '../../../constants/theme';
 
 class StatusData extends Component {
   constructor(props) {
@@ -35,7 +14,6 @@ class StatusData extends Component {
 
   shouldComponentUpdate = np =>
     propsChanged(this.props, np, [
-      'index',
       'data',
       'label',
       'labelStyle',
@@ -51,27 +29,39 @@ class StatusData extends Component {
       data,
       label,
       labelStyle,
+      bgImg,
       statusColor = '#444',
       containerProps = {},
       badgeProps = {},
+      gameState: { imgs = {} },
     } = this.props;
 
-    // const marginTop = index > 1 ? 15 : 0;
+    const containerW = Dimensions.get('window').width / 3 - 10;
 
     return (
       <Section
-        justify="center"
+        justify="space-between"
         align="center"
-        w={Dimensions.get('window').width / 3 - 10}
+        w={containerW}
         style={[
+          styles.container,
           {
             ...containerProps.style,
           },
         ]}
       >
         <Text style={[styles.label, labelStyle]}>{label}</Text>
+        <Section position="relative" h={30} justify="center">
+          <Image
+            source={imgs[bgImg]}
+            style={styles.underlay}
+            alt="background_underlay_image"
+            resizeMode="contain"
+          />
+          <Text>{data}</Text>
+        </Section>
 
-        <Badge
+        {/* <Badge
           value={data || ''}
           badgeStyle={[
             styles.badge,
@@ -80,15 +70,48 @@ class StatusData extends Component {
           ]}
           textStyle={{
             fontSize: 14,
-            fontFamily: 'CutiveMono_400Regular',
+            fontFamily: font.regular,
             margin: 0,
             color: statusColor,
             ...badgeProps.textStyle,
           }}
-        />
+        /> */}
       </Section>
     );
   }
 }
 
-export default memo(p => <StatusData {...p} />);
+const Memo = memo(p => <StatusData {...p} />);
+
+export default withState(Memo);
+
+const styles = StyleSheet.create({
+  container: {
+    width: Dimensions.get('window').width / 3 - 10,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  label: {
+    textAlign: 'center',
+    fontSize: 10,
+    fontFamily: font.regular,
+    width: 50,
+    marginLeft: 0,
+    marginRight: 0,
+    color: '#444',
+  },
+  badge: {
+    height: 30,
+    width: 100,
+    marginLeft: 0,
+    marginRight: 0,
+    backgroundColor: null,
+  },
+  underlay: {
+    width: Dimensions.get('window').width / 3 - 10,
+    height: 30,
+    position: 'absolute',
+    zIndex: 0,
+  },
+});
