@@ -74,7 +74,8 @@ export default () => {
   };
 
   const loadImgs = async () => {
-    getImgs({ cb: imgs => setImgs(imgs) });
+    const gameImgs = await getImgs({ cb: imgs => setImgs(imgs) });
+    setImgs(gameImgs);
   };
 
   // on mount
