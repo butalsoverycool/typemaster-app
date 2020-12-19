@@ -30,7 +30,7 @@ const Btn = ({
   bgImg = null,
   ...props
 }) => {
-  let img = !imgs || bgImg ? null : !imgs[bgImg] ? null : imgs[bgImg];
+  const img = imgs?.get(bgImg) || null;
 
   const buttonOverride = {
     ...styles.button,
