@@ -55,7 +55,7 @@ export default StyleSheet.create({
   },
   label: {
     fontWeight: 'bold',
-    fontFamily: font.regular,
+    fontFamily: font.bold,
   },
 });
 
