@@ -21,6 +21,7 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     padding: 0,
+    backgroundColor: '#eee',
   },
   section: {
     width: '100%',
