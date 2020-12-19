@@ -1,15 +1,10 @@
-import React, { useState, useEffect, memo } from 'react';
-import { StyleSheet, View, Image, TouchableHighlight } from 'react-native';
+import React, { memo } from 'react';
+import { StyleSheet, Image, TouchableHighlight } from 'react-native';
 import * as ICONS from '@expo/vector-icons';
 import { withState } from '../GameState';
 import Section from './Section';
 import Text from './Text';
-import Anim from './Anim';
 import { font } from '../../constants/theme';
-
-const customImgs = {
-  back: require('../../assets/imgs/btns/back.png'),
-};
 
 const Conventional = ({ brand, name, size, color, ...props }) => {
   const Component = ICONS[brand];
@@ -22,7 +17,6 @@ const Conventional = ({ brand, name, size, color, ...props }) => {
 class custom extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       fadeIn: false,
       once: true,
@@ -52,13 +46,13 @@ class custom extends React.Component {
 
     const { fadeIn, once } = this.state;
 
-    if (!imgs) return null;
+    const img = imgs.get(name);
 
     if (!props.anim) {
       return (
         <Image
           onLoad={() => this.setState({ fadeIn: true })}
-          source={imgs[name]}
+          source={img}
           style={{ width: size, height: size }}
           resizeMode="contain"
           {...props}
@@ -110,8 +104,12 @@ export default ({
   anim,
   ...props
 }) => {
+  const customImage = brand === 'custom';
+
   const Icon = () =>
-    brand !== 'custom' ? (
+    customImage ? (
+      <Custom name={name} size={size} anim={anim} {...props} />
+    ) : (
       <Conventional
         brand={brand}
         name={name}
@@ -119,8 +117,6 @@ export default ({
         color={color}
         {...props}
       />
-    ) : (
-      <Custom name={name} size={size} anim={anim} {...props} />
     );
 
   if (props.logOn) {
@@ -140,6 +136,7 @@ export default ({
           {label && labelPos === 'top' && (
             <Text style={styles.label}>{label}</Text>
           )}
+
           <Icon />
           {label && labelPos === 'bottom' && (
             <Text style={styles.label}>{label}</Text>

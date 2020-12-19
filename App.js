@@ -9,8 +9,8 @@ import getSounds, { loadSound } from './constants/getSounds';
 import Header from './components/Header';
 import Nav from './components/Nav';
 
-import { loadSounds, playSound } from './constants/helperFuncs';
-import getImgs from './constants/imgs';
+import { playSound } from './constants/helperFuncs';
+import getImgs from './constants/getImgs';
 
 import Firebase, { FirebaseContext } from './components/Firebase';
 import { useFonts } from 'expo-font';
@@ -31,7 +31,6 @@ const introSoundFile = require('./assets/audio/main.mp3');
 console.log(`(React version: ${React.version})`);
 
 export default () => {
-  console.log('APP RENDER');
   const [appReady, setAppReady] = useState(false);
   const [splashRunning, setSplashRunning] = useState(false);
   const [splashDone, setSplashDone] = useState(false);
@@ -74,7 +73,7 @@ export default () => {
   };
 
   const loadImgs = async () => {
-    const gameImgs = await getImgs({ cb: imgs => setImgs(imgs) });
+    const gameImgs = await getImgs();
     setImgs(gameImgs);
   };
 
@@ -98,14 +97,12 @@ export default () => {
 
   // on dependencies-update
   useEffect(() => {
-    console.log('deps dummy', dependencies);
-
-    console.log('IMG RES', imgs);
-    console.log('SOUND RES', sounds);
+    // console.log('deps dummy', dependencies);
+    // console.log('IMG RES', imgs);
+    // console.log('SOUND RES', sounds);
     // all loaded = app ready
     let startTimeout;
-    if (!dependencies.some(dep => !dep)) {
-      console.log('app deps!');
+    if (!dependencies.some(dep => !dep.status)) {
       // buy splash some time
       startTimeout = setTimeout(() => {
         setAppReady(true);

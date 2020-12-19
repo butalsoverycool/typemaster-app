@@ -1,8 +1,8 @@
-import { Asset } from 'expo-asset';
+import { Asset, useAssets } from 'expo-asset';
 import { Image } from 'react-native';
 import { arrToMap } from './helperFuncs';
 
-const imgs = [
+export const imgs = [
   { name: 'info', file: require('../assets/imgs/btns/info.png') },
   { name: 'users', file: require('../assets/imgs/btns/users.png') },
   { name: 'sound', file: require('../assets/imgs/btns/sound.png') },
@@ -48,21 +48,27 @@ const imgs = [
 ];
 
 const loadImg = async ({ name, file }) => {
+  const uri = Image.resolveAssetSource(file).uri;
   // webImg or local uri
   const webImg = typeof file === 'string';
-  const img = webImg
-    ? await Image.prefetch(file)
-    : await Asset.fromModule(file).downloadAsync();
+
+  // let f;
+  // if (webImg) {
+  //   f = await Image.prefetch(file);
+  // } else {
+  //   const img = Asset.fromModule(file);
+  //   f = await img.downloadAsync();
+  // }
+
+  const f = webImg ? await Image.prefetch(file) : Asset.fromModule(file); //Image.resolveAssetSource(file).uri;
 
   return {
     name,
-    file: img,
+    file: f,
   };
 };
 
 export default async () => {
-  console.log('IMG RENDER');
-
   const imgArr = await Promise.all(imgs.map(loadImg));
 
   return arrToMap(imgArr);
