@@ -259,7 +259,7 @@ export const playSound = async (props, cb) => {
   // if sound provided, just play
   if (props.sound) {
     if (props.vol) {
-      props.sound.setVolumeAsync(props.vol);
+      await props.sound.setVolumeAsync(props.vol);
     }
 
     replay({ sound: props.sound, props, cb: props.cb });
@@ -279,7 +279,8 @@ export const playSound = async (props, cb) => {
 
   //console.log(`playSound()... (${name})`);
 
-  let sound = props.sounds[name];
+  //let sound = props.sounds[name];
+  let sound = props.sound;
 
   // located 1 level deep? pick index
   if (Array.isArray(sound)) {
@@ -328,4 +329,20 @@ export const playSound = async (props, cb) => {
   }
 
   replay({ sound, props, cb });
+};
+
+export const arrToMap = arr => {
+  const lookup = new Map();
+
+  const writeToMap = value => {
+    const isArr = Array.isArray(value);
+    const name = isArr ? value[0].name : value.name;
+    const file = isArr ? value.map(v => v.file) : value.file;
+
+    lookup.set(name, file);
+  };
+
+  arr.forEach(writeToMap);
+
+  return lookup;
 };

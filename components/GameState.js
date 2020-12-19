@@ -299,6 +299,7 @@ class GameState extends Component {
     playSound(
       {
         ...props,
+        sound: this.state.sounds.get(props.name),
         name,
         muted: this.state.muted,
         sounds: this.state.sounds,

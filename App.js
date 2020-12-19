@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,7 +9,7 @@ import getSounds, { loadSound } from './constants/getSounds';
 import Header from './components/Header';
 import Nav from './components/Nav';
 
-import { playSound } from './constants/helperFuncs';
+import { loadSounds, playSound } from './constants/helperFuncs';
 import getImgs from './constants/imgs';
 
 import Firebase, { FirebaseContext } from './components/Firebase';
@@ -31,14 +31,13 @@ const introSoundFile = require('./assets/audio/main.mp3');
 console.log(`(React version: ${React.version})`);
 
 export default () => {
+  console.log('APP RENDER');
   const [appReady, setAppReady] = useState(false);
   const [splashRunning, setSplashRunning] = useState(false);
   const [splashDone, setSplashDone] = useState(false);
   const [introSound, setIntroSound] = useState(null);
   const [sounds, setSounds] = useState(null);
   const [imgs, setImgs] = useState(null);
-
-  const [startTimeout, setStartTimeout] = useState(null);
 
   let [fonts] = useFonts({
     Monofett_400Regular,
@@ -51,85 +50,97 @@ export default () => {
   });
 
   // appReady-dependencies
-  const dependencies = [introSound, sounds, fonts, splashRunning, imgs];
+  const dependencies = useMemo(() => {
+    return [
+      { name: 'introSound', status: !!introSound },
+      { name: 'sounds', status: !!sounds },
+      { name: 'fonts', status: !!fonts },
+      { name: 'splashRunning', status: splashRunning },
+      { name: 'imgs', status: !!imgs },
+    ];
+  }, [introSound, sounds, fonts, splashRunning, imgs]);
+
+  const loadIntroSound = async () => {
+    const sound = await loadSound({
+      file: introSoundFile,
+      name: 'main',
+    });
+    setIntroSound(sound.file);
+  };
+
+  const loadGameSounds = async () => {
+    const gameSounds = await getSounds();
+    setSounds(gameSounds);
+  };
+
+  const loadImgs = async () => {
+    getImgs({ cb: imgs => setImgs(imgs) });
+  };
 
   // on mount
   useEffect(() => {
     // get intro-sound
-    loadSound({ file: introSoundFile, name: 'main' }, sound => {
-      setIntroSound(sound);
+    loadIntroSound();
 
-      // then game sounds
-      getSounds(sounds => setSounds(sounds));
+    // then game sounds
+    loadGameSounds();
 
-      // load/cache imgs
-      getImgs({ cb: imgs => setImgs(imgs) });
-    });
-
-    // cleanup worker
-    return () => {
-      clearTimeout(startTimeout);
-    };
+    // load/cache imgs
+    loadImgs();
   }, []);
 
   // play intro-sound when available
   useEffect(() => {
-    if (introSound) {
-      playSound({ sound: introSound });
-    }
+    console.log('playing intro', introSound);
+    introSound && playSound({ sound: introSound });
   }, [introSound]);
 
   // on dependencies-update
   useEffect(() => {
+    console.log('deps dummy', dependencies);
+
+    console.log('IMG RES', imgs);
+    console.log('SOUND RES', sounds);
     // all loaded = app ready
+    let startTimeout;
     if (!dependencies.some(dep => !dep)) {
+      console.log('app deps!');
       // buy splash some time
-      setStartTimeout(
-        setTimeout(() => {
-          setAppReady(true);
-        }, 1200)
-      );
+      startTimeout = setTimeout(() => {
+        setAppReady(true);
+      }, 1200);
     }
+
+    // cleanup worker
+    return () => clearTimeout(startTimeout);
   }, dependencies);
 
-  if (!introSound) return null;
-
-  /* if (!splashDone || !appReady) {
-    return (
-      <View>
-        <Splash
-          enterCallback={() => setSplashRunning(true)}
-          exitOn={appReady}
-          exitCallback={() => setSplashDone(true)}
-        />
-      </View>
-    );
-  } */
-
   return (
-    <View style={{ flex: 1 }}>
-      {(!splashDone || !appReady) && (
-        <Splash
-          enterCallback={() => setSplashRunning(true)}
-          exitOn={appReady}
-          exitCallback={() => setSplashDone(true)}
-        />
-      )}
-      <NavigationContainer>
-        <FirebaseContext.Provider value={new Firebase()}>
-          <GameState
-            sounds={sounds}
-            imgs={imgs}
-            appReady={appReady && splashDone}
-          >
-            <PaperProvider>
-              <Header />
+    introSound && (
+      <View style={{ flex: 1 }}>
+        {(!splashDone || !appReady) && (
+          <Splash
+            enterCallback={() => setSplashRunning(true)}
+            exitOn={appReady}
+            exitCallback={() => setSplashDone(true)}
+          />
+        )}
+        <NavigationContainer>
+          <FirebaseContext.Provider value={new Firebase()}>
+            <GameState
+              sounds={sounds}
+              imgs={imgs}
+              appReady={appReady && splashDone}
+            >
+              <PaperProvider>
+                <Header />
 
-              <Nav />
-            </PaperProvider>
-          </GameState>
-        </FirebaseContext.Provider>
-      </NavigationContainer>
-    </View>
+                <Nav />
+              </PaperProvider>
+            </GameState>
+          </FirebaseContext.Provider>
+        </NavigationContainer>
+      </View>
+    )
   );
 };
