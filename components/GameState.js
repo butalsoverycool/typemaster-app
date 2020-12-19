@@ -252,15 +252,25 @@ class GameState extends Component {
 
     await setSoloist();
 
+    console.log('SOUNDING', this.state.sounding);
     const playing = [...this.state.sounding];
-    for (let nth = 0; nth < playing.length; nth++) {
+
+    const mute = async input => {
+      if (Array.isArray(input.sound)) {
+        return input.sound.forEach(s => mute({ name: input.name, sound: s }));
+      }
+
       try {
-        await playing[nth].sound.stopAsync();
+        await input.sound.stopAsync();
         //console.log('STOPPED SOUND', playing[nth].name);
       } catch (err) {
-        console.log('soloSound err:', err);
+        console.log('mute sound err:', input.name, err);
       }
-    }
+    };
+
+    playing.forEach(mute);
+
+    for (let nth = 0; nth < playing.length; nth++) {}
   }
 
   async playSound(props, cb) {
@@ -291,6 +301,7 @@ class GameState extends Component {
     };
 
     const name = typeof props === 'string' ? props : props.name;
+    const sound = this.state.sounds.get(name);
 
     if (props.solo) {
       this.soloSound();
@@ -299,15 +310,17 @@ class GameState extends Component {
     playSound(
       {
         ...props,
-        sound: this.state.sounds.get(props.name),
+        sound,
         name,
         muted: this.state.muted,
-        sounds: this.state.sounds,
+        // sounds: this.state.sounds,
         onStop: ({ sound }) => onStop({ sound, name, props }),
         onFinish: ({ sound }) => onFinish({ sound, name, props }),
       },
-      ({ sound, err }) => {
+      err => {
         if (err) console.log('sound err:', err);
+
+        console.log('NEW SOUNDING', name, sound, 'ALL:', this.state.sounding);
 
         this.setState(ps => ({ sounding: [...ps.sounding, { name, sound }] }));
         this.tryCallback(cb, { sound });

@@ -254,21 +254,28 @@ export const replay = async ({ sound, props, cb }) => {
 export const playSound = async (props, cb) => {
   /// bail if
   // muted mode
-  if (props.muted) return;
+  const { sound, muted, vol } = props;
+  if (muted || !sound) return;
+
+  const soundArray = Array.isArray(sound);
 
   // if sound provided, just play
-  if (props.sound) {
-    if (props.vol) {
-      await props.sound.setVolumeAsync(props.vol);
+  if (!!sound) {
+    const toPlay = soundArray
+      ? sound[index || mathRandInc(0, sound.length - 1)]
+      : sound;
+
+    if (typeof vol === 'number') {
+      await toPlay.setVolumeAsync(props.vol);
     }
 
-    replay({ sound: props.sound, props, cb: props.cb });
+    replay({ sound: toPlay, props, cb: props.cb });
 
-    return tryCallback(cb, { sound });
+    return tryCallback(cb, { sound: toPlay });
   }
 
   // no sounds available
-  if (!props.sounds) return console.log('Sounds not loaded yet');
+  // if (!props.sounds) return console.log('Sounds not loaded yet');
 
   // pick out props
   let name = typeof props === 'object' ? props.name : props;
@@ -280,12 +287,8 @@ export const playSound = async (props, cb) => {
   //console.log(`playSound()... (${name})`);
 
   //let sound = props.sounds[name];
-  let sound = props.sound;
 
   // located 1 level deep? pick index
-  if (Array.isArray(sound)) {
-    sound = sound[index || mathRandInc(0, sound.length - 1)];
-  }
 
   // on playback status change
   const onStatusChange = status => {

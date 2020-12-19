@@ -91,7 +91,7 @@ export default () => {
 
   // play intro-sound when available
   useEffect(() => {
-    console.log('playing intro', introSound);
+    // console.log('playing intro', introSound);
     introSound && playSound({ sound: introSound });
   }, [introSound]);
 
