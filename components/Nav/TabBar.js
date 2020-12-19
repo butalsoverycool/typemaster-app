@@ -1,16 +1,21 @@
-import React, { Component, useEffect } from 'react';
-import { View, TouchableOpacity, Image } from 'react-native';
-import { IconPreset } from '../../constants/preset';
-import { usePrev, propsChanged } from '../../constants/helperFuncs';
+import React, { Component } from 'react';
+import { View, TouchableOpacity } from 'react-native';
+import { propsChanged } from '../../constants/helperFuncs';
 import { withState } from '../GameState';
 import { Icon } from '../Elements';
 
 class TabBar extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      mounted: false,
+    };
   }
 
   componentDidMount() {
+    this.setState({ mounted: true });
+
     const {
       state: { routes, index },
       gameState: { nav },
@@ -23,9 +28,10 @@ class TabBar extends Component {
     }
   }
 
-  shouldComponentUpdate = np =>
+  shouldComponentUpdate = (np, ns) =>
     propsChanged(this.props, np, ['state', 'descriptors', 'navigation']) ||
-    propsChanged(this.props.gameState, np.gameState, ['pushNav', 'nav']);
+    propsChanged(this.props.gameState, np.gameState, ['pushNav', 'nav']) ||
+    propsChanged(this.state, ns);
 
   componentDidUpdate(pp) {
     const {
@@ -124,8 +130,6 @@ class TabBar extends Component {
                 alignItems: 'center',
                 backgroundColor: isFocused ? '#eee' : '#f7f7f7',
                 height: '100%',
-                borderTopRightRadius: preFocused ? 10 : 0,
-                borderTopLeftRadius: postFocused ? 10 : 0,
                 shadowOffset: {
                   height: 10,
                   width: preFocused ? 1 : postFocused ? -1 : 0,
