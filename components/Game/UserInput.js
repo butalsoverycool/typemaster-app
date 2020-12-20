@@ -96,15 +96,14 @@ class UserInput extends Component {
   }
 
   onInput = e => {
+    console.time('onInput');
+    console.time('inputHandler');
     const {
       gameStandby,
       gameON,
       gamePaused,
       material,
       typed,
-      achievements,
-      level,
-      muted,
     } = this.props.gameState;
 
     const {
@@ -112,7 +111,6 @@ class UserInput extends Component {
       startGame,
       endGame,
       createLatestScore,
-      setGameState,
       playSound,
     } = this.props.gameSetters;
 
@@ -210,6 +208,7 @@ class UserInput extends Component {
 
     const pointsToAdd = isTypo ? withdrawal : reward;
 
+    console.timeEnd('onInput');
     // points
     inputHandler({ pointsToAdd, typedProps, char });
 

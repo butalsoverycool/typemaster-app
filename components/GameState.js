@@ -19,6 +19,8 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 
 import Loading from './Elements/Loading';
 
+import { Audio } from 'expo-av';
+
 const Ctx = createContext();
 
 const newGameState = (ps, override = null) => ({
@@ -273,6 +275,20 @@ class GameState extends Component {
   }
 
   async playSound(props, cb) {
+    const playType = async () => {
+      console.time('playType');
+      const sound = this.state.sounds.back;
+      try {
+        await sound.setPositionAsync(0);
+        await sound.playAsync();
+        console.timeEnd('inputToSoundStart');
+      } catch (error) {
+        console.log('play type err', error);
+      }
+
+      console.timeEnd('playType');
+    };
+
     if (this.state.muted) return;
 
     const name = typeof props === 'string' ? props : props.name;
@@ -282,9 +298,11 @@ class GameState extends Component {
       ? file[props.index || mathRandInc(0, file.length - 1)]
       : file;
 
+    if (name === 'type') return playType();
     const onStart = () => {
-      console.log('curr sounding', this.state.sounding);
       const alreadySounding = this.state.sounding.includes(name);
+      console.timeEnd('inputToSoundStart');
+
       !alreadySounding &&
         this.setState(ps => ({ sounding: [...ps.sounding, name] }));
     };
@@ -294,21 +312,18 @@ class GameState extends Component {
     };
 
     const onFinish = () => {
-      console.log('Sound', name, 'FINISHED');
+      // console.log('Sound', name, 'FINISHED');
 
       props.solo && this.setState({ soloist: false });
 
       const removeIndex = this.state.sounding.indexOf(name);
 
       removeIndex > -1 &&
-        this.setState(
-          ps => {
-            const sounding = [...ps.sounding];
-            sounding.splice(removeIndex, 1);
-            return { sounding };
-          },
-          () => console.log('curr sounding on finish', this.state.sounding)
-        );
+        this.setState(ps => {
+          const sounding = [...ps.sounding];
+          sounding.splice(removeIndex, 1);
+          return { sounding };
+        });
     };
 
     const onBuffer = () => {
@@ -844,6 +859,7 @@ class GameState extends Component {
             },
           };
         });
+        console.timeEnd('inputHandler');
       }
     );
   }

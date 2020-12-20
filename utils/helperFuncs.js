@@ -241,9 +241,10 @@ export const tryCallback = (cb, args = null) => {
   if (typeof cb === 'function') cb(args);
 };
 
-export const replay = async ({ name, sound }) => {
+export const play = async ({ name, sound }) => {
   try {
-    await sound.replayAsync();
+    await sound.setPositionAsync(0);
+    await sound.playAsync();
   } catch (err) {
     const errMsg = `Sound fail (${props.name}): ${err}`;
     console.log(errMsg);
@@ -307,7 +308,7 @@ export const playAudio = async ({
 
   shouldSetVol && (await sound.setVolumeAsync(props.vol));
 
-  return await replay({ name, sound });
+  return await play({ name, sound });
 };
 
 export const arrToObjectLookup = arr => {
