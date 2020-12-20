@@ -202,8 +202,9 @@ class GameState extends Component {
 
     if (
       propsChanged(pp, this.props, ['appReady']) ||
-      propsChanged(ps, this.state, ['authUser', 'authTyper'])
+      propsChanged(ps, this.state, ['authUser', 'authTyper, sounds, imgs'])
     ) {
+      console.log('STATE IMGS', this.state.imgs, 'PROPS IMGS', this.props.imgs);
       const { appReady, sounds, imgs } = this.props;
 
       if (!pp.appReady && this.props.appReady) {
@@ -234,12 +235,18 @@ class GameState extends Component {
     // orientation
     this.lockOrientation('portrait');
 
-    /* // sounds
-    this.setState({
-      sounds: this.props.sounds,
-      imgs: this.props.imgs,
-      fonts: this.props.fonts,
-    }); */
+    // sounds
+    if (!this.state.sounds) {
+      this.setState({
+        sounds: this.props.sounds,
+      });
+    }
+
+    if (!this.state.imgs) {
+      this.setState({
+        imgs: this.props.imgs,
+      });
+    }
 
     // auth-changes
     this.props.firebase.onAuthUserListener(this.onSignIn, this.onSignOut);
@@ -275,33 +282,31 @@ class GameState extends Component {
   }
 
   async playSound(props, cb) {
-    const playType = async () => {
-      console.time('playType');
-      const sound = this.state.sounds.back;
+    const playType = async sound => {
+      // console.time('playType');
       try {
         await sound.setPositionAsync(0);
         await sound.playAsync();
-        console.timeEnd('inputToSoundStart');
       } catch (error) {
         console.log('play type err', error);
       }
 
-      console.timeEnd('playType');
+      // console.timeEnd('inputToSoundStart');
+      // console.timeEnd('playType');
     };
 
     if (this.state.muted) return;
 
     const name = typeof props === 'string' ? props : props.name;
     const file = this.state.sounds[name];
+    const fileIndex = props.index || mathRandInc(0, file.length - 1);
     const isArr = Array.isArray(file);
-    const sound = isArr
-      ? file[props.index || mathRandInc(0, file.length - 1)]
-      : file;
+    const sound = isArr ? file[fileIndex] : file;
 
-    if (name === 'type') return playType();
+    if (name === 'type' || name === 'gasp') return playType(sound);
     const onStart = () => {
       const alreadySounding = this.state.sounding.includes(name);
-      console.timeEnd('inputToSoundStart');
+      // console.timeEnd('inputToSoundStart');
 
       !alreadySounding &&
         this.setState(ps => ({ sounding: [...ps.sounding, name] }));
@@ -859,7 +864,7 @@ class GameState extends Component {
             },
           };
         });
-        console.timeEnd('inputHandler');
+        // console.timeEnd('inputHandler');
       }
     );
   }

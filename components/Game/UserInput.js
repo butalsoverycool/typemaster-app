@@ -96,8 +96,8 @@ class UserInput extends Component {
   }
 
   onInput = e => {
-    console.time('onInput');
-    console.time('inputHandler');
+    // console.time('onInput');
+    // console.time('inputHandler');
     const {
       gameStandby,
       gameON,
@@ -208,7 +208,7 @@ class UserInput extends Component {
 
     const pointsToAdd = isTypo ? withdrawal : reward;
 
-    console.timeEnd('onInput');
+    // console.timeEnd('onInput');
     // points
     inputHandler({ pointsToAdd, typedProps, char });
 

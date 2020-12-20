@@ -26,6 +26,8 @@ import {
 
 import Splash from './components/Splash';
 
+import { Audio } from 'expo-av';
+
 const introSoundFile = require('./assets/audio/main.mp3');
 
 console.log(`(React version: ${React.version})`);
@@ -37,6 +39,7 @@ export default () => {
   const [introSound, setIntroSound] = useState(null);
   const [sounds, setSounds] = useState(null);
   const [imgs, setImgs] = useState(null);
+  const [audioReady, setAudioReady] = useState(false);
 
   let [fonts] = useFonts({
     Monofett_400Regular,
@@ -56,8 +59,9 @@ export default () => {
       { name: 'fonts', status: !!fonts },
       { name: 'splashRunning', status: splashRunning },
       { name: 'imgs', status: !!imgs },
+      { name: 'audioReady', status: audioReady },
     ];
-  }, [introSound, sounds, fonts, splashRunning, imgs]);
+  }, [introSound, sounds, fonts, splashRunning, imgs, audioReady]);
 
   const loadIntroSound = async () => {
     const sound = await loadSound({
@@ -68,8 +72,25 @@ export default () => {
     setIntroSound(sound.file);
   };
 
+  const prepareSound = async () => {
+    await Audio.setIsEnabledAsync(true);
+
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      allowsRecordingIOS: false,
+      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+      shouldDuckAndroid: false,
+      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+    });
+
+    setAudioReady(true);
+  };
+
   const loadGameSounds = async () => {
     const gameSounds = await getSounds();
+
+    await prepareSound();
+
     setSounds(gameSounds);
   };
 
@@ -103,8 +124,10 @@ export default () => {
     // console.log('IMG RES', imgs);
     // console.log('SOUND RES', sounds);
     // all loaded = app ready
+    const depsLoaded = !dependencies.some(dep => !dep.status);
     let startTimeout;
-    if (!dependencies.some(dep => !dep.status)) {
+    if (depsLoaded) {
+      console.log('sounds', sounds);
       // buy splash some time
       startTimeout = setTimeout(() => {
         setAppReady(true);

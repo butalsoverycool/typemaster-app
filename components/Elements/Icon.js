@@ -42,7 +42,9 @@ class custom extends React.Component {
 
     const { fadeIn } = this.state;
 
+    if (!imgs) return null;
     const img = imgs[name];
+    if (!img) return null;
 
     if (!props.anim) {
       return (

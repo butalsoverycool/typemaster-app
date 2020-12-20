@@ -7,20 +7,11 @@ const vol = {
   medium: 0.5,
   high: 0.8,
 };
+
 const volPreset = [
   {
     vol: vol.low,
-    sounds: [
-      'tab1',
-      'tab2',
-      'tab3',
-      'confirm',
-      'main',
-      'erase',
-      'type',
-      'success',
-      'gasp',
-    ],
+    sounds: ['confirm', 'main', 'erase', 'type', 'success', 'gasp'],
   },
   {
     vo: vol.medium,
@@ -32,20 +23,26 @@ const volPreset = [
   },
 ];
 
-const setVol = async (name, sound) => {
-  volPreset.forEach(async preset => {
+const getVol = name =>
+  volPreset.reduce((initial, preset) => {
     const shouldSetVol = preset.sounds.some(s => s === name);
+    return shouldSetVol ? preset.vol : initial;
+  }, 1);
 
-    shouldSetVol && (await sound.setVolumeAsync(preset.vol));
-  });
+const soundStatus = {
+  shouldPlay: false,
+  rate: 1.0,
+  shouldCorrectPitch: false,
+  volume: 1,
+  isMuted: false,
 };
 
-export const createAudio = async ({ file, name }) => {
+export const createAudio = async ({ file: source, name }) => {
   const sound = new Audio.Sound();
 
-  await sound.loadAsync(file);
+  const initialStatus = { ...soundStatus, volume: getVol(name) };
 
-  await setVol(name, sound);
+  await sound.loadAsync(source, initialStatus, true);
 
   return {
     name,
