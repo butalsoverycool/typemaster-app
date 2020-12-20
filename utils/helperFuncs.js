@@ -250,7 +250,7 @@ export const replay = async ({ name, sound }) => {
   }
 };
 
-export const playSound = async ({
+export const playAudio = async ({
   name,
   sound,
   index = null,

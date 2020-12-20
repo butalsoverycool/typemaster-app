@@ -11,7 +11,7 @@ import {
   propsChanged,
   formatAuth,
   pointCalc,
-  playSound,
+  playAudio,
 } from '../utils/helperFuncs';
 import { dynamicMsg, forbiddenAuthDiffs, bonus } from '../constants/preset';
 import { withFirebase } from './Firebase';
@@ -323,7 +323,7 @@ class GameState extends Component {
       this.soloSound();
     }
 
-    playSound({
+    playAudio({
       ...props,
       name,
       sound,

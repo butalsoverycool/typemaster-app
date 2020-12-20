@@ -8,7 +8,7 @@ import GameState from './components/GameState';
 import Header from './components/Header';
 import Nav from './components/Nav';
 
-import { playSound } from './utils/helperFuncs';
+import { playAudio } from './utils/helperFuncs';
 import getSounds, { loadSound } from './utils/getSounds';
 import getImgs from './utils/getImgs';
 
@@ -93,7 +93,7 @@ export default () => {
   // play intro-sound when available
   useEffect(() => {
     if (introSound) {
-      playSound({ sound: introSound });
+      playAudio({ sound: introSound });
     }
   }, [introSound]);
 
