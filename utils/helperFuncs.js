@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import library from './library';
+import library from '../constants/library';
 import { Audio } from 'expo-av';
 
 export const getTime = (time, typedString = '') => {
@@ -241,80 +241,56 @@ export const tryCallback = (cb, args = null) => {
   if (typeof cb === 'function') cb(args);
 };
 
-export const replay = async ({ sound, props, cb }) => {
+export const replay = async ({ name, sound }) => {
   try {
     await sound.replayAsync();
-    tryCallback(cb, { sound });
   } catch (err) {
     const errMsg = `Sound fail (${props.name}): ${err}`;
     console.log(errMsg);
   }
 };
 
-export const playSound = async (props, cb) => {
-  /// bail if
-  // muted mode
-  const { sound, muted, vol } = props;
-  if (muted || !sound) return;
+export const playSound = async ({
+  name,
+  sound,
+  index = null,
+  vol = null,
+  onStart,
+  onStop,
+  onFinish,
+  onBuffer,
+  onError,
+  ...props
+}) => {
+  if (!sound) return;
 
-  const soundArray = Array.isArray(sound);
-
-  // if sound provided, just play
-  if (!!sound) {
-    const toPlay = soundArray
-      ? sound[index || mathRandInc(0, sound.length - 1)]
-      : sound;
-
-    if (typeof vol === 'number') {
-      await toPlay.setVolumeAsync(props.vol);
-    }
-
-    replay({ sound: toPlay, props, cb: props.cb });
-
-    return tryCallback(cb, { sound: toPlay });
-  }
-
-  // no sounds available
-  // if (!props.sounds) return console.log('Sounds not loaded yet');
-
-  // pick out props
-  let name = typeof props === 'object' ? props.name : props;
-  let index = typeof props === 'object' ? props.index : null;
-
-  // bail if no sound selected
-  if (!name) return console.log('no sound name provided');
-
-  //console.log(`playSound()... (${name})`);
-
-  //let sound = props.sounds[name];
-
-  // located 1 level deep? pick index
+  // const toPlay = soundArray
+  //   ? sound[index || mathRandInc(0, sound.length - 1)]
+  //   : sound;
 
   // on playback status change
   const onStatusChange = status => {
     if (!status.isLoaded) {
-      // not loaded
-      if (status.error) {
-        console.log(
-          `Encountered a fatal error during playback: ${status.error}`
-        );
-      }
+      const err = `(not loaded): ${status.error}`;
+      tryCallback(() => onError(err));
     } else {
       // loaded
-      if (status.isPlaying) {
+      if (status.isPlaying && status.positionMillis === 0) {
         // is playing
-      } else {
-        tryCallback(props.onStop, { sound });
-        // stopped/paused
-      }
-
-      if (status.isBuffering) {
+        tryCallback(onStart);
+      } else if (status.isBuffering) {
         // Update your UI for the buffering state
+        tryCallback(onBuffer);
+      } else {
+        tryCallback(onStop);
       }
-
       if (status.didJustFinish && !status.isLooping) {
         // on finish
-        tryCallback(props.onFinish, { sound });
+        tryCallback(onFinish);
+      } else if (status.didJustFinish) {
+        tryCallback(onLoop);
+      } else if (status.error) {
+        tryCallback(() => onError(status.error));
       }
     }
   };
@@ -327,25 +303,23 @@ export const playSound = async (props, cb) => {
     }
   }
 
-  if (props.vol && typeof props.vol === 'number') {
-    await sound.setVolumeAsync(props.vol);
-  }
+  const shouldSetVol = vol && typeof props.vol === 'number';
 
-  replay({ sound, props, cb });
+  shouldSetVol && (await sound.setVolumeAsync(props.vol));
+
+  return await replay({ name, sound });
 };
 
-export const arrToMap = arr => {
-  const lookup = new Map();
+export const arrToObjectLookup = arr => {
+  let lookup = {};
 
-  const writeToMap = value => {
-    const isArr = Array.isArray(value);
-    const name = isArr ? value[0].name : value.name;
-    const file = isArr ? value.map(v => v.file) : value.file;
+  arr.forEach(x => {
+    const isArr = Array.isArray(x);
+    const name = isArr ? x[0].name : x.name;
+    const value = isArr ? x.map(f => f.file) : x.file;
 
-    lookup.set(name, file);
-  };
-
-  arr.forEach(writeToMap);
+    lookup[name] = value;
+  });
 
   return lookup;
 };

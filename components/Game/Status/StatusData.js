@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { withState } from '../../GameState';
 import { Text, Section } from '../../Elements';
 import { Badge } from 'react-native-elements';
-import { propsChanged } from '../../../constants/helperFuncs';
+import { propsChanged } from '../../../utils/helperFuncs';
 import { font } from '../../../constants/theme';
 
 class StatusData extends Component {

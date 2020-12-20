@@ -1,7 +1,7 @@
 import React, { Component, memo } from 'react';
 import { StyleSheet } from 'react-native';
 import { withState } from '../GameState';
-import { propsChanged } from '../../constants/helperFuncs';
+import { propsChanged } from '../../utils/helperFuncs';
 import { IconPreset } from '../../constants/preset';
 import { Section, Text, Icon } from '../Elements';
 

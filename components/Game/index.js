@@ -3,7 +3,7 @@ import { StyleSheet, Image } from 'react-native';
 import theme from '../../constants/theme';
 import { withFirebase } from '../Firebase/context';
 import { withState } from '../GameState';
-import { propsChanged } from '../../constants/helperFuncs';
+import { propsChanged } from '../../utils/helperFuncs';
 
 import Msg from './Msg';
 import Status from './Status';

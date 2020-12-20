@@ -12,7 +12,7 @@ import {
   formatAuth,
   pointCalc,
   playSound,
-} from '../constants/helperFuncs';
+} from '../utils/helperFuncs';
 import { dynamicMsg, forbiddenAuthDiffs, bonus } from '../constants/preset';
 import { withFirebase } from './Firebase';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -252,8 +252,7 @@ class GameState extends Component {
 
     await setSoloist();
 
-    console.log('SOUNDING', this.state.sounding);
-    const playing = [...this.state.sounding];
+    console.log('New soloist. Currently sounding:', this.state.sounding);
 
     const mute = async input => {
       if (Array.isArray(input.sound)) {
@@ -268,130 +267,73 @@ class GameState extends Component {
       }
     };
 
-    playing.forEach(mute);
+    this.state.sounding.forEach(mute);
 
-    for (let nth = 0; nth < playing.length; nth++) {}
+    // for (let nth = 0; nth < playing.length; nth++) {}
   }
 
   async playSound(props, cb) {
-    const onStop = ({ sound, name, props }) => {
+    if (this.state.muted) return;
+
+    const name = typeof props === 'string' ? props : props.name;
+    const file = this.state.sounds[name];
+    const isArr = Array.isArray(file);
+    const sound = isArr
+      ? file[props.index || mathRandInc(0, file.length - 1)]
+      : file;
+
+    const onStart = () => {
+      console.log('curr sounding', this.state.sounding);
+      const alreadySounding = this.state.sounding.includes(name);
+      !alreadySounding &&
+        this.setState(ps => ({ sounding: [...ps.sounding, name] }));
+    };
+
+    const onStop = () => {
       //console.log('Sound', name, 'STOPPED');
     };
 
-    const onFinish = ({ sound, name, props }) => {
-      //console.log('Sound', name, 'FINISHED');
+    const onFinish = () => {
+      console.log('Sound', name, 'FINISHED');
 
-      if (props.solo) {
-        this.setState({ soloist: false });
-      }
+      props.solo && this.setState({ soloist: false });
 
-      let removeNth = null;
-      this.state.sounding.find((item, nth) => {
-        if (item.name === name) removeNth = nth;
-      });
+      const removeIndex = this.state.sounding.indexOf(name);
 
-      if (typeof removeNth === 'number' && removeNth > -1) {
-        this.setState(ps => {
-          let newSounding = [...ps.sounding];
-          newSounding.splice(removeNth, 1);
-
-          return { sounding: newSounding };
-        });
-      }
+      removeIndex > -1 &&
+        this.setState(
+          ps => {
+            const sounding = [...ps.sounding];
+            sounding.splice(removeIndex, 1);
+            return { sounding };
+          },
+          () => console.log('curr sounding on finish', this.state.sounding)
+        );
     };
 
-    const name = typeof props === 'string' ? props : props.name;
-    const sound = this.state.sounds.get(name);
+    const onBuffer = () => {
+      //console.log('Sound', name, 'IS BUFFERING...');
+    };
+
+    const onError = err => {
+      console.log('Sound error:', err);
+    };
 
     if (props.solo) {
       this.soloSound();
     }
 
-    playSound(
-      {
-        ...props,
-        sound,
-        name,
-        muted: this.state.muted,
-        // sounds: this.state.sounds,
-        onStop: ({ sound }) => onStop({ sound, name, props }),
-        onFinish: ({ sound }) => onFinish({ sound, name, props }),
-      },
-      err => {
-        if (err) console.log('sound err:', err);
-
-        console.log('NEW SOUNDING', name, sound, 'ALL:', this.state.sounding);
-
-        this.setState(ps => ({ sounding: [...ps.sounding, { name, sound }] }));
-        this.tryCallback(cb, { sound });
-      }
-    );
+    playSound({
+      ...props,
+      name,
+      sound,
+      onStart,
+      onStop,
+      onFinish,
+      onBuffer,
+      onError,
+    });
   }
-
-  /* /// bail if
-    // muted mode
-    if (this.state.muted) return;
-    // no sounds available
-    if (!this.state.sounds) return console.log('Sounds not loaded yet');
-
-    // pick out props
-    let name = props,
-      index = null;
-    if (typeof props === 'object') {
-      name = props.name;
-      index = props.index;
-    }
-
-    // bail if no sound selected
-    if (!name) return console.log('no sound name provided');
-
-    console.log(`playSound()... (${name})`);
-
-    let sound = this.state.sounds[name];
-
-    // located 1 level deep? pick index
-    if (Array.isArray(sound)) {
-      sound = sound[index || mathRandInc(0, sound.length - 1)];
-    }
-
-    // on playback status change
-    const onStatusChange = status => {
-      if (!status.isLoaded) {
-        // not loaded
-        if (status.error) {
-          console.log(
-            `Encountered a fatal error during playback: ${status.error}`
-          );
-        }
-      } else {
-        // loaded
-        if (status.isPlaying) {
-          // is playing
-        } else {
-          // stopped/paused
-        }
-
-        if (status.isBuffering) {
-          // Update your UI for the buffering state
-        }
-
-        if (status.didJustFinish && !status.isLooping) {
-          // on finish
-          this.tryCallback(cb);
-        }
-      }
-    };
-
-    sound.setOnPlaybackStatusUpdate(onStatusChange);
-
-    try {
-      await sound.replayAsync();
-    } catch (err) {
-      const errMsg = `Failed to play sound (${name}): ${err}`;
-      console.log(errMsg);
-      this.tryCallback(cb, { err: errMsg });
-    } 
-  }*/
 
   onTyperChange(newTyper) {
     console.log('onTyperChange()...');

@@ -3,7 +3,7 @@ import { withFirebase } from '../Firebase';
 import { withState } from '../GameState';
 import { View, Modal, Section, Text, Input, Btn } from '../Elements';
 import theme from '../../constants/theme';
-import { timeStamp } from '../../constants/helperFuncs';
+import { timeStamp } from '../../utils/helperFuncs';
 
 const INITIAL_STATE = {
   username: '',

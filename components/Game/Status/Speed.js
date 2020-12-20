@@ -2,7 +2,7 @@ import React, { Component, memo } from 'react';
 import { withState } from '../../GameState';
 import * as PRESET from '../../../constants/preset';
 import StatusData from './StatusData';
-import { getTime } from '../../../constants/helperFuncs';
+import { getTime } from '../../../utils/helperFuncs';
 
 class Speed extends Component {
   constructor(props) {

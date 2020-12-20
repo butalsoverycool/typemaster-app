@@ -3,7 +3,7 @@ import { Alert, StyleSheet } from 'react-native';
 import { Section, Text, Btn } from '../Elements';
 import { withState } from '../GameState';
 import theme from '../../constants/theme';
-import { propsChanged, randOfArr } from '../../constants/helperFuncs';
+import { propsChanged, randOfArr } from '../../utils/helperFuncs';
 import { dynamicMsg, sadFace } from '../../constants/preset';
 
 import Status from '../Game/Status';

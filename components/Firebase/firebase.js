@@ -2,7 +2,7 @@ import * as firebase from 'firebase';
 import 'firebase/auth';
 import 'firebase/database';
 import { AsyncStorage } from 'react-native';
-import { timeStamp } from '../../constants/helperFuncs';
+import { timeStamp } from '../../utils/helperFuncs';
 
 import getENV from '../../env';
 

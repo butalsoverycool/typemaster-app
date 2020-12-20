@@ -4,7 +4,7 @@ import { StyleSheet, TouchableHighlight, Image } from 'react-native';
 import Section from './Section';
 import Text from './Text';
 import { font } from '../../constants/theme';
-import { mathRandInc } from '../../constants/helperFuncs';
+import { mathRandInc } from '../../utils/helperFuncs';
 
 const Btn = ({
   w,
@@ -30,7 +30,7 @@ const Btn = ({
   bgImg = null,
   ...props
 }) => {
-  const img = imgs?.get(bgImg) || null;
+  const img = imgs[bgImg] || null;
 
   const buttonOverride = {
     ...styles.button,

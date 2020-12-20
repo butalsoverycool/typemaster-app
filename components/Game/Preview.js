@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { withState } from '../GameState';
 import { levels } from '../../constants/options';
 import theme from '../../constants/theme';
-import { propsChanged } from '../../constants/helperFuncs';
+import { propsChanged } from '../../utils/helperFuncs';
 import { Section, Text, Btn } from '../Elements';
 
 const localStyles = StyleSheet.create({

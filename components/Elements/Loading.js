@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Section from './Section';
 import Text from './Text';
-import { usePrev } from '../../constants/helperFuncs';
+import { usePrev } from '../../utils/helperFuncs';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { hide } from 'expo-splash-screen';
 

@@ -28,11 +28,7 @@ class custom extends React.Component {
   } */
 
   shouldComponentUpdate(np, ns) {
-    return (
-      this.props.gameState.imgs !==
-      np.gameState.imgs /* ||
-      this.state.fadeIn !== ns.fadeIn */
-    );
+    return this.props.gameState.imgs !== np.gameState.imgs;
   }
 
   render() {
@@ -44,9 +40,9 @@ class custom extends React.Component {
       ...props
     } = this.props;
 
-    const { fadeIn, once } = this.state;
+    const { fadeIn } = this.state;
 
-    const img = imgs.get(name);
+    const img = imgs[name];
 
     if (!props.anim) {
       return (
@@ -62,7 +58,6 @@ class custom extends React.Component {
 
     return (
       <Anim
-        /* autoStart */
         enterOn={fadeIn}
         duration={{ in: 300, out: 300 }}
         easing={{ in: 'ease-out', out: 'ease' }}

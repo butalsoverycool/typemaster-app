@@ -4,7 +4,7 @@ import { ButtonGroup } from 'react-native-elements';
 import * as OPTIONS from '../../constants/options';
 import styles from './styles';
 import theme, { buttonGroupStyle } from '../../constants/theme';
-import { propsChanged } from '../../constants/helperFuncs';
+import { propsChanged } from '../../utils/helperFuncs';
 import { Section, Text } from '../Elements';
 
 // About typemaster Stella: https://www.pond5.com/stock-footage/item/75268195-miss-stella-pajunas-worlds-fast-typist-types-ibm-electric-ty

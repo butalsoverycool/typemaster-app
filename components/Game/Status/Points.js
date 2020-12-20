@@ -3,11 +3,7 @@ import { Dimensions } from 'react-native';
 import { Image } from 'react-native';
 import { withState } from '../../GameState';
 import StatusData from './StatusData';
-import {
-  propsChanged,
-  getTime,
-  pointCalc,
-} from '../../../constants/helperFuncs';
+import { propsChanged, getTime, pointCalc } from '../../../utils/helperFuncs';
 import { Section } from '../../Elements';
 
 class Points extends Component {

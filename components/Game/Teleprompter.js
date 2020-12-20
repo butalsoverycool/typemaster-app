@@ -1,7 +1,7 @@
 import React, { Component, useRef, useEffect, useState, memo } from 'react';
 import { Image } from 'react-native';
 import { StyleSheet, Animated, View } from 'react-native';
-import { usePrev, propsChanged } from '../../constants/helperFuncs';
+import { usePrev, propsChanged } from '../../utils/helperFuncs';
 import { withState } from '../GameState';
 import { Section, Text, Anim } from '../Elements';
 import Stars from './Stars';

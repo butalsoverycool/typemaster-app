@@ -3,7 +3,7 @@ import { Image } from 'react-native';
 import { Section, Text, Anim } from '../Elements';
 import { withState } from '../GameState';
 import { Animated, Dimensions } from 'react-native';
-import { usePrev } from '../../constants/helperFuncs';
+import { usePrev } from '../../utils/helperFuncs';
 
 const starSize = Dimensions.get('window').width / 5 - 5;
 const handSize = Dimensions.get('window').width / 2;

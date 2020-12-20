@@ -20,7 +20,7 @@ import {
   mathRandInc,
   propsChanged,
   playSound,
-} from '../../constants/helperFuncs';
+} from '../../utils/helperFuncs';
 import Input from '../Elements/Input';
 
 const { gameOverText } = dynamicMsg;

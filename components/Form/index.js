@@ -3,7 +3,7 @@ import { withState } from '../GameState';
 import { View, Section } from '../Elements';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
-import { propsChanged } from '../../constants/helperFuncs';
+import { propsChanged } from '../../utils/helperFuncs';
 import ScorePreview from '../ScoreBoard/ScorePreview';
 
 const Types = {

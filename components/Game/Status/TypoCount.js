@@ -1,7 +1,7 @@
 import React, { Component, memo } from 'react';
 import { withState } from '../../GameState';
 import StatusData from './StatusData';
-import { propsChanged } from '../../../constants/helperFuncs';
+import { propsChanged } from '../../../utils/helperFuncs';
 
 class TypoCount extends Component {
   constructor(props) {

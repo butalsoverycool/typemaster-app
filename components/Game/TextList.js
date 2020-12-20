@@ -5,7 +5,7 @@ import { withFirebase } from '../Firebase';
 import { withState } from '../GameState';
 import theme, { font } from '../../constants/theme';
 //import library from '../../constants/library';
-import { mathRandInc } from '../../constants/helperFuncs';
+import { mathRandInc } from '../../utils/helperFuncs';
 import { Section, Text } from '../Elements';
 
 const TextList = ({ gameSetters: { setMaterial, playSound }, firebase }) => {

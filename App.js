@@ -5,12 +5,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
 import GameState from './components/GameState';
-import getSounds, { loadSound } from './constants/getSounds';
 import Header from './components/Header';
 import Nav from './components/Nav';
 
-import { playSound } from './constants/helperFuncs';
-import getImgs from './constants/getImgs';
+import { playSound } from './utils/helperFuncs';
+import getSounds, { loadSound } from './utils/getSounds';
+import getImgs from './utils/getImgs';
 
 import Firebase, { FirebaseContext } from './components/Firebase';
 import { useFonts } from 'expo-font';
@@ -61,9 +61,10 @@ export default () => {
 
   const loadIntroSound = async () => {
     const sound = await loadSound({
-      file: introSoundFile,
       name: 'main',
+      file: introSoundFile,
     });
+
     setIntroSound(sound.file);
   };
 
@@ -91,8 +92,9 @@ export default () => {
 
   // play intro-sound when available
   useEffect(() => {
-    // console.log('playing intro', introSound);
-    introSound && playSound({ sound: introSound });
+    if (introSound) {
+      playSound({ sound: introSound });
+    }
   }, [introSound]);
 
   // on dependencies-update

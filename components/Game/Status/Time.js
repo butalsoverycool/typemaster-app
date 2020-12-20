@@ -1,7 +1,7 @@
 import React, { Component, memo } from 'react';
 import { withState } from '../../GameState';
 import * as PRESET from '../../../constants/preset';
-import { getTime } from '../../../constants/helperFuncs';
+import { getTime } from '../../../utils/helperFuncs';
 import StatusData from './StatusData';
 
 class Time extends Component {

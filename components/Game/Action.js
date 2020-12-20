@@ -1,6 +1,6 @@
 import React, { Component, memo } from 'react';
 import { withState } from '../GameState';
-import { propsChanged } from '../../constants/helperFuncs';
+import { propsChanged } from '../../utils/helperFuncs';
 import { Section, Btn } from '../Elements';
 
 class Action extends Component {
